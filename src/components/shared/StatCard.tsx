@@ -1,6 +1,6 @@
 import * as React from "react"
 import { cn } from "../../utils"
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/Card"
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
 import { motion } from "motion/react"
 
 export interface StatCardProps {
