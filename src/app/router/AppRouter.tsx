@@ -1,0 +1,67 @@
+import React from "react"
+import { createBrowserRouter } from "react-router"
+import { ProtectedAdminLayout } from "./layouts/ProtectedAdminLayout"
+import { ErrorBoundaryScreen } from "../../pages/ErrorBoundaryPage"
+
+// Static imports for critical auth paths (must load immediately)
+import { LoginScreen } from "../../pages/Auth/LoginPage"
+import { SessionRequiredScreen } from "../../pages/Auth/SessionRequiredPage"
+import { NotFoundScreen } from "../../pages/NotFound/NotFoundPage"
+
+// Lazy-loaded screen components for code splitting
+const DashboardScreen = React.lazy(() =>
+  import("../../pages/Dashboard/DashboardPage").then((m) => ({ default: m.DashboardScreen })),
+)
+
+/**
+ * Suspense wrapper for lazy-loaded route components.
+ * Shows a minimal loading spinner while the chunk downloads.
+ */
+function SuspenseRoute({ children }: { children: React.ReactNode }) {
+  return (
+    <React.Suspense
+      fallback={
+        <div className="flex items-center justify-center py-24">
+          <div className="h-7 w-7 animate-spin rounded-full border-2 border-slate-300 border-t-blue-600" />
+        </div>
+      }
+    >
+      {children}
+    </React.Suspense>
+  )
+}
+
+/**
+ * Wraps a lazy component in Suspense for use in route config.
+ */
+function lazyRoute(LazyComponent: React.LazyExoticComponent<React.ComponentType>) {
+  return function LazyRouteWrapper() {
+    return (
+      <SuspenseRoute>
+        <LazyComponent />
+      </SuspenseRoute>
+    )
+  }
+}
+
+export const router = createBrowserRouter([
+  {
+    path: "/auth/login",
+    Component: LoginScreen,
+    ErrorBoundary: ErrorBoundaryScreen,
+  },
+  {
+    path: "/auth/session-required",
+    Component: SessionRequiredScreen,
+    ErrorBoundary: ErrorBoundaryScreen,
+  },
+  {
+    path: "/",
+    Component: ProtectedAdminLayout,
+    ErrorBoundary: ErrorBoundaryScreen,
+    children: [
+      { index: true, Component: lazyRoute(DashboardScreen) },
+      { path: "*", Component: NotFoundScreen },
+    ],
+  },
+])
