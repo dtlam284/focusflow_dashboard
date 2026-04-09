@@ -1,7 +1,7 @@
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
-import path from 'path'
-import { defineConfig } from 'vite'
+import { fileURLToPath, URL } from 'node:url'
+import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   plugins: [
@@ -13,8 +13,13 @@ export default defineConfig({
   resolve: {
     alias: {
       // Alias @ to the src directory
-      '@': path.resolve(__dirname, './src'),
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
+  },
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: './src/tests/setup.ts',
   },
 
   // File types to support raw imports. Never add .css, .tsx, or .ts files to this.
