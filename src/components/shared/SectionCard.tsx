@@ -1,5 +1,5 @@
 import React from 'react'
-import { cn } from '../../utils'
+import { cn } from '@/utils'
 
 /**
  * Consistent section panel / card used across all admin screens.

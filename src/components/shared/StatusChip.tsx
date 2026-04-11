@@ -1,6 +1,6 @@
 import * as React from "react"
-import { cn } from "../../utils"
-import { useI18n } from "../../contexts/I18nContext"
+import { cn } from "@/utils"
+import { useI18n } from "@/contexts/I18nContext"
 
 export type StatusType =
   | "success"

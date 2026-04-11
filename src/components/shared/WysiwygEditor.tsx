@@ -11,8 +11,8 @@ import {
   Heading2,
   Pilcrow,
 } from "lucide-react"
-import { cn } from "../../utils"
-import { useI18n } from "../../contexts/I18nContext"
+import { cn } from "@/utils"
+import { useI18n } from "@/contexts/I18nContext"
 
 type WysiwygEditorProps = {
   value: string
