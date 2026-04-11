@@ -1,4 +1,4 @@
-import React from "react"
+import React from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -8,18 +8,19 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "../ui/alert-dialog"
+} from "../ui/alert-dialog";
 
 type ConfirmDialogProps = {
-  open: boolean
-  title: string
-  description: string
-  confirmLabel?: string
-  cancelLabel?: string
-  loading?: boolean
-  onOpenChange: (open: boolean) => void
-  onConfirm: () => void
-}
+  open: boolean;
+  title: string;
+  description: string;
+  confirmLabel?: string;
+  cancelLabel?: string;
+  processingLabel?: string;
+  loading?: boolean;
+  onOpenChange: (open: boolean) => void;
+  onConfirm: () => void;
+};
 
 export function ConfirmDialog({
   open,
@@ -27,6 +28,7 @@ export function ConfirmDialog({
   description,
   confirmLabel = "Confirm",
   cancelLabel = "Cancel",
+  processingLabel = "Processing...",
   loading = false,
   onOpenChange,
   onConfirm,
@@ -38,13 +40,14 @@ export function ConfirmDialog({
           <AlertDialogTitle>{title}</AlertDialogTitle>
           <AlertDialogDescription>{description}</AlertDialogDescription>
         </AlertDialogHeader>
+
         <AlertDialogFooter>
-          <AlertDialogCancel>{cancelLabel}</AlertDialogCancel>
+          <AlertDialogCancel disabled={loading}>{cancelLabel}</AlertDialogCancel>
           <AlertDialogAction onClick={onConfirm} disabled={loading}>
-            {loading ? "Processing..." : confirmLabel}
+            {loading ? processingLabel : confirmLabel}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-  )
+  );
 }
