@@ -1,9 +1,8 @@
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
-import { useI18n } from "../../contexts/I18nContext";
 
-import { cn } from "./utils";
+import { cn } from "@/utils";
 
 const buttonVariants = cva(
   "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
@@ -35,42 +34,46 @@ const buttonVariants = cva(
   },
 );
 
+type ButtonProps = React.ComponentProps<"button"> &
+  VariantProps<typeof buttonVariants> & {
+    asChild?: boolean;
+    isLoading?: boolean;
+  };
+
 function Button({
   className,
   variant,
   size,
   asChild = false,
+  isLoading = false,
   children,
-  title,
-  "aria-label": ariaLabel,
+  disabled,
+  type = "button",
   ...props
-}: React.ComponentProps<"button"> &
-  VariantProps<typeof buttonVariants> & {
-    asChild?: boolean;
-  }) {
-  const { t } = useI18n();
+}: ButtonProps) {
   const Comp = asChild ? Slot : "button";
-  const translateNode = (node: React.ReactNode): React.ReactNode => {
-    if (typeof node === "string") {
-      return t(node);
-    }
-
-    if (Array.isArray(node)) {
-      return node.map((item) => translateNode(item));
-    }
-
-    return node;
-  };
 
   return (
     <Comp
       data-slot="button"
       className={cn(buttonVariants({ variant, size, className }))}
-      title={typeof title === "string" ? t(title) : title}
-      aria-label={typeof ariaLabel === "string" ? t(ariaLabel) : ariaLabel}
+      disabled={!asChild ? disabled || isLoading : undefined}
+      aria-disabled={asChild ? disabled || isLoading : undefined}
+      data-loading={isLoading ? "true" : undefined}
+      type={!asChild ? type : undefined}
       {...props}
     >
-      {translateNode(children)}
+      {isLoading ? (
+        <>
+          <span
+            className="size-4 animate-spin rounded-full border-2 border-current border-t-transparent"
+            aria-hidden="true"
+          />
+          <span>{children}</span>
+        </>
+      ) : (
+        children
+      )}
     </Comp>
   );
 }
