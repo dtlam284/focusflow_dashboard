@@ -11,7 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "./dialog";
-import { cn } from "./utils";
+import { cn } from "@/utils";
 
 function Command({
   className,
