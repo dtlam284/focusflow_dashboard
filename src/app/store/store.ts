@@ -1,8 +1,8 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit'
 import { persistReducer, persistStore } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
-import authReducer from '../../features/auth/store/slices/authSlice'
-import appReducer from '../../app/store/slices/appSlice'
+import authReducer from '@/features/auth/store/slices/authSlice'
+import appReducer from '@/app/store/slices/appSlice'
 
 const persistConfig = {
   key: 'cms',
