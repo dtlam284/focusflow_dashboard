@@ -1,10 +1,12 @@
 import React, { useMemo, useState } from "react"
-import { cn } from "@/utils"
-import { Search, SlidersHorizontal, X } from "lucide-react"
-import { useI18n } from "@/contexts/I18nContext"
-import { Button } from "../ui/button"
-import { useIsMobile } from "@/hooks/useMobile"
+
 import { motion } from "motion/react"
+import { Search, SlidersHorizontal, X } from "lucide-react"
+
+import { cn } from "@/utils"
+import { useIsMobile } from "@/hooks/useMobile"
+import { useI18n } from "@/contexts/I18nContext"
+
 import {
   Dialog,
   DialogContent,
@@ -18,6 +20,8 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "../ui/tooltip"
+import { Button } from "../ui/button"
+
 import { EmptyState } from "@/components/shared/EmptyState";
 
 export interface Column<T> {

@@ -1,6 +1,7 @@
 import React from "react"
-import { cn } from "@/utils"
 import { ChevronRight, Home } from "lucide-react"
+
+import { cn } from "@/utils"
 import { useI18n } from "@/contexts/I18nContext"
 
 export interface PageHeaderProps {

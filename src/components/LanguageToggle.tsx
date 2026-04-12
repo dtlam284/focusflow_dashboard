@@ -1,7 +1,8 @@
 import React from "react"
 import { Languages } from "lucide-react"
-import { cn } from "../utils"
 import { useI18n } from "../contexts/I18nContext"
+
+import { cn } from "../utils"
 
 export function LanguageToggle() {
   const { language, setLanguage } = useI18n()
