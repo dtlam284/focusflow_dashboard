@@ -113,7 +113,7 @@ export function DataTable<T>({
   const search = searchValue ?? internalSearch;
   const hasSearch = Boolean(onSearchChange || searchValue !== undefined);
   const isServerPagination = Boolean(onPageChange);
-  const availableFilters = filters ?? [];
+  const availableFilters = useMemo(() => filters ?? [], [filters]);
   const activeFilters = useMemo(
     () => availableFilters.filter((filter) => hasFilterValue(filter.value)),
     [availableFilters],
