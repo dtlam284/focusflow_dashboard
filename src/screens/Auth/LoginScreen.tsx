@@ -1,11 +1,14 @@
-import { Button } from "@/components/ui/button";
-import { useAuth } from "@/contexts/AuthContext";
-import { useAppDispatch } from "@/app/store/hooks";
-import { loginAdmin } from "@/features/auth/store/slices/authSlice";
-import { ShieldCheck } from "lucide-react";
 import React from "react";
 import { Navigate, useNavigate, useSearchParams } from "react-router";
+import { ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
+
+import { useAppDispatch } from "@/app/store/hooks";
+import { FormField } from "@/components/shared/FormField";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useAuth } from "@/contexts/AuthContext";
+import { loginAdmin } from "@/features/auth/store/slices/authSlice";
 
 export function LoginScreen() {
   const navigate = useNavigate();
@@ -25,9 +28,9 @@ export function LoginScreen() {
 
   if (status === "loading") {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4">
-        <div className="w-full max-w-sm bg-white border border-slate-200 rounded-xl p-6 shadow-sm text-center space-y-3">
-          <div className="mx-auto h-9 w-9 rounded-full border-2 border-slate-300 border-t-blue-600 animate-spin" />
+      <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
+        <div className="w-full max-w-sm space-y-3 rounded-xl border border-slate-200 bg-white p-6 text-center shadow-sm">
+          <div className="mx-auto h-9 w-9 animate-spin rounded-full border-2 border-slate-300 border-t-blue-600" />
           <h1 className="text-base font-semibold text-slate-900">
             Checking existing session
           </h1>
@@ -37,7 +40,7 @@ export function LoginScreen() {
     );
   }
 
-  const submit = async (event: React.FormEvent) => {
+  const submit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (!email.trim() || !password.trim()) {
@@ -46,6 +49,7 @@ export function LoginScreen() {
     }
 
     setIsSubmitting(true);
+
     try {
       await dispatch(
         loginAdmin({
@@ -70,7 +74,7 @@ export function LoginScreen() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4">
+    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
       <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
         <div className="mb-6 text-center">
           <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-blue-700">
@@ -85,35 +89,32 @@ export function LoginScreen() {
         </div>
 
         <form onSubmit={submit} className="space-y-4">
-          <div>
-            <input
+          <FormField label="Email" htmlFor="email" required>
+            <Input
+              id="email"
               type="email"
               autoComplete="email"
               title="Email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               placeholder="admin@example.com"
-              className="h-10 w-full rounded-md border border-slate-200 px-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
             />
-          </div>
-          <div>
-            <input
+          </FormField>
+
+          <FormField label="Password" htmlFor="password" required>
+            <Input
+              id="password"
               type="password"
               autoComplete="current-password"
+              title="Password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              title="Password"
               placeholder="Enter your password"
-              className="h-10 w-full rounded-md border border-slate-200 px-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
             />
-          </div>
+          </FormField>
 
-          <Button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full"
-          >
-            {isSubmitting ? "Signing in..." : "Sign in"}
+          <Button type="submit" isLoading={isSubmitting} className="w-full">
+            Sign in
           </Button>
         </form>
       </div>
