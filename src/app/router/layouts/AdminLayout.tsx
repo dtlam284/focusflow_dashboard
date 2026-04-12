@@ -1,17 +1,14 @@
-import {
-  LayoutDashboard,
-  LogOut,
-  Menu,
-  Search,
-} from "lucide-react"
-import { AnimatePresence, motion } from "motion/react"
 import React from "react"
+
+import { AnimatePresence, motion } from "motion/react"
 import { NavLink, Outlet, useLocation } from "react-router"
-import { ThemeToggle } from "../../../components/ThemeToggle"
-import { LanguageToggle } from "../../../components/LanguageToggle"
-import { useAuth } from "../../../contexts/AuthContext"
-import { useIsMobile } from "../../../hooks/useMobile"
-import { cn } from "../../../utils"
+import { LayoutDashboard, LogOut, Menu, Search, } from "lucide-react"
+
+import { cn } from "@/utils"
+import { useIsMobile } from "@/hooks/useMobile"
+import { useAuth } from "@/contexts/AuthContext"
+import { ThemeToggle } from "@/components/ThemeToggle"
+import { LanguageToggle } from "@/components/LanguageToggle"
 
 const NAV_ITEMS = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },

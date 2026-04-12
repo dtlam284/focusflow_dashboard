@@ -1,12 +1,13 @@
 import React from "react"
 import { createBrowserRouter } from "react-router"
-import { ProtectedAdminLayout } from "./layouts/ProtectedAdminLayout"
-import { ErrorBoundaryScreen } from "@/screens/ErrorBoundaryScreen"
 
 // Static imports for critical auth paths (must load immediately)
 import { LoginScreen } from "@/screens/Auth/LoginScreen"
-import { SessionRequiredScreen } from "@/screens/Auth/SessionRequiredScreen"
 import { NotFoundScreen } from "@/screens/NotFound/NotFoundScreen"
+import { ErrorBoundaryScreen } from "@/screens/ErrorBoundaryScreen"
+import { SessionRequiredScreen } from "@/screens/Auth/SessionRequiredScreen"
+
+import { ProtectedAdminLayout } from "./layouts/ProtectedAdminLayout"
 
 // Lazy-loaded screen components for code splitting
 const DashboardScreen = React.lazy(() =>

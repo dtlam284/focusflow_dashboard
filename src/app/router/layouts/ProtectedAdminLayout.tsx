@@ -1,5 +1,7 @@
-import { useAuth } from "@/contexts/AuthContext";
 import { Navigate, useLocation } from "react-router";
+
+import { useAuth } from "@/contexts/AuthContext";
+
 import { AdminLayout } from "./AdminLayout";
 
 function AuthCheckingScreen() {
