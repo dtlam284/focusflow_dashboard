@@ -1,8 +1,8 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 
-export type NoteColor = 'default' | 'yellow' | 'blue' | 'green' | 'pink'
+export type NoteColor = 'all' | 'default' | 'yellow' | 'blue' | 'green' | 'pink'
 
-export interface Note {
+export interface INote {
   id: string
   title: string
   content: string
@@ -12,24 +12,24 @@ export interface Note {
   updatedAt: string
 }
 
-export interface NotesState {
-  items: Note[]
+export interface INotesState {
+  items: INote[]
 }
 
-const initialState: NotesState = {
+const initialState: INotesState = {
   items: [],
 }
 
 type UpdateNotePayload = {
   id: string
-  changes: Partial<Omit<Note, 'id' | 'createdAt'>>
+  changes: Partial<Omit<INote, 'id' | 'createdAt'>>
 }
 
 const noteSlice = createSlice({
   name: 'notes',
   initialState,
   reducers: {
-    addNote(state, action: PayloadAction<Note>) {
+    addNote(state, action: PayloadAction<INote>) {
       state.items.unshift(action.payload)
     },
     updateNote(state, action: PayloadAction<UpdateNotePayload>) {

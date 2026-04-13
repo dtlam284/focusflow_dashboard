@@ -1,8 +1,8 @@
-export type TaskStatus = "todo" | "in_progress" | "done";
+export type TaskStatus = 'all' | 'todo' | 'in_progress' | 'done';
 
-export type TaskPriority = "low" | "medium" | "high";
+export type TaskPriority = 'all' | 'low' | 'medium' | 'high';
 
-export interface Task {
+export interface ITask {
   id: string;
   title: string;
   description?: string;
@@ -13,25 +13,25 @@ export interface Task {
   updatedAt: string;
 }
 
-export interface TaskFilters {
-  status: "all" | TaskStatus;
-  priority: "all" | TaskPriority;
+export interface ITaskFilters {
+  status: TaskStatus;
+  priority: TaskPriority;
   keyword: string;
 }
 
-export interface TasksState {
-  items: Task[];
-  filters: TaskFilters;
+export interface ITasksState {
+  items: ITask[];
+  filters: ITaskFilters;
 }
 
-export interface CreateTaskFormValues {
+export interface ICreateTaskFormValues {
   title: string;
   description?: string;
   priority: TaskPriority;
   dueDate?: string;
 }
 
-export interface UpdateTaskFormValues {
+export interface IUpdateTaskFormValues {
   title: string;
   description?: string;
   priority: TaskPriority;

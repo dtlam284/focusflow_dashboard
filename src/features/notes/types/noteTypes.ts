@@ -1,6 +1,6 @@
-export type NoteColor = "default" | "yellow" | "blue" | "green" | "pink";
+export type NoteColor = 'all' | 'default' | 'yellow' | 'blue' | 'green' | 'pink';
 
-export interface Note {
+export interface INote {
   id: string;
   title: string;
   content: string;
@@ -10,24 +10,24 @@ export interface Note {
   updatedAt: string;
 }
 
-export interface NoteFilters {
+export interface INoteFilters {
   keyword: string;
-  color: "all" | NoteColor;
-  pinned: "all" | "pinned" | "unpinned";
+  color: NoteColor;
+  pinned: 'pinned' | 'unpinned';
 }
 
-export interface NotesState {
-  items: Note[];
-  filters: NoteFilters;
+export interface INotesState {
+  items: INote[];
+  filters: INoteFilters;
 }
 
-export interface CreateNoteFormValues {
+export interface ICreateNoteFormValues {
   title: string;
   content: string;
   color: NoteColor;
 }
 
-export interface UpdateNoteFormValues {
+export interface IUpdateNoteFormValues {
   title: string;
   content: string;
   color: NoteColor;

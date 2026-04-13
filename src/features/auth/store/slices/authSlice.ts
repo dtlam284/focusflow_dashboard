@@ -6,7 +6,7 @@ import { AuthService } from '@/services/access/accessService'
 import { createAppAsyncThunk } from '@/app/store/thunkTypes'
 import { toErrorMessage } from '@/app/store/slices/sliceUtils'
 
-export interface AuthState {
+export interface IAuthState {
   user: AdminUser | null
   isAuthenticated: boolean
   isLoading: boolean
@@ -14,7 +14,7 @@ export interface AuthState {
   error: string | null
 }
 
-const initialState: AuthState = {
+const initialState: IAuthState = {
   user: null,
   isAuthenticated: false,
   isLoading: false,

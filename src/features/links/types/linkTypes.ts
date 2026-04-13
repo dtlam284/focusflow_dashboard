@@ -1,11 +1,6 @@
-export type LinkCategory =
-  | "general"
-  | "reference"
-  | "design"
-  | "development"
-  | "learning";
+export type LinkCategory = 'all' | 'general' | 'reference' | 'design' | 'development' | 'learning';
 
-export interface Link {
+export interface ILink {
   id: string;
   title: string;
   url: string;
@@ -15,24 +10,24 @@ export interface Link {
   updatedAt: string;
 }
 
-export interface LinkFilters {
+export interface ILinkFilters {
   keyword: string;
-  category: "all" | LinkCategory;
+  category: LinkCategory;
 }
 
-export interface LinksState {
-  items: Link[];
-  filters: LinkFilters;
+export interface ILinksState {
+  items: ILink[];
+  filters: ILinkFilters;
 }
 
-export interface CreateLinkFormValues {
+export interface ICreateLinkFormValues {
   title: string;
   url: string;
   category: LinkCategory;
   description?: string;
 }
 
-export interface UpdateLinkFormValues {
+export interface IUpdateLinkFormValues {
   title: string;
   url: string;
   category: LinkCategory;

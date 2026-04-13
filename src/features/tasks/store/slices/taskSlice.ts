@@ -1,9 +1,9 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 
-export type TaskStatus = 'todo' | 'in_progress' | 'done'
-export type TaskPriority = 'low' | 'medium' | 'high'
+export type TaskStatus = 'all' | 'todo' | 'in_progress' | 'done'
+export type TaskPriority = 'all' | 'low' | 'medium' | 'high'
 
-export interface Task {
+export interface ITask {
   id: string
   title: string
   description?: string
@@ -14,18 +14,18 @@ export interface Task {
   updatedAt: string
 }
 
-export interface TaskFilters {
-  status: 'all' | TaskStatus
-  priority: 'all' | TaskPriority
+export interface ITaskFilters {
+  status: TaskStatus
+  priority: TaskPriority
   keyword: string
 }
 
-export interface TasksState {
-  items: Task[]
-  filters: TaskFilters
+export interface ITasksState {
+  items: ITask[]
+  filters: ITaskFilters
 }
 
-const initialState: TasksState = {
+const initialState: ITasksState = {
   items: [],
   filters: {
     status: 'all',
@@ -36,14 +36,14 @@ const initialState: TasksState = {
 
 type UpdateTaskPayload = {
   id: string
-  changes: Partial<Omit<Task, 'id' | 'createdAt'>>
+  changes: Partial<Omit<ITask, 'id' | 'createdAt'>>
 }
 
 const taskSlice = createSlice({
   name: 'tasks',
   initialState,
   reducers: {
-    addTask(state, action: PayloadAction<Task>) {
+    addTask(state, action: PayloadAction<ITask>) {
       state.items.unshift(action.payload)
     },
     updateTask(state, action: PayloadAction<UpdateTaskPayload>) {
@@ -59,7 +59,7 @@ const taskSlice = createSlice({
     deleteTask(state, action: PayloadAction<string>) {
       state.items = state.items.filter((item) => item.id !== action.payload)
     },
-    setTaskFilters(state, action: PayloadAction<Partial<TaskFilters>>) {
+    setTaskFilters(state, action: PayloadAction<Partial<ITaskFilters>>) {
       state.filters = {
         ...state.filters,
         ...action.payload,

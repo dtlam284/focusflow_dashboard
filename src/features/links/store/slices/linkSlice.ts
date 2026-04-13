@@ -1,8 +1,8 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 
-export type LinkCategory = 'general' | 'work' | 'study' | 'personal'
+export type LinkCategory = 'all' | 'general' | 'work' | 'study' | 'personal'
 
-export interface Link {
+export interface ILink {
   id: string
   title: string
   url: string
@@ -12,17 +12,17 @@ export interface Link {
   updatedAt: string
 }
 
-export interface LinkFilters {
+export interface ILinkFilters {
   category: 'all' | LinkCategory
   keyword: string
 }
 
-export interface LinksState {
-  items: Link[]
-  filters: LinkFilters
+export interface ILinksState {
+  items: ILink[]
+  filters: ILinkFilters
 }
 
-const initialState: LinksState = {
+const initialState: ILinksState = {
   items: [],
   filters: {
     category: 'all',
@@ -32,14 +32,14 @@ const initialState: LinksState = {
 
 type UpdateLinkPayload = {
   id: string
-  changes: Partial<Omit<Link, 'id' | 'createdAt'>>
+  changes: Partial<Omit<ILink, 'id' | 'createdAt'>>
 }
 
 const linkSlice = createSlice({
   name: 'links',
   initialState,
   reducers: {
-    addLink(state, action: PayloadAction<Link>) {
+    addLink(state, action: PayloadAction<ILink>) {
       state.items.unshift(action.payload)
     },
     updateLink(state, action: PayloadAction<UpdateLinkPayload>) {
@@ -54,7 +54,7 @@ const linkSlice = createSlice({
     deleteLink(state, action: PayloadAction<string>) {
       state.items = state.items.filter((item) => item.id !== action.payload)
     },
-    setLinkFilters(state, action: PayloadAction<Partial<LinkFilters>>) {
+    setLinkFilters(state, action: PayloadAction<Partial<ILinkFilters>>) {
       state.filters = {
         ...state.filters,
         ...action.payload,

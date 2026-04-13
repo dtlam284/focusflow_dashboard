@@ -1,5 +1,5 @@
-export type ThemeMode = "light" | "dark";
+export type ThemeMode = 'all' | 'light' | 'dark';
 
-export interface ThemeState {
+export interface IThemeState {
   mode: ThemeMode;
 }
