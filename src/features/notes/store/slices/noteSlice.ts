@@ -1,26 +1,16 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
-
-export type NoteColor = 'all' | 'default' | 'yellow' | 'blue' | 'green' | 'pink'
-
-export interface INote {
-  id: string
-  title: string
-  content: string
-  color: NoteColor
-  isPinned: boolean
-  createdAt: string
-  updatedAt: string
-}
-
-export interface INotesState {
-  items: INote[]
-}
+import type { INote, INoteFilters, INotesState } from '../../types/noteTypes'
 
 const initialState: INotesState = {
   items: [],
+  filters: {
+    keyword: '',
+    color: 'all',
+    pinned: 'all',
+  },
 }
 
-type UpdateNotePayload = {
+type TUpdateNotePayload = {
   id: string
   changes: Partial<Omit<INote, 'id' | 'createdAt'>>
 }
@@ -32,7 +22,8 @@ const noteSlice = createSlice({
     addNote(state, action: PayloadAction<INote>) {
       state.items.unshift(action.payload)
     },
-    updateNote(state, action: PayloadAction<UpdateNotePayload>) {
+
+    updateNote(state, action: PayloadAction<TUpdateNotePayload>) {
       const note = state.items.find((item) => item.id === action.payload.id)
 
       if (!note) return
@@ -41,9 +32,11 @@ const noteSlice = createSlice({
         updatedAt: new Date().toISOString(),
       })
     },
+
     deleteNote(state, action: PayloadAction<string>) {
       state.items = state.items.filter((item) => item.id !== action.payload)
     },
+
     togglePin(state, action: PayloadAction<string>) {
       const note = state.items.find((item) => item.id === action.payload)
 
@@ -52,8 +45,32 @@ const noteSlice = createSlice({
       note.isPinned = !note.isPinned
       note.updatedAt = new Date().toISOString()
     },
+
+    setNoteFilters(state, action: PayloadAction<Partial<INoteFilters>>) {
+      state.filters = {
+        ...state.filters,
+        ...action.payload,
+      }
+    },
+
+    resetNoteFilters(state) {
+      state.filters = initialState.filters
+    },
+
+    hydrateNotes(state, action: PayloadAction<INote[]>) {
+      state.items = action.payload
+    },
   },
 })
 
-export const { addNote, updateNote, deleteNote, togglePin } = noteSlice.actions
+export const {
+  addNote,
+  updateNote,
+  deleteNote,
+  togglePin,
+  setNoteFilters,
+  resetNoteFilters,
+  hydrateNotes,
+} = noteSlice.actions
+
 export default noteSlice.reducer
