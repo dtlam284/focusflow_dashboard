@@ -1,26 +1,5 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
-
-export type LinkCategory = 'all' | 'general' | 'work' | 'study' | 'personal'
-
-export interface ILink {
-  id: string
-  title: string
-  url: string
-  description?: string
-  category: LinkCategory
-  createdAt: string
-  updatedAt: string
-}
-
-export interface ILinkFilters {
-  category: 'all' | LinkCategory
-  keyword: string
-}
-
-export interface ILinksState {
-  items: ILink[]
-  filters: ILinkFilters
-}
+import type { ILink, ILinkFilters, ILinksState } from '../../types/linkTypes'
 
 const initialState: ILinksState = {
   items: [],
@@ -42,6 +21,7 @@ const linkSlice = createSlice({
     addLink(state, action: PayloadAction<ILink>) {
       state.items.unshift(action.payload)
     },
+
     updateLink(state, action: PayloadAction<UpdateLinkPayload>) {
       const link = state.items.find((item) => item.id === action.payload.id)
 
@@ -51,22 +31,29 @@ const linkSlice = createSlice({
         updatedAt: new Date().toISOString(),
       })
     },
+
     deleteLink(state, action: PayloadAction<string>) {
       state.items = state.items.filter((item) => item.id !== action.payload)
     },
+
     setLinkFilters(state, action: PayloadAction<Partial<ILinkFilters>>) {
       state.filters = {
         ...state.filters,
         ...action.payload,
       }
     },
+
     resetLinkFilters(state) {
       state.filters = initialState.filters
+    },
+
+    hydrateLinks(state, action: PayloadAction<ILink[]>) {
+      state.items = action.payload
     },
   },
 })
 
-export const { addLink, updateLink, deleteLink, setLinkFilters, resetLinkFilters } =
+export const { addLink, updateLink, deleteLink, setLinkFilters, resetLinkFilters, hydrateLinks } =
   linkSlice.actions
 
 export default linkSlice.reducer
