@@ -4,9 +4,11 @@ import storage from 'redux-persist/lib/storage'
 
 import appReducer from '@/app/store/slices/appSlice'
 import authReducer from '@/features/auth/store/slices/authSlice'
-import tasksReducer from '@/features/tasks/store/slices/taskSlice'
-import notesReducer from '@/features/notes/store/slices/noteSlice'
-import linksReducer from '@/features/links/store/slices/linkSlice'
+import tasksReducer, { hydrateTasks } from '@/features/tasks/store/slices/taskSlice'
+import notesReducer, { hydrateNotes } from '@/features/notes/store/slices/noteSlice'
+import linksReducer, { hydrateLinks } from '@/features/links/store/slices/linkSlice'
+
+import { loadState, saveState } from '@/utils/storage'
 
 const persistConfig = {
   key: 'cms',
@@ -40,6 +42,36 @@ export const store = configureStore({
       },
     }),
   devTools: import.meta.env.DEV,
+})
+
+const persistedFeatureState = loadState()
+
+if (persistedFeatureState?.tasks?.items) {
+  store.dispatch(hydrateTasks(persistedFeatureState.tasks.items))
+}
+
+if (persistedFeatureState?.notes?.items) {
+  store.dispatch(hydrateNotes(persistedFeatureState.notes.items))
+}
+
+if (persistedFeatureState?.links?.items) {
+  store.dispatch(hydrateLinks(persistedFeatureState.links.items))
+}
+
+store.subscribe(() => {
+  const state = store.getState()
+
+  saveState({
+    tasks: {
+      items: state.tasks.items,
+    },
+    notes: {
+      items: state.notes.items,
+    },
+    links: {
+      items: state.links.items,
+    },
+  })
 })
 
 export const persistor = persistStore(store)
