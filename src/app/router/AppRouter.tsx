@@ -14,6 +14,10 @@ const DashboardScreen = React.lazy(() =>
   import("@/screens/Dashboard/DashboardScreen").then((m) => ({ default: m.DashboardScreen })),
 )
 
+const TasksScreen = React.lazy(() =>
+  import("@/screens/Tasks/TasksScreen").then((m) => ({ default: m.TasksScreen })),
+)
+
 /**
  * Suspense wrapper for lazy-loaded route components.
  * Shows a minimal loading spinner while the chunk downloads.
@@ -62,6 +66,7 @@ export const router = createBrowserRouter([
     ErrorBoundary: ErrorBoundaryScreen,
     children: [
       { index: true, Component: lazyRoute(DashboardScreen) },
+      { path: "tasks", Component: lazyRoute(TasksScreen) },
       { path: "*", Component: NotFoundScreen },
     ],
   },
