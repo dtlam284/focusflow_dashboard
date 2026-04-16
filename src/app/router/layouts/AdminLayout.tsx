@@ -2,7 +2,7 @@ import React from "react"
 
 import { AnimatePresence, motion } from "motion/react"
 import { NavLink, Outlet, useLocation } from "react-router"
-import { LayoutDashboard, LogOut, Menu, Search, } from "lucide-react"
+import { LayoutDashboard, LogOut, Menu, Search, CheckSquare } from "lucide-react"
 
 import { cn } from "@/utils"
 import { useIsMobile } from "@/hooks/useMobile"
@@ -12,6 +12,7 @@ import { LanguageToggle } from "@/components/LanguageToggle"
 
 const NAV_ITEMS = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
+  { name: "Tasks", href: "/tasks", icon: CheckSquare },
 ]
 
 export function AdminLayout() {
@@ -134,13 +135,15 @@ export function AdminLayout() {
               <Menu className="w-5 h-5" />
             </button>
             <div className="relative hidden md:block w-56">
-              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
-              <input
-                type="text"
-                placeholder="Search modules..."
-                className="w-full h-8 pl-9 pr-4 bg-slate-100 dark:bg-slate-800 border-transparent rounded-full text-sm text-slate-900 dark:text-slate-200 placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-900 outline-none transition-all"
-              />
-            </div>
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
+            <input
+              type="text"
+              placeholder="Search modules..."
+              aria-label="Search modules"
+              data-skip-auto-label="true"
+              className="w-full h-8 pl-9 pr-4 bg-slate-100 dark:bg-slate-800 border-transparent rounded-full text-sm text-slate-900 dark:text-slate-200 placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-900 outline-none transition-all"
+            />
+          </div>
           </div>
 
           <div className="flex items-center gap-3">
