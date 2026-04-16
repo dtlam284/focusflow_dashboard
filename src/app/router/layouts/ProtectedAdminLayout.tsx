@@ -22,6 +22,13 @@ export function ProtectedAdminLayout() {
   const { status, user } = useAuth();
   const location = useLocation();
 
+  const isDevTasksBypass =
+    import.meta.env.DEV && location.pathname.startsWith("/tasks");
+
+  if (isDevTasksBypass) {
+    return <AdminLayout />;
+  }
+
   if (status === "loading") {
     return <AuthCheckingScreen />;
   }
@@ -35,31 +42,38 @@ export function ProtectedAdminLayout() {
       />
     );
   }
+
   const userRecord = (user ?? {}) as Record<string, unknown>;
   const roleRecord =
     userRecord.role && typeof userRecord.role === "object"
       ? (userRecord.role as Record<string, unknown>)
       : undefined;
+
   const roleId = Number(
     roleRecord?.id ??
       userRecord.roleId ??
       userRecord.role_id ??
       userRecord.role,
   );
+
   const roleNameCandidates = [
     roleRecord?.name,
     userRecord.roleName,
     userRecord.role_name,
     typeof userRecord.role === "string" ? userRecord.role : undefined,
   ];
+
   const normalizedRoleNames = roleNameCandidates
     .filter((value): value is string => typeof value === "string")
     .map((value) => value.trim().toLowerCase().replace(/[\s-]+/g, "_"))
     .filter(Boolean);
+
   const isAdminByName = normalizedRoleNames.some((name) =>
     ["admin", "administrator", "super_admin", "superadmin"].includes(name),
   );
+
   const isAdmin = roleId === 1 || isAdminByName;
+
   if (!isAdmin) {
     return <Navigate to="/auth/session-required?reason=forbidden" replace />;
   }
