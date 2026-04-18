@@ -1,15 +1,20 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { INote, INotesState } from "../../types/noteTypes";
 
+//#region state
 const initialState: INotesState = {
   items: [],
 };
+//endregion state
 
+//#region payload types
 type UpdateNotePayload = {
   id: string;
   changes: Partial<Omit<INote, "id" | "createdAt">>;
 };
+//endregion payload types
 
+//#region slice
 const noteSlice = createSlice({
   name: "notes",
   initialState,
@@ -53,7 +58,9 @@ const noteSlice = createSlice({
     },
   },
 });
+//endregion slice
 
+//#region exports
 export const {
   addNote,
   updateNote,
@@ -63,3 +70,4 @@ export const {
 } = noteSlice.actions;
 
 export default noteSlice.reducer;
+//#endregion exports
