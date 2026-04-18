@@ -33,20 +33,25 @@ import type { TaskFormValues } from "@/features/tasks/schemas/taskSchema";
 export function TasksScreen() {
   const { t } = useI18n();
   const dispatch = useAppDispatch();
-
+  
+  //#region selectors
   const tasks = useAppSelector(selectTaskItems);
   const filters = useAppSelector(selectTaskFilters);
   const filteredTasks = useAppSelector(selectFilteredTasks);
   const completedCount = useAppSelector(selectCompletedTaskCount);
   const pendingCount = useAppSelector(selectPendingTaskCount);
   const unfinishedCount = useAppSelector(selectUnfinishedTaskCount);
+  //#endregion selectors
 
+  //#region state
   const [editingTaskId, setEditingTaskId] = React.useState<string | null>(null);
   const [taskPendingDelete, setTaskPendingDelete] = React.useState<ITask | null>(null);
 
   const editingTask = tasks.find((task) => task.id === editingTaskId) ?? null;
   const totalCount = tasks.length;
+  //#endregion state
 
+  //#region handlers
   const initialFormValues = editingTask
     ? {
         title: editingTask.title,
@@ -147,6 +152,7 @@ export function TasksScreen() {
   const handleResetFilters = () => {
     dispatch(resetTaskFilters());
   };
+  //#endregion handlers
 
   return (
     <div className="space-y-6">
