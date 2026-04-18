@@ -1,6 +1,7 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { ITask, ITaskFilters, ITasksState } from "../../types/taskTypes";
 
+//#region state
 const initialState: ITasksState = {
   items: [],
   filters: {
@@ -9,12 +10,16 @@ const initialState: ITasksState = {
     keyword: "",
   },
 };
+//#endregion state
 
+//#region payload types
 type UpdateTaskPayload = {
   id: string;
   changes: Partial<Omit<ITask, "id" | "createdAt">>;
 };
+//#endregion payload types
 
+//#region slice
 const taskSlice = createSlice({
   name: "tasks",
   initialState,
@@ -66,7 +71,9 @@ const taskSlice = createSlice({
     },
   },
 });
+//#endregion slice
 
+//#region exports
 export const {
   addTask,
   updateTask,
@@ -78,3 +85,4 @@ export const {
 } = taskSlice.actions;
 
 export default taskSlice.reducer;
+//#region exports
