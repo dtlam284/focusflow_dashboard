@@ -13,14 +13,17 @@ import { useI18n } from "@/contexts/I18nContext";
 
 import { taskFormSchema, type TaskFormValues } from "../schemas/taskSchema";
 
-export interface TaskFormProps {
+//#region props
+export interface ITaskFormProps {
   mode: "create" | "edit";
   initialValues?: Partial<TaskFormValues>;
   onSubmit: (values: TaskFormValues) => void | Promise<void>;
   onCancelEdit?: () => void;
   isSubmitting?: boolean;
 }
+//#endregion props
 
+//#region helpers
 const getTodayDateString = () => {
   const today = new Date();
   const year = today.getFullYear();
@@ -29,7 +32,9 @@ const getTodayDateString = () => {
 
   return `${year}-${month}-${day}`;
 };
+//#endregion helpers
 
+//#region constants
 const EMPTY_VALUES: TaskFormValues = {
   title: "",
   description: "",
@@ -37,17 +42,23 @@ const EMPTY_VALUES: TaskFormValues = {
   dueDate: "",
   dueTime: "",
 };
+//#endregion constants
 
+//#region component
 export function TaskForm({
   mode,
   initialValues,
   onSubmit,
   onCancelEdit,
   isSubmitting = false,
-}: TaskFormProps) {
+}: ITaskFormProps) {
+
+  //#region hooks
   const { t } = useI18n();
   const minDueDate = React.useMemo(() => getTodayDateString(), []);
+  //#endregion hooks
 
+  //#region form setup
   const {
     register,
     control,
@@ -61,17 +72,23 @@ export function TaskForm({
       ...initialValues,
     },
   });
+  //#endregion form setup
 
+  //#region effects
   React.useEffect(() => {
     reset({
       ...EMPTY_VALUES,
       ...initialValues,
     });
   }, [initialValues, reset]);
+  //#endregion effects
 
+  //#region derived values
   const submitting = isSubmitting || isFormSubmitting;
   const isEditMode = mode === "edit";
+  //#endregion derived values
 
+  //#region handlers
   const submitHandler = async (values: TaskFormValues) => {
     await onSubmit(values);
 
@@ -79,7 +96,9 @@ export function TaskForm({
       reset(EMPTY_VALUES);
     }
   };
+  //#endregion handlers
 
+  //#region render
   return (
     <SectionCard
       title={isEditMode ? t("Edit task") : t("Create a new task")}
@@ -221,4 +240,6 @@ export function TaskForm({
       </form>
     </SectionCard>
   );
+  //#endregion render
 }
+//#endregion component

@@ -8,7 +8,8 @@ import { useI18n } from "@/contexts/I18nContext";
 
 import type { ITaskFilters } from "../types/taskTypes";
 
-export interface TaskFilterBarProps {
+//#region props
+export interface ITaskFilterBarProps {
   filters: ITaskFilters;
   visibleCount?: number;
   onStatusChange: (status: ITaskFilters["status"]) => void;
@@ -16,7 +17,9 @@ export interface TaskFilterBarProps {
   onKeywordChange: (keyword: string) => void;
   onReset: () => void;
 }
+//#endregion props
 
+//#region component
 export function TaskFilterBar({
   filters,
   visibleCount,
@@ -24,14 +27,19 @@ export function TaskFilterBar({
   onPriorityChange,
   onKeywordChange,
   onReset,
-}: TaskFilterBarProps) {
+}: ITaskFilterBarProps) {
+  //#region hooks
   const { t } = useI18n();
+  //#endregion hooks
 
+  //#region derived values
   const hasActiveFilters =
     filters.status !== "all" ||
     filters.priority !== "all" ||
     filters.keyword.trim().length > 0;
+  //#endregion derived values
 
+  //#region render
   return (
     <div className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-950">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
@@ -102,4 +110,6 @@ export function TaskFilterBar({
       </div>
     </div>
   );
+  //#endregion render
 }
+//#endregion component

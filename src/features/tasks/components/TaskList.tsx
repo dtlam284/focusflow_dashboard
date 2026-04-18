@@ -7,7 +7,8 @@ import { cn } from "@/utils";
 import { TaskCard } from "./TaskCard";
 import type { ITask, ITaskFilters } from "../types/taskTypes";
 
-export interface TaskListProps {
+//#region props
+export interface ITaskListProps {
   tasks: ITask[];
   filters?: ITaskFilters;
   onEdit: (task: ITask) => void;
@@ -16,7 +17,9 @@ export interface TaskListProps {
   emptyAction?: React.ReactNode;
   className?: string;
 }
+//#endregion props
 
+//#region component
 export function TaskList({
   tasks,
   filters,
@@ -25,9 +28,13 @@ export function TaskList({
   onToggleStatus,
   emptyAction,
   className,
-}: TaskListProps) {
-  const { t } = useI18n();
+}: ITaskListProps) {
 
+  //#region hooks
+  const { t } = useI18n();
+  //#endregion hooks
+
+  //#region derived values
   const hasActiveFilters = Boolean(
     filters &&
       (
@@ -36,7 +43,9 @@ export function TaskList({
         filters.keyword.trim().length > 0
       ),
   );
+  //#endregion derived values
 
+  //#region guards
   if (tasks.length === 0) {
     return (
       <EmptyState
@@ -55,7 +64,9 @@ export function TaskList({
       />
     );
   }
+  //#endregion guards
 
+  //#region render
   return (
     <div className={cn("space-y-4", className)}>
       {tasks.map((task) => (
@@ -69,4 +80,6 @@ export function TaskList({
       ))}
     </div>
   );
+  //#endregion render
 }
+//#endregion component

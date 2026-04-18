@@ -7,13 +7,16 @@ import { cn } from "@/utils";
 
 import type { ITask } from "../types/taskTypes";
 
-export interface TaskCardProps {
+//#region props
+export interface ITaskCardProps {
   task: ITask;
   onEdit: (task: ITask) => void;
   onDelete: (taskId: string) => void;
   onToggleStatus: (taskId: string) => void;
 }
+//#endregion props
 
+//#region ui maps
 const taskStatusUi: Record<
   ITask["status"],
   { status: string; label: string }
@@ -30,7 +33,9 @@ const priorityStyles: Record<string, string> = {
     "border-amber-200 bg-amber-100 text-amber-800 dark:border-amber-900 dark:bg-amber-950/50 dark:text-amber-400",
   high: "border-rose-200 bg-rose-100 text-rose-800 dark:border-rose-900 dark:bg-rose-950/50 dark:text-rose-400",
 };
+//#endregion ui maps
 
+//#region helpers
 const getTaskDeadline = (task: ITask) => {
   if (!task.dueDate) return null;
 
@@ -46,17 +51,23 @@ const getTaskEffectiveStatus = (task: ITask): ITask["status"] => {
 
   return deadline < new Date() ? "unfinished" : "todo";
 };
+//#endregion helpers
 
+//#region component
 export function TaskCard({
   task,
   onEdit,
   onDelete,
   onToggleStatus,
-}: TaskCardProps) {
+}: ITaskCardProps) {
+
+  //#region derived values
   const effectiveStatus = getTaskEffectiveStatus(task);
   const isDone = effectiveStatus === "done";
   const isUnfinished = effectiveStatus === "unfinished";
+  //#endregion derived values
 
+  //#region render
   return (
     <Card className="gap-0 overflow-hidden border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-950">
       <CardHeader className="flex flex-row items-start justify-between gap-3 border-b border-slate-100 pb-4 dark:border-slate-800">
@@ -152,4 +163,6 @@ export function TaskCard({
       </CardFooter>
     </Card>
   );
+  //#endregion render
 }
+//#endregion component
