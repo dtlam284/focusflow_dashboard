@@ -2,7 +2,7 @@ import React from "react"
 
 import { AnimatePresence, motion } from "motion/react"
 import { NavLink, Outlet, useLocation } from "react-router"
-import { LayoutDashboard, LogOut, Menu, Search, CheckSquare } from "lucide-react"
+import { LayoutDashboard, LogOut, Menu, Search, CheckSquare, StickyNote } from "lucide-react"
 
 import { cn } from "@/utils"
 import { useIsMobile } from "@/hooks/useMobile"
@@ -10,17 +10,27 @@ import { useAuth } from "@/contexts/AuthContext"
 import { ThemeToggle } from "@/components/ThemeToggle"
 import { LanguageToggle } from "@/components/LanguageToggle"
 
+//#region constants
 const NAV_ITEMS = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
   { name: "Tasks", href: "/tasks", icon: CheckSquare },
+  { name: "Notes", href: "/notes", icon: StickyNote },
 ]
+//#endregion constants
 
+//#region component
 export function AdminLayout() {
+  //#region hooks
   const { user, logout } = useAuth()
   const isMobile = useIsMobile(1024)
-  const [sidebarOpen, setSidebarOpen] = React.useState(!isMobile)
-  const location = useLocation()
+    const location = useLocation()
+  //#endregion hooks
 
+  //#region state
+  const [sidebarOpen, setSidebarOpen] = React.useState(!isMobile)
+  //#endregion state
+
+  //#region effects
   React.useEffect(() => {
     if (isMobile) {
       setSidebarOpen(false)
@@ -28,7 +38,9 @@ export function AdminLayout() {
       setSidebarOpen(true)
     }
   }, [isMobile, location.pathname])
+  //#endregion effects
 
+  //#region render
   return (
     <div className="flex min-h-screen w-full bg-slate-50 dark:bg-slate-900 font-sans text-slate-900 dark:text-slate-100">
       {/* Mobile Sidebar Overlay */}
@@ -158,5 +170,7 @@ export function AdminLayout() {
         </main>
       </div>
     </div>
-  )
+  );
+  //#endregion render
 }
+//#endregion component
