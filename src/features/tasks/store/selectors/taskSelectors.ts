@@ -1,10 +1,13 @@
 import type { RootState } from "@/app/store/store";
 import type { ITask, TaskStatus } from "../../types/taskTypes";
 
+//#region selectors
 export const selectTaskState = (state: RootState) => state.tasks;
 export const selectTaskItems = (state: RootState) => state.tasks.items;
 export const selectTaskFilters = (state: RootState) => state.tasks.filters;
+//#endregion selectors
 
+//#region based helpers
 const getTaskDeadline = (task: ITask) => {
   if (!task.dueDate) return null;
 
@@ -20,7 +23,9 @@ export const getTaskEffectiveStatus = (task: ITask): TaskStatus => {
 
   return deadline < new Date() ? "unfinished" : "todo";
 };
+//#endregion based helpers
 
+//#region filtered selectors
 export const selectFilteredTasks = (state: RootState): ITask[] => {
   const { items, filters } = state.tasks;
   const keyword = filters.keyword.trim().toLowerCase();
@@ -42,7 +47,9 @@ export const selectFilteredTasks = (state: RootState): ITask[] => {
     return matchesStatus && matchesPriority && matchesKeyword;
   });
 };
+//#endregion filtered selectors
 
+//#region metrics selectors
 export const selectCompletedTaskCount = (state: RootState) =>
   state.tasks.items.filter((task) => getTaskEffectiveStatus(task) === "done").length;
 
@@ -51,3 +58,4 @@ export const selectPendingTaskCount = (state: RootState) =>
 
 export const selectUnfinishedTaskCount = (state: RootState) =>
   state.tasks.items.filter((task) => getTaskEffectiveStatus(task) === "unfinished").length;
+//#endregion metrics selectors
