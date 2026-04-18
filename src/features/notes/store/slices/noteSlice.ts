@@ -5,14 +5,14 @@ import type { INote, INotesState } from "../../types/noteTypes";
 const initialState: INotesState = {
   items: [],
 };
-//endregion state
+//#endregion state
 
 //#region payload types
 type UpdateNotePayload = {
   id: string;
   changes: Partial<Omit<INote, "id" | "createdAt">>;
 };
-//endregion payload types
+//#endregion payload types
 
 //#region slice
 const noteSlice = createSlice({
@@ -58,7 +58,7 @@ const noteSlice = createSlice({
     },
   },
 });
-//endregion slice
+//#endregion slice
 
 //#region exports
 export const {
