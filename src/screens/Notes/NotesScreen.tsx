@@ -24,6 +24,7 @@ import {
 import type { INote } from "@/features/notes/types/noteTypes";
 import type { NoteFormValues } from "@/features/notes/schemas/noteSchema";
 
+//#region component
 export function NotesScreen() {
   const { t } = useI18n();
   const dispatch = useAppDispatch();
@@ -136,6 +137,7 @@ export function NotesScreen() {
   };
   //#endregion handlers
 
+  //#region render
   return (
     <div className="space-y-6">
       <PageHeader
@@ -208,4 +210,6 @@ export function NotesScreen() {
       />
     </div>
   );
+  //#endregion render
 }
+//#endregion component
