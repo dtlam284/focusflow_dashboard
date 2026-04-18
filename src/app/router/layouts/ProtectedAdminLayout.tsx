@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 import { AdminLayout } from "./AdminLayout";
 
+//#region loading ui
 function AuthCheckingScreen() {
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4">
@@ -17,18 +18,28 @@ function AuthCheckingScreen() {
     </div>
   );
 }
+//#endregion loading ui
 
+//#region component
 export function ProtectedAdminLayout() {
+  //#region hooks
   const { status, user } = useAuth();
   const location = useLocation();
+  //#endregion hooks
 
-  const isDevTasksBypass =
-    import.meta.env.DEV && location.pathname.startsWith("/tasks");
+  //#region dev bypass
+  const DEV_BYPASS_PATHS = ["/tasks", "/notes"];
+  
+  const isDevFeatureBypass =
+    import.meta.env.DEV &&
+    DEV_BYPASS_PATHS.some((path) => location.pathname.startsWith(path));
 
-  if (isDevTasksBypass) {
+  if (isDevFeatureBypass) {
     return <AdminLayout />;
   }
+  //#endregion dev bypass
 
+  //#region auth guards
   if (status === "loading") {
     return <AuthCheckingScreen />;
   }
@@ -42,7 +53,9 @@ export function ProtectedAdminLayout() {
       />
     );
   }
+  //#endregion auth guards
 
+  //region role guards
   const userRecord = (user ?? {}) as Record<string, unknown>;
   const roleRecord =
     userRecord.role && typeof userRecord.role === "object"
@@ -77,6 +90,10 @@ export function ProtectedAdminLayout() {
   if (!isAdmin) {
     return <Navigate to="/auth/session-required?reason=forbidden" replace />;
   }
+  //#endregion role guards
 
+  //#region render
   return <AdminLayout />;
+  //#endregion render
 }
+//#endregion component
