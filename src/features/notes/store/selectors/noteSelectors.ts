@@ -1,34 +1,23 @@
-import type { RootState } from '../../../../app/store/store'
-import type { INote } from '../../types/noteTypes'
+import type { RootState } from "@/app/store/store";
+import type { INote } from "../../types/noteTypes";
 
-export const selectNoteState = (state: RootState) => state.notes
-export const selectNoteItems = (state: RootState) => state.notes.items
-export const selectNoteFilters = (state: RootState) => state.notes.filters
+//#region selectors
+export const selectNoteState = (state: RootState) => state.notes;
 
-export const selectFilteredNotes = (state: RootState): INote[] => {
-  const { items, filters } = state.notes
-  const keyword = filters.keyword.trim().toLowerCase()
+export const selectNoteItems = (state: RootState) => state.notes.items;
 
-  return items.filter((note) => {
-    const matchesKeyword =
-      keyword.length === 0 ||
-      note.title.toLowerCase().includes(keyword) ||
-      note.content.toLowerCase().includes(keyword)
+export const selectHasNotes = (state: RootState) => state.notes.items.length > 0;
 
-    const matchesColor =
-      filters.color === 'all' || note.color === filters.color
+export const selectPinnedNotes = (state: RootState): INote[] =>
+  state.notes.items.filter((note) => note.isPinned);
 
-    const matchesPinned =
-      filters.pinned === 'all' ||
-      (filters.pinned === 'pinned' && note.isPinned) ||
-      (filters.pinned === 'unpinned' && !note.isPinned)
+export const selectUnpinnedNotes = (state: RootState): INote[] =>
+  state.notes.items.filter((note) => !note.isPinned);
 
-    return matchesKeyword && matchesColor && matchesPinned
-  })
-}
+export const selectOrderedNotes = (state: RootState): INote[] => {
+  const pinned = state.notes.items.filter((note) => note.isPinned);
+  const unpinned = state.notes.items.filter((note) => !note.isPinned);
 
-export const selectPinnedNotes = (state: RootState) =>
-  state.notes.items.filter((note) => note.isPinned)
-
-export const selectUnpinnedNotes = (state: RootState) =>
-  state.notes.items.filter((note) => !note.isPinned)
+  return [...pinned, ...unpinned];
+};
+//endregion selectors
