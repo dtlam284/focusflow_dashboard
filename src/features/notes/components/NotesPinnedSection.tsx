@@ -19,7 +19,7 @@ export interface INotesPinnedSectionProps {
   onPreview: (note: INote) => void;
   className?: string;
 }
-//endregion props
+//#endregion props
 
 //#region component
 export function NotesPinnedSection({
@@ -33,12 +33,17 @@ export function NotesPinnedSection({
   onPreview,
   className,
 }: INotesPinnedSectionProps) {
+  //#region hooks
   const { t } = useI18n();
+  //#endregion hooks
 
+  //#region guards
   if (notes.length === 0) {
     return null;
   }
+  //#endregion guards
 
+  //#region render
   return (
     <section className={cn("space-y-4", className)}>
       <div className="flex items-center gap-2">
@@ -85,5 +90,6 @@ export function NotesPinnedSection({
       </div>
     </section>
   );
+  //#endregion render
 }
 //#endregion component

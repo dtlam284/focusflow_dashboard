@@ -21,7 +21,7 @@ export interface INotesGridProps {
   emptyAction?: React.ReactNode;
   className?: string;
 }
-//endregion props
+//#endregion props
 
 //#region component
 export function NotesGrid({
@@ -36,8 +36,11 @@ export function NotesGrid({
   emptyAction,
   className,
 }: INotesGridProps) {
+  //#region hooks
   const { t } = useI18n();
+  //#endregion hooks
 
+  //#region guards
   if (notes.length === 0) {
     return (
       <EmptyState
@@ -48,7 +51,9 @@ export function NotesGrid({
       />
     );
   }
+  //#endregion guards
 
+  //#region render
   return (
     <div className={cn("grid items-start gap-4 sm:grid-cols-2 xl:grid-cols-3", className)}>
       {notes.map((note) =>
@@ -78,5 +83,6 @@ export function NotesGrid({
       )}
     </div>
   );
+  //#endregion render
 }
-//endregion component
+//#endregion component

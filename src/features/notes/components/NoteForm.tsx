@@ -88,6 +88,7 @@ export function NoteForm({
   };
   //#endregion handlers
 
+  //#region render
   return (
     <SectionCard
       title={isEditMode ? t("Edit note") : t("Create a new note")}
@@ -225,5 +226,6 @@ export function NoteForm({
       </form>
     </SectionCard>
   );
+  //#endregion render
 }
 //#endregion component

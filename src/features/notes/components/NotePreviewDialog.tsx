@@ -55,7 +55,7 @@ const formatCategory = (category: INote["category"]) => {
       return "Other";
   }
 };
-//endregion helpers
+//#endregion helpers
 
 //#region component
 export function NotePreviewDialog({
@@ -66,6 +66,7 @@ export function NotePreviewDialog({
 }: INotePreviewDialogProps) {
   if (!note) return null;
 
+  //#region render
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl overflow-hidden p-0">
@@ -139,5 +140,6 @@ export function NotePreviewDialog({
       </DialogContent>
     </Dialog>
   );
+  //#endregion render
 }
 //#endregion component

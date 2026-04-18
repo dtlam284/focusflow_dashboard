@@ -65,7 +65,7 @@ export function NoteCard({
   const previewContent = note.content.replace(/\s+/g, " ").trim();
   //#endregion derived values
 
-  //#region handlers
+  //#region render
   return (
     <Card
       className={cn(
@@ -145,6 +145,6 @@ export function NoteCard({
       </CardFooter>
     </Card>
   );
-  //#endregion handlers
+  //#endregion render
 }
-//endregion component
+//#endregion component
