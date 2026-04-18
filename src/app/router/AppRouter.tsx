@@ -1,7 +1,6 @@
 import React from "react"
 import { createBrowserRouter } from "react-router"
 
-// Static imports for critical auth paths (must load immediately)
 import { LoginScreen } from "@/screens/Auth/LoginScreen"
 import { NotFoundScreen } from "@/screens/NotFound/NotFoundScreen"
 import { ErrorBoundaryScreen } from "@/screens/ErrorBoundaryScreen"
@@ -9,7 +8,7 @@ import { SessionRequiredScreen } from "@/screens/Auth/SessionRequiredScreen"
 
 import { ProtectedAdminLayout } from "./layouts/ProtectedAdminLayout"
 
-// Lazy-loaded screen components for code splitting
+//#region lazy screens
 const DashboardScreen = React.lazy(() =>
   import("@/screens/Dashboard/DashboardScreen").then((m) => ({ default: m.DashboardScreen })),
 )
@@ -18,10 +17,12 @@ const TasksScreen = React.lazy(() =>
   import("@/screens/Tasks/TasksScreen").then((m) => ({ default: m.TasksScreen })),
 )
 
-/**
- * Suspense wrapper for lazy-loaded route components.
- * Shows a minimal loading spinner while the chunk downloads.
- */
+const NotesScreen = React.lazy(() =>
+  import("@/screens/Notes/NotesScreen").then((m) => ({ default: m.NotesScreen })),
+);
+//#endregion lazy screens
+
+//#region helpers
 function SuspenseRoute({ children }: { children: React.ReactNode }) {
   return (
     <React.Suspense
@@ -36,9 +37,6 @@ function SuspenseRoute({ children }: { children: React.ReactNode }) {
   )
 }
 
-/**
- * Wraps a lazy component in Suspense for use in route config.
- */
 function lazyRoute(LazyComponent: React.LazyExoticComponent<React.ComponentType>) {
   return function LazyRouteWrapper() {
     return (
@@ -48,7 +46,9 @@ function lazyRoute(LazyComponent: React.LazyExoticComponent<React.ComponentType>
     )
   }
 }
+//#endregion helpers
 
+//#region routes
 export const router = createBrowserRouter([
   {
     path: "/auth/login",
@@ -67,7 +67,9 @@ export const router = createBrowserRouter([
     children: [
       { index: true, Component: lazyRoute(DashboardScreen) },
       { path: "tasks", Component: lazyRoute(TasksScreen) },
+      { path: "notes", Component: lazyRoute(NotesScreen) },
       { path: "*", Component: NotFoundScreen },
     ],
   },
 ])
+//#endregion routes
