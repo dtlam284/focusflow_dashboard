@@ -30,6 +30,7 @@ import {
 import type { ITask, ITaskFilters } from "@/features/tasks/types/taskTypes";
 import type { TaskFormValues } from "@/features/tasks/schemas/taskSchema";
 
+//#region component
 export function TasksScreen() {
   const { t } = useI18n();
   const dispatch = useAppDispatch();
@@ -154,6 +155,7 @@ export function TasksScreen() {
   };
   //#endregion handlers
 
+  //#region render
   return (
     <div className="space-y-6">
       <PageHeader
@@ -232,4 +234,6 @@ export function TasksScreen() {
       />
     </div>
   );
+  //#endregion render
 }
+//#endregion component
