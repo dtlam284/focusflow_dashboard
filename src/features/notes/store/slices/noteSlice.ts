@@ -1,76 +1,65 @@
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
-import type { INote, INoteFilters, INotesState } from '../../types/noteTypes'
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import type { INote, INotesState } from "../../types/noteTypes";
 
 const initialState: INotesState = {
   items: [],
-  filters: {
-    keyword: '',
-    color: 'all',
-    pinned: 'all',
-  },
-}
+};
 
-type TUpdateNotePayload = {
-  id: string
-  changes: Partial<Omit<INote, 'id' | 'createdAt'>>
-}
+type UpdateNotePayload = {
+  id: string;
+  changes: Partial<Omit<INote, "id" | "createdAt">>;
+};
 
 const noteSlice = createSlice({
-  name: 'notes',
+  name: "notes",
   initialState,
   reducers: {
     addNote(state, action: PayloadAction<INote>) {
-      state.items.unshift(action.payload)
+      state.items.unshift(action.payload);
     },
 
-    updateNote(state, action: PayloadAction<TUpdateNotePayload>) {
-      const note = state.items.find((item) => item.id === action.payload.id)
+    updateNote(state, action: PayloadAction<UpdateNotePayload>) {
+      const { id, changes } = action.payload;
 
-      if (!note) return
-
-      Object.assign(note, action.payload.changes, {
-        updatedAt: new Date().toISOString(),
-      })
+      state.items = state.items.map((item) =>
+        item.id === id
+          ? {
+              ...item,
+              ...changes,
+              updatedAt: new Date().toISOString(),
+            }
+          : item,
+      );
     },
 
     deleteNote(state, action: PayloadAction<string>) {
-      state.items = state.items.filter((item) => item.id !== action.payload)
+      state.items = state.items.filter((item) => item.id !== action.payload);
     },
 
-    togglePin(state, action: PayloadAction<string>) {
-      const note = state.items.find((item) => item.id === action.payload)
-
-      if (!note) return
-
-      note.isPinned = !note.isPinned
-      note.updatedAt = new Date().toISOString()
-    },
-
-    setNoteFilters(state, action: PayloadAction<Partial<INoteFilters>>) {
-      state.filters = {
-        ...state.filters,
-        ...action.payload,
-      }
-    },
-
-    resetNoteFilters(state) {
-      state.filters = initialState.filters
+    togglePinNote(state, action: PayloadAction<string>) {
+      state.items = state.items.map((item) =>
+        item.id === action.payload
+          ? {
+              ...item,
+              isPinned: !item.isPinned,
+              updatedAt: new Date().toISOString(),
+            }
+          : item,
+      );
     },
 
     hydrateNotes(state, action: PayloadAction<INote[]>) {
-      state.items = action.payload
+      state.items = action.payload;
     },
   },
-})
+});
 
 export const {
   addNote,
   updateNote,
   deleteNote,
-  togglePin,
-  setNoteFilters,
-  resetNoteFilters,
+  togglePinNote,
   hydrateNotes,
-} = noteSlice.actions
+} = noteSlice.actions;
 
-export default noteSlice.reducer
+export default noteSlice.reducer;
