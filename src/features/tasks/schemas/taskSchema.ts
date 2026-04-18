@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+//#region helpers
 const getTodayDateString = () => {
   const today = new Date();
   const year = today.getFullYear();
@@ -8,7 +9,9 @@ const getTodayDateString = () => {
 
   return `${year}-${month}-${day}`;
 };
+//#endregion helpers
 
+//#region schema
 export const taskFormSchema = z.object({
   title: z
     .string()
@@ -38,5 +41,8 @@ export const taskFormSchema = z.object({
     .optional()
     .or(z.literal("")),
 });
+//#endregion schema
 
+//#region types
 export type TaskFormValues = z.infer<typeof taskFormSchema>;
+//#endregion types
