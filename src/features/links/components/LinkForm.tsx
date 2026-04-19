@@ -12,14 +12,17 @@ import {
   type ICreateLinkFormValues,
 } from "@/features/links/types/linkTypes";
 
+//#region types
 type LinkFormProps = {
   mode?: "create" | "edit";
   initialValues?: Partial<ICreateLinkFormValues>;
   submitLabel?: string;
-  onSubmit: (values: LinkFormValues) => void;
+  onSubmit: (values: LinkFormValues) => void | Promise<void>;
   onCancel?: () => void;
 };
+//#endregion types
 
+//#region component
 export function LinkForm({
   mode = "create",
   initialValues,
@@ -27,6 +30,7 @@ export function LinkForm({
   onSubmit,
   onCancel,
 }: LinkFormProps) {
+  //#region form setup
   const {
     register,
     handleSubmit,
@@ -39,22 +43,27 @@ export function LinkForm({
       ...initialValues,
     },
   });
+  //#endregion form setup
 
+  //#region effects
   useEffect(() => {
     reset({
       ...linkFormDefaultValues,
       ...initialValues,
     });
   }, [initialValues, reset]);
+  //#endregion effects
 
-  const handleFormSubmit = (values: LinkFormValues) => {
-    onSubmit(values);
-
+  //#region handlers
+  const handleFormSubmit = async (values: LinkFormValues) => {
+    await onSubmit(values);
     if (mode === "create") {
-      reset(linkFormDefaultValues);
+        reset(linkFormDefaultValues);
     }
   };
+  //#endregion handlers
 
+  //#region render
   return (
     <div className="rounded-2xl border bg-card p-5 shadow-sm">
       <div className="mb-4 space-y-1">
@@ -148,8 +157,12 @@ export function LinkForm({
       </form>
     </div>
   );
+  //#endregion render
 }
+//#endregion component
 
+//#region utils
 function formatCategoryLabel(category: string) {
   return category.charAt(0).toUpperCase() + category.slice(1);
 }
+//#endregion utils
