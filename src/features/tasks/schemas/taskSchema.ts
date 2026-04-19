@@ -38,8 +38,7 @@ export const taskFormSchema = z.object({
   dueTime: z
     .string()
     .trim()
-    .optional()
-    .or(z.literal("")),
+    .min(1, "Please select a time."),
 });
 //#endregion schema
 

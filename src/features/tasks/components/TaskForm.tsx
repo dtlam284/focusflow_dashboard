@@ -55,7 +55,12 @@ export function TaskForm({
 
   //#region hooks
   const { t } = useI18n();
-  const minDueDate = React.useMemo(() => getTodayDateString(), []);
+  const minDueDate = React.useMemo(() => {
+    if (mode === "edit" && initialValues?.dueDate) {
+      return initialValues.dueDate;
+    }
+    return getTodayDateString();
+  }, [mode, initialValues?.dueDate]);
   //#endregion hooks
 
   //#region form setup
@@ -211,6 +216,11 @@ export function TaskForm({
                 className="pl-9"
                 {...register("dueTime")}
               />
+              {errors.dueTime ? (
+                <p className="text-sm text-rose-600 dark:text-rose-400">
+                  {errors.dueTime.message}
+                </p>
+              ) : null}
             </div>
           </FormField>
         </div>
