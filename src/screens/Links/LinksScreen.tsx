@@ -1,0 +1,112 @@
+import { useCallback } from "react";
+
+import { useAppDispatch, useAppSelector } from "@/app/store/hooks";
+import { LinkForm } from "@/features/links/components/LinkForm";
+import { LinksFilterBar } from "@/features/links/components/LinksFilterBar";
+import { LinksList } from "@/features/links/components/LinksList";
+import { type LinkFormValues } from "@/features/links/schemas/linkSchema";
+import {
+  addLink,
+  deleteLink,
+  resetLinkFilters,
+  setLinkFilters,
+} from "@/features/links/store/slices/linkSlice";
+import {
+  selectFilteredLinks,
+  selectFilteredLinksCount,
+  selectLinkFilters,
+  selectLinksCount,
+} from "@/features/links/store/selectors/linkSelectors";
+
+//#region component
+export function LinksScreen() {
+  //#region hooks
+  const dispatch = useAppDispatch();
+  //#endregion hooks
+
+  //#region selectors
+  const filters = useAppSelector(selectLinkFilters);
+  const links = useAppSelector(selectFilteredLinks);
+  const totalCount = useAppSelector(selectLinksCount);
+  const filteredCount = useAppSelector(selectFilteredLinksCount);
+  //#endregion selectors
+
+  //#region handlers
+  const handleCreateLink = useCallback(
+    (values: LinkFormValues) => {
+      const now = new Date().toISOString();
+
+      dispatch(
+        addLink({
+          id: crypto.randomUUID(),
+          title: values.title,
+          url: values.url,
+          category: values.category,
+          createdAt: now,
+          updatedAt: now,
+        }),
+      );
+    },
+    [dispatch],
+  );
+
+  const handleDeleteLink = useCallback(
+    (id: string) => {
+      dispatch(deleteLink(id));
+    },
+    [dispatch],
+  );
+
+  const handleKeywordChange = useCallback(
+    (keyword: string) => {
+      dispatch(setLinkFilters({ keyword }));
+    },
+    [dispatch],
+  );
+
+  const handleCategoryChange = useCallback(
+    (category: typeof filters.category) => {
+      dispatch(setLinkFilters({ category }));
+    },
+    [dispatch],
+  );
+
+  const handleResetFilters = useCallback(() => {
+    dispatch(resetLinkFilters());
+  }, [dispatch]);
+  //#endregion handlers
+
+  //#region render
+  return (
+    <section className="space-y-6">
+      <div className="space-y-2">
+        <h1 className="text-2xl font-semibold tracking-tight">Links</h1>
+        <p className="text-sm text-muted-foreground">
+          Save useful resources and open them quickly in a safe new tab.
+        </p>
+      </div>
+
+      <div className="grid gap-6 xl:grid-cols-[360px_minmax(0,1fr)]">
+        <div className="xl:sticky xl:top-6 xl:self-start">
+          <LinkForm onSubmit={handleCreateLink} />
+        </div>
+
+        <div className="space-y-4">
+          <LinksFilterBar
+            keyword={filters.keyword}
+            category={filters.category}
+            totalCount={totalCount}
+            filteredCount={filteredCount}
+            onKeywordChange={handleKeywordChange}
+            onCategoryChange={handleCategoryChange}
+            onReset={handleResetFilters}
+          />
+
+          <LinksList links={links} onDelete={handleDeleteLink} />
+        </div>
+      </div>
+    </section>
+  );
+  //#endregion render
+}
+//#endregion component
