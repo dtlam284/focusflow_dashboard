@@ -9,17 +9,8 @@ import { NoteForm } from "@/features/notes/components/NoteForm";
 import { NotesGrid } from "@/features/notes/components/NotesGrid";
 import { NotesPinnedSection } from "@/features/notes/components/NotesPinnedSection";
 import { NotePreviewDialog } from "@/features/notes/components/NotePreviewDialog";
-import {
-  addNote,
-  deleteNote,
-  togglePinNote,
-  updateNote,
-} from "@/features/notes/store/slices/noteSlice";
-import {
-  selectNoteItems,
-  selectPinnedNotes,
-  selectUnpinnedNotes,
-} from "@/features/notes/store/selectors/noteSelectors";
+import { addNote, deleteNote, togglePinNote, updateNote, } from "@/features/notes/store/slices/noteSlice";
+import { selectNoteItems, selectPinnedNotes, selectUnpinnedNotes, } from "@/features/notes/store/selectors/noteSelectors";
 
 import type { INote } from "@/features/notes/types/noteTypes";
 import type { NoteFormValues } from "@/features/notes/schemas/noteSchema";
@@ -44,15 +35,6 @@ export function NotesScreen() {
   //#endregion state
 
   //#region handlers
-  const initialFormValues = editingNote
-    ? {
-        title: editingNote.title,
-        content: editingNote.content,
-        color: editingNote.color,
-        category: editingNote.category,
-      }
-    : undefined;
-
   const handleCreateNote = (values: NoteFormValues) => {
     const now = new Date().toISOString();
 
@@ -86,15 +68,6 @@ export function NotesScreen() {
     );
 
     setEditingNoteId(null);
-  };
-
-  const handleSubmitNote = async (values: NoteFormValues) => {
-    if (editingNote) {
-      handleUpdateNote(values);
-      return;
-    }
-
-    handleCreateNote(values);
   };
 
   const handleStartEdit = (note: INote) => {
