@@ -34,4 +34,4 @@ export interface ICreateLinkFormValues {
   category: LinkCategory;
 }
 
-export interface UpdateLinkFormValues extends ICreateLinkFormValues {}
+export interface IUpdateLinkFormValues extends ICreateLinkFormValues {}
