@@ -1,18 +1,26 @@
-export type LinkCategory = 'all' | 'general' | 'reference' | 'design' | 'development' | 'learning';
+export const LINK_CATEGORY_OPTIONS = [
+  "docs",
+  "design",
+  "dev",
+  "learning",
+  "tools",
+  "other",
+] as const;
+
+export type LinkCategory = (typeof LINK_CATEGORY_OPTIONS)[number];
 
 export interface ILink {
   id: string;
   title: string;
   url: string;
   category: LinkCategory;
-  description?: string;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface ILinkFilters {
   keyword: string;
-  category: LinkCategory;
+  category: "all" | LinkCategory;
 }
 
 export interface ILinksState {
@@ -24,12 +32,6 @@ export interface ICreateLinkFormValues {
   title: string;
   url: string;
   category: LinkCategory;
-  description?: string;
 }
 
-export interface IUpdateLinkFormValues {
-  title: string;
-  url: string;
-  category: LinkCategory;
-  description?: string;
-}
+export interface UpdateLinkFormValues extends ICreateLinkFormValues {}
