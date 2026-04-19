@@ -1,18 +1,23 @@
 
-export type NoteColor =
-  | "default"
-  | "blue"
-  | "green"
-  | "yellow"
-  | "rose"
-  | "violet";
+export const NOTE_COLOR_OPTIONS = [
+  "default",
+  "blue",
+  "green",
+  "yellow",
+  "rose",
+  "violet",
+] as const;
 
-export type NoteCategory =
-  | "work"
-  | "personal"
-  | "idea"
-  | "learning"
-  | "other";
+export const NOTE_CATEGORY_OPTIONS = [
+  "work",
+  "personal",
+  "idea",
+  "learning",
+  "other",
+] as const;
+
+export type NoteColor = (typeof NOTE_COLOR_OPTIONS)[number];
+export type NoteCategory = (typeof NOTE_CATEGORY_OPTIONS)[number];
 
 export interface INote {
   id: string;
