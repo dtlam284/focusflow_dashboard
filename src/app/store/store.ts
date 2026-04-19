@@ -10,10 +10,11 @@ import linksReducer, { hydrateLinks } from '@/features/links/store/slices/linkSl
 
 import { loadState, saveState } from '@/utils/storage'
 
+//#region config & root reducer
 const persistConfig = {
   key: 'cms',
   storage,
-  whitelist: ['auth', 'app'],
+  whitelist: ['auth', 'app', 'links'],
 }
 
 const rootReducer = combineReducers({
@@ -43,7 +44,9 @@ export const store = configureStore({
     }),
   devTools: import.meta.env.DEV,
 })
+//#endregion config & root reducer
 
+//#region loading ui
 const persistedFeatureState = loadState()
 
 if (persistedFeatureState?.tasks?.items) {
@@ -57,7 +60,9 @@ if (persistedFeatureState?.notes?.items) {
 if (persistedFeatureState?.links?.items) {
   store.dispatch(hydrateLinks(persistedFeatureState.links.items))
 }
+//#endregion loading ui
 
+//#region subscribe to store changes
 store.subscribe(() => {
   const state = store.getState()
 
@@ -73,8 +78,10 @@ store.subscribe(() => {
     },
   })
 })
+//#endregion subscribe to store changes
 
+//#region exports
 export const persistor = persistStore(store)
-
 export type RootState = ReturnType<typeof store.getState>
 export type AppDispatch = typeof store.dispatch
+//#endregion exports
