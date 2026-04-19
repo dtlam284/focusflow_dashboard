@@ -20,6 +20,10 @@ const TasksScreen = React.lazy(() =>
 const NotesScreen = React.lazy(() =>
   import("@/screens/Notes/NotesScreen").then((m) => ({ default: m.NotesScreen })),
 );
+
+const LinksScreen = React.lazy(() =>
+  import("@/screens/Links/LinksScreen").then((m) => ({ default: m.LinksScreen })),
+);
 //#endregion lazy screens
 
 //#region helpers
@@ -68,6 +72,7 @@ export const router = createBrowserRouter([
       { index: true, Component: lazyRoute(DashboardScreen) },
       { path: "tasks", Component: lazyRoute(TasksScreen) },
       { path: "notes", Component: lazyRoute(NotesScreen) },
+      { path: "links", Component: lazyRoute(LinksScreen) },
       { path: "*", Component: NotFoundScreen },
     ],
   },

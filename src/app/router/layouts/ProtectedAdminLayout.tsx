@@ -28,7 +28,7 @@ export function ProtectedAdminLayout() {
   //#endregion hooks
 
   //#region dev bypass
-  const DEV_BYPASS_PATHS = ["/tasks", "/notes"];
+  const DEV_BYPASS_PATHS = ["/tasks", "/notes", "/links"];
   
   const isDevFeatureBypass =
     import.meta.env.DEV &&

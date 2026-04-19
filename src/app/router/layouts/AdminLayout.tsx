@@ -2,7 +2,7 @@ import React from "react"
 
 import { AnimatePresence, motion } from "motion/react"
 import { NavLink, Outlet, useLocation } from "react-router"
-import { LayoutDashboard, LogOut, Menu, Search, CheckSquare, StickyNote } from "lucide-react"
+import { LayoutDashboard, LogOut, Menu, Search, CheckSquare, StickyNote, Link2} from "lucide-react"
 
 import { cn } from "@/utils"
 import { useIsMobile } from "@/hooks/useMobile"
@@ -15,6 +15,7 @@ const NAV_ITEMS = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
   { name: "Tasks", href: "/tasks", icon: CheckSquare },
   { name: "Notes", href: "/notes", icon: StickyNote },
+  { name: "Links", href: "/links", icon: Link2 },
 ]
 //#endregion constants
 
