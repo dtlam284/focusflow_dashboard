@@ -50,6 +50,9 @@ export const selectFilteredTasks = (state: RootState): ITask[] => {
 //#endregion filtered selectors
 
 //#region metrics selectors
+export const selectTotalTaskCount = (state: RootState) =>
+  state.tasks.items.length;
+
 export const selectCompletedTaskCount = (state: RootState) =>
   state.tasks.items.filter((task) => getTaskEffectiveStatus(task) === "done").length;
 

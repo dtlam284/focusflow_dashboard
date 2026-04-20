@@ -41,7 +41,11 @@ export const selectOrderedNotes = (state: RootState): INote[] => {
 //#endregion ordered selectors
 
 //#region metrics selectors
-export const selectNotesCount = (state: RootState) => state.notes.items.length;
+export const selectPinnedNotesCount = (state: RootState) =>
+  state.notes.items.filter((note) => note.isPinned).length;
+
+export const selectNotesCount = (state: RootState) => 
+  state.notes.items.length;
 
 export const selectFilteredNotesCount = (state: RootState) =>
   selectFilteredNotes(state).length;
