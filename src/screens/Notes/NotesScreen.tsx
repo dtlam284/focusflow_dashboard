@@ -9,21 +9,40 @@ import { NoteForm } from "@/features/notes/components/NoteForm";
 import { NotesGrid } from "@/features/notes/components/NotesGrid";
 import { NotesPinnedSection } from "@/features/notes/components/NotesPinnedSection";
 import { NotePreviewDialog } from "@/features/notes/components/NotePreviewDialog";
-import { addNote, deleteNote, togglePinNote, updateNote, } from "@/features/notes/store/slices/noteSlice";
-import { selectNoteItems, selectPinnedNotes, selectUnpinnedNotes, } from "@/features/notes/store/selectors/noteSelectors";
+import {
+  addNote,
+  deleteNote,
+  resetNoteFilters,
+  setNoteFilters,
+  togglePinNote,
+  updateNote,
+} from "@/features/notes/store/slices/noteSlice";
+import {
+  selectFilteredNotesCount,
+  selectFilteredPinnedNotes,
+  selectFilteredUnpinnedNotes,
+  selectNoteFilters,
+  selectNoteItems,
+  selectNotesCount,
+} from "@/features/notes/store/selectors/noteSelectors";
 
 import type { INote } from "@/features/notes/types/noteTypes";
 import type { NoteFormValues } from "@/features/notes/schemas/noteSchema";
 
 //#region component
 export function NotesScreen() {
+  //#region hooks
   const { t } = useI18n();
   const dispatch = useAppDispatch();
+  //#endregion hooks
 
   //#region selectors
   const notes = useAppSelector(selectNoteItems);
-  const pinnedNotes = useAppSelector(selectPinnedNotes);
-  const unpinnedNotes = useAppSelector(selectUnpinnedNotes);
+  const filters = useAppSelector(selectNoteFilters);
+  const pinnedNotes = useAppSelector(selectFilteredPinnedNotes);
+  const unpinnedNotes = useAppSelector(selectFilteredUnpinnedNotes);
+  const totalCount = useAppSelector(selectNotesCount);
+  const filteredCount = useAppSelector(selectFilteredNotesCount);
   //#endregion selectors
 
   //#region state
@@ -31,7 +50,9 @@ export function NotesScreen() {
   const [notePendingDelete, setNotePendingDelete] = React.useState<INote | null>(null);
   const [previewNote, setPreviewNote] = React.useState<INote | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = React.useState(false);
+
   const editingNote = notes.find((note) => note.id === editingNoteId) ?? null;
+  const isFiltered = filters.keyword.trim().length > 0;
   //#endregion state
 
   //#region handlers
@@ -108,6 +129,14 @@ export function NotesScreen() {
 
     setNotePendingDelete(null);
   };
+
+  const handleKeywordChange = (keyword: string) => {
+    dispatch(setNoteFilters({ keyword }));
+  };
+
+  const handleResetFilters = () => {
+    dispatch(resetNoteFilters());
+  };
   //#endregion handlers
 
   //#region render
@@ -119,6 +148,43 @@ export function NotesScreen() {
           "Capture ideas, reminders, and useful information in a clean note workspace.",
         )}
       />
+
+      <div className="rounded-2xl border bg-card p-4 shadow-sm">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div className="min-w-0 flex-1 space-y-2">
+            <label htmlFor="notes-search" className="text-sm font-medium">
+              {t("Search")}
+            </label>
+            <input
+              id="notes-search"
+              type="text"
+              value={filters.keyword}
+              onChange={(event) => handleKeywordChange(event.target.value)}
+              placeholder={t("Search notes by title or content")}
+              data-skip-auto-label="true"
+              className="w-full rounded-xl border bg-background px-3 py-2 text-sm outline-none transition focus:border-primary"
+            />
+          </div>
+
+          <div className="flex items-center gap-3">
+            <div className="text-sm text-muted-foreground">
+              {t("Showing")}{" "}
+              <span className="font-medium text-foreground">{filteredCount}</span>
+              {" / "}
+              <span className="font-medium text-foreground">{totalCount}</span>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleResetFilters}
+              disabled={!isFiltered}
+              className="inline-flex h-10 items-center justify-center rounded-xl border px-4 text-sm font-medium transition hover:bg-accent disabled:pointer-events-none disabled:opacity-50"
+            >
+              {t("Reset")}
+            </button>
+          </div>
+        </div>
+      </div>
 
       <div className="grid items-start gap-6 xl:grid-cols-[380px_minmax(0,1fr)]">
         <aside className="xl:sticky xl:top-6 xl:self-start xl:h-fit">

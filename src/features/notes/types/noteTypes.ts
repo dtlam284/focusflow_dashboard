@@ -1,4 +1,3 @@
-
 export const NOTE_COLOR_OPTIONS = [
   "default",
   "blue",
@@ -30,6 +29,11 @@ export interface INote {
   updatedAt: string;
 }
 
+export interface INoteFilters {
+  keyword: string;
+}
+
 export interface INotesState {
   items: INote[];
+  filters: INoteFilters;
 }

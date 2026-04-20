@@ -1,9 +1,13 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import type { INote, INotesState } from "../../types/noteTypes";
+
+import type { INote, INoteFilters, INotesState } from "../../types/noteTypes";
 
 //#region state
 const initialState: INotesState = {
   items: [],
+  filters: {
+    keyword: "",
+  },
 };
 //#endregion state
 
@@ -53,6 +57,17 @@ const noteSlice = createSlice({
       );
     },
 
+    setNoteFilters(state, action: PayloadAction<Partial<INoteFilters>>) {
+      state.filters = {
+        ...state.filters,
+        ...action.payload,
+      };
+    },
+
+    resetNoteFilters(state) {
+      state.filters = initialState.filters;
+    },
+
     hydrateNotes(state, action: PayloadAction<INote[]>) {
       state.items = action.payload;
     },
@@ -66,6 +81,8 @@ export const {
   updateNote,
   deleteNote,
   togglePinNote,
+  setNoteFilters,
+  resetNoteFilters,
   hydrateNotes,
 } = noteSlice.actions;
 
