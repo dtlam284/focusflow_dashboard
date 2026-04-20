@@ -151,7 +151,7 @@ npm run format:check
 
 The project follows a **feature-first structure** for business domains and keeps app-wide infrastructure separate.
 
-### High-Level Structure
+### Structure
 
 ```txt
 src/
