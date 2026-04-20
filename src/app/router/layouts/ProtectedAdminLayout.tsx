@@ -29,12 +29,15 @@ export function ProtectedAdminLayout() {
 
   //#region dev bypass
   const DEV_BYPASS_PATHS = ["/tasks", "/notes", "/links"];
-  
+
+  const isDevDashboardBypass =
+    import.meta.env.DEV && location.pathname === "/";
+
   const isDevFeatureBypass =
     import.meta.env.DEV &&
     DEV_BYPASS_PATHS.some((path) => location.pathname.startsWith(path));
 
-  if (isDevFeatureBypass) {
+  if (isDevFeatureBypass || isDevDashboardBypass) {
     return <AdminLayout />;
   }
   //#endregion dev bypass
