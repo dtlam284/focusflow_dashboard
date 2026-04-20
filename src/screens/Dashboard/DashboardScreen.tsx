@@ -74,14 +74,14 @@ export function DashboardScreen() {
     <div className="space-y-6">
       <PageHeader
         title={`Welcome${user ? `, ${user.firstName}` : ""}`}
-        description="A quick overview of your current work, saved notes, and useful resources."
+        description="A quick overview of the current work, saved notes, and useful resources."
       />
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         <SummaryCard
           title="Total Tasks"
           value={totalTasks}
-          description="All tasks currently saved in your workspace."
+          description="All tasks currently saved in the workspace."
           icon={<ListTodo className="h-5 w-5" />}
         />
 
@@ -95,7 +95,7 @@ export function DashboardScreen() {
         <SummaryCard
           title="Pending Tasks"
           value={pendingTasks}
-          description="Tasks that still need your attention."
+          description="Tasks that still need to be completed."
           icon={<Clock3 className="h-5 w-5" />}
         />
 
@@ -109,14 +109,14 @@ export function DashboardScreen() {
         <SummaryCard
           title="Pinned Notes"
           value={pinnedNotes}
-          description="Important notes you pinned for quick access."
+          description="Important notes that are pinned for quick access."
           icon={<NotebookPen className="h-5 w-5" />}
         />
 
         <SummaryCard
           title="Saved Links"
           value={savedLinks}
-          description="Useful resources you saved in the app."
+          description="Useful resources that are saved in the app."
           icon={<Link2 className="h-5 w-5" />}
         />
       </section>
