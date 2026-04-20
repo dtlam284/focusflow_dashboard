@@ -1,4 +1,4 @@
-export type ThemeMode = 'all' | 'light' | 'dark';
+export type ThemeMode = 'light' | 'dark';
 
 export interface IThemeState {
   mode: ThemeMode;
