@@ -1,79 +1,65 @@
-import { useCallback } from "react";
-
-import { useAppDispatch, useAppSelector } from "@/app/store/hooks";
-import { LinkForm } from "@/features/links/components/LinkForm";
-import { LinksFilterBar } from "@/features/links/components/LinksFilterBar";
-import { LinksList } from "@/features/links/components/LinksList";
-import { type LinkFormValues } from "@/features/links/schemas/linkSchema";
+import { useAppDispatch, useAppSelector } from '@/app/store/hooks'
+import { LinkForm } from '@/features/links/components/LinkForm'
+import { LinksFilterBar } from '@/features/links/components/LinksFilterBar'
+import { LinksList } from '@/features/links/components/LinksList'
+import { type LinkFormValues } from '@/features/links/schemas/linkSchema'
 import {
   addLink,
   deleteLink,
   resetLinkFilters,
   setLinkFilters,
-} from "@/features/links/store/slices/linkSlice";
+} from '@/features/links/store/slices/linkSlice'
 import {
   selectFilteredLinks,
   selectFilteredLinksCount,
   selectLinkFilters,
   selectLinksCount,
-} from "@/features/links/store/selectors/linkSelectors";
+} from '@/features/links/store/selectors/linkSelectors'
 
 //#region component
 export function LinksScreen() {
   //#region hooks
-  const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch()
   //#endregion hooks
 
   //#region selectors
-  const filters = useAppSelector(selectLinkFilters);
-  const links = useAppSelector(selectFilteredLinks);
-  const totalCount = useAppSelector(selectLinksCount);
-  const filteredCount = useAppSelector(selectFilteredLinksCount);
+  const filters = useAppSelector(selectLinkFilters)
+  const links = useAppSelector(selectFilteredLinks)
+  const totalCount = useAppSelector(selectLinksCount)
+  const filteredCount = useAppSelector(selectFilteredLinksCount)
   //#endregion selectors
 
   //#region handlers
-  const handleCreateLink = useCallback(
-    (values: LinkFormValues) => {
-      const now = new Date().toISOString();
+  const handleCreateLink = (values: LinkFormValues) => {
+    const now = new Date().toISOString()
 
-      dispatch(
-        addLink({
-          id: crypto.randomUUID(),
-          title: values.title,
-          url: values.url,
-          category: values.category,
-          createdAt: now,
-          updatedAt: now,
-        }),
-      );
-    },
-    [dispatch],
-  );
+    dispatch(
+      addLink({
+        id: crypto.randomUUID(),
+        title: values.title,
+        url: values.url,
+        category: values.category,
+        createdAt: now,
+        updatedAt: now,
+      }),
+    )
+  }
 
-  const handleDeleteLink = useCallback(
-    (id: string) => {
-      dispatch(deleteLink(id));
-    },
-    [dispatch],
-  );
+  const handleDeleteLink = (id: string) => {
+    dispatch(deleteLink(id))
+  }
 
-  const handleKeywordChange = useCallback(
-    (keyword: string) => {
-      dispatch(setLinkFilters({ keyword }));
-    },
-    [dispatch],
-  );
+  const handleKeywordChange = (keyword: string) => {
+    dispatch(setLinkFilters({ keyword }))
+  }
 
-  const handleCategoryChange = useCallback(
-    (category: typeof filters.category) => {
-      dispatch(setLinkFilters({ category }));
-    },
-    [dispatch],
-  );
+  const handleCategoryChange = (category: typeof filters.category) => {
+    dispatch(setLinkFilters({ category }))
+  }
 
-  const handleResetFilters = useCallback(() => {
-    dispatch(resetLinkFilters());
-  }, [dispatch]);
+  const handleResetFilters = () => {
+    dispatch(resetLinkFilters())
+  }
   //#endregion handlers
 
   //#region render
@@ -106,7 +92,7 @@ export function LinksScreen() {
         </div>
       </div>
     </section>
-  );
+  )
   //#endregion render
 }
 //#endregion component

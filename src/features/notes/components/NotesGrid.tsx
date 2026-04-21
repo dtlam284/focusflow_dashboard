@@ -1,25 +1,27 @@
-import * as React from "react";
+import * as React from 'react'
 
-import { EmptyState } from "@/components/shared/EmptyState";
-import { useI18n } from "@/contexts/I18nContext";
-import { cn } from "@/utils";
+import { EmptyState } from '@/components/shared/EmptyState'
+import { useI18n } from '@/contexts/I18nContext'
+import { cn } from '@/utils'
 
-import { NoteCard } from "./NoteCard";
-import { NoteForm } from "./NoteForm";
-import type { INote } from "../types/noteTypes";
+import { NoteCard } from './NoteCard'
+import { NoteForm } from './NoteForm'
+import type { INote } from '../types/noteTypes'
 
 //#region props
+type NoteFormSubmitHandler = React.ComponentProps<typeof NoteForm>['onSubmit']
+
 export interface INotesGridProps {
-  notes: INote[];
-  editingNoteId?: string | null;
-  onEdit: (note: INote) => void;
-  onSaveEdit: (values: any) => void;
-  onCancelEdit: () => void;
-  onDelete: (noteId: string) => void;
-  onTogglePin: (noteId: string) => void;
-  onPreview: (note: INote) => void;
-  emptyAction?: React.ReactNode;
-  className?: string;
+  notes: INote[]
+  editingNoteId?: string | null
+  onEdit: (note: INote) => void
+  onSaveEdit: NoteFormSubmitHandler
+  onCancelEdit: () => void
+  onDelete: (noteId: string) => void
+  onTogglePin: (noteId: string) => void
+  onPreview: (note: INote) => void
+  emptyAction?: React.ReactNode
+  className?: string
 }
 //#endregion props
 
@@ -37,25 +39,27 @@ export function NotesGrid({
   className,
 }: INotesGridProps) {
   //#region hooks
-  const { t } = useI18n();
+  const { t } = useI18n()
   //#endregion hooks
 
   //#region guards
   if (notes.length === 0) {
     return (
       <EmptyState
-        className={cn("min-h-[280px]", className)}
-        title={t("No notes yet")}
-        description={t("Create your first note to capture ideas, reminders, or useful information.")}
+        className={cn('min-h-[280px]', className)}
+        title={t('No notes yet')}
+        description={t(
+          'Create your first note to capture ideas, reminders, or useful information.',
+        )}
         action={emptyAction}
       />
-    );
+    )
   }
   //#endregion guards
 
   //#region render
   return (
-    <div className={cn("grid items-start gap-4 sm:grid-cols-2 xl:grid-cols-3", className)}>
+    <div className={cn('grid items-start gap-4 sm:grid-cols-2 xl:grid-cols-3', className)}>
       {notes.map((note) =>
         note.id === editingNoteId ? (
           <NoteForm
@@ -82,7 +86,7 @@ export function NotesGrid({
         ),
       )}
     </div>
-  );
+  )
   //#endregion render
 }
 //#endregion component
