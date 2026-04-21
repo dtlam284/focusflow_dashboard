@@ -1,209 +1,232 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from 'vitest';
 
+import type { RootState } from '@/app/store/store';
 import {
-  selectCompletedTaskCount,
-  selectFilteredTasks,
-  selectPendingTaskCount,
-} from "@/features/tasks/store/selectors/taskSelectors";
+    selectCompletedTaskCount,
+    selectFilteredTasks,
+    selectPendingTaskCount,
+} from '@/features/tasks/store/selectors/taskSelectors';
 import tasksReducer, {
-  addTask,
-  deleteTask,
-  resetTaskFilters,
-  setTaskFilters,
-  toggleTaskStatus,
-  updateTask,
-} from "@/features/tasks/store/slices/taskSlice";
-
-import type { RootState } from "@/app/store/store";
-import type { ITask, ITasksState } from "@/features/tasks/types/taskTypes";
+    addTask,
+    deleteTask,
+    resetTaskFilters,
+    setTaskFilters,
+    toggleTaskStatus,
+    updateTask,
+} from '@/features/tasks/store/slices/taskSlice';
+import type { ITask, ITasksState } from '@/features/tasks/types/taskTypes';
 
 //#region helpers
-const createTask = (overrides: Partial<ITask> = {}): ITask => ({
-  id: "task-1",
-  title: "Learn Redux Toolkit",
-  description: "Build a typed slice",
-  status: "todo",
-  priority: "high",
-  createdAt: "2026-04-12T00:00:00.000Z",
-  updatedAt: "2026-04-12T00:00:00.000Z",
-  ...overrides,
-});
+const createTask = (overrides: Partial<ITask> = {}): ITask => {
+    const baseTask: ITask = {
+        id: 'task-1',
+        title: 'Task title',
+        description: 'Task description',
+        status: 'todo',
+        order: 0,
+        priority: 'medium',
+        createdAt: '2026-04-21T00:00:00.000Z',
+        updatedAt: '2026-04-21T00:00:00.000Z',
+    };
 
-const createTasksState = (
-  overrides: Partial<ITasksState> = {},
-): ITasksState => ({
-  items: [],
-  filters: {
-    status: "all",
-    priority: "all",
-    keyword: "",
-  },
-  ...overrides,
+    return {
+        ...baseTask,
+        ...overrides,
+        order: overrides.order ?? baseTask.order,
+    };
+};
+
+const createTasksState = (overrides: Partial<ITasksState> = {}): ITasksState => ({
+    items: [],
+    filters: {
+        status: 'all',
+        priority: 'all',
+        keyword: '',
+    },
+    ...overrides,
 });
 
 const createRootState = (tasks: ITasksState): RootState =>
-  ({
-    app: {
-      initialized: false,
-      pageTitle: "",
-      isSidebarCollapsed: false,
-    },
-    auth: {
-      user: null,
-      isAuthenticated: false,
-      isLoading: false,
-      isSubmitting: false,
-      error: null,
-    },
-    tasks,
-    notes: {
-      items: [],
-      filters: {
-        keyword: "",
-      },
-    },
-    links: {
-      items: [],
-      filters: {
-        keyword: "",
-        category: "all",
-      },
-    },
-    _persist: {
-      version: -1,
-      rehydrated: true,
-    },
-  }) as RootState;
+    ({
+        app: {
+            initialized: false,
+            pageTitle: '',
+            isSidebarCollapsed: false,
+        },
+        auth: {
+            user: null,
+            isAuthenticated: false,
+            isLoading: false,
+            isSubmitting: false,
+            error: null,
+        },
+        tasks,
+        notes: {
+            items: [],
+            filters: {
+                keyword: '',
+            },
+        },
+        links: {
+            items: [],
+            filters: {
+                keyword: '',
+                category: 'all',
+            },
+        },
+        _persist: {
+            version: -1,
+            rehydrated: true,
+        },
+    }) as RootState;
 //#endregion helpers
 
-//#region setup
-describe("tasksSlice", () => {
-  it("adds a task", () => {
-    const nextState = tasksReducer(createTasksState(), addTask(createTask()));
+//#region slice tests
+describe('tasksSlice', () => {
+    it('adds a task', () => {
+        const nextState = tasksReducer(
+            createTasksState(),
+            addTask(
+                createTask({
+                    id: 'task-1',
+                    title: 'Learn Redux Toolkit',
+                    description: 'Read docs and build a slice',
+                    status: 'todo',
+                    order: 0,
+                    priority: 'high',
+                    createdAt: '2026-04-06T00:00:00.000Z',
+                    updatedAt: '2026-04-06T00:00:00.000Z',
+                }),
+            ),
+        );
 
-    expect(nextState.items).toHaveLength(1);
-    expect(nextState.items[0]?.title).toBe("Learn Redux Toolkit");
-  });
-
-  it("updates a task", () => {
-    const initialState = createTasksState({
-      items: [createTask()],
+        expect(nextState.items).toHaveLength(1);
+        expect(nextState.items[0]?.title).toBe('Learn Redux Toolkit');
+        expect(nextState.items[0]?.priority).toBe('high');
+        expect(nextState.items[0]?.order).toBe(0);
     });
 
-    const nextState = tasksReducer(
-      initialState,
-      updateTask({
-        id: "task-1",
-        changes: {
-          title: "Learn Redux Toolkit deeply",
-          priority: "medium",
-        },
-      }),
-    );
+    it('updates a task', () => {
+        const initialState = createTasksState({
+            items: [createTask()],
+        });
 
-    expect(nextState.items[0]?.title).toBe("Learn Redux Toolkit deeply");
-    expect(nextState.items[0]?.priority).toBe("medium");
-  });
+        const nextState = tasksReducer(
+            initialState,
+            updateTask({
+                id: 'task-1',
+                changes: {
+                    title: 'Learn Redux Toolkit deeply',
+                    priority: 'medium',
+                },
+            }),
+        );
 
-  it("deletes a task", () => {
-    const initialState = createTasksState({
-      items: [createTask()],
+        expect(nextState.items[0]?.title).toBe('Learn Redux Toolkit deeply');
+        expect(nextState.items[0]?.priority).toBe('medium');
     });
 
-    const nextState = tasksReducer(initialState, deleteTask("task-1"));
+    it('deletes a task', () => {
+        const initialState = createTasksState({
+            items: [createTask()],
+        });
 
-    expect(nextState.items).toHaveLength(0);
-  });
+        const nextState = tasksReducer(initialState, deleteTask('task-1'));
 
-  it("toggles task status", () => {
-    const initialState = createTasksState({
-      items: [createTask({ status: "todo" })],
+        expect(nextState.items).toHaveLength(0);
     });
 
-    const nextState = tasksReducer(initialState, toggleTaskStatus("task-1"));
+    it('toggles task status', () => {
+        const initialState = createTasksState({
+            items: [createTask({ status: 'todo' })],
+        });
 
-    expect(nextState.items[0]?.status).toBe("done");
-  });
+        const nextState = tasksReducer(initialState, toggleTaskStatus('task-1'));
 
-  it("sets task filters", () => {
-    const nextState = tasksReducer(
-      createTasksState(),
-      setTaskFilters({
-        status: "done",
-        keyword: "redux",
-      }),
-    );
-
-    expect(nextState.filters.status).toBe("done");
-    expect(nextState.filters.keyword).toBe("redux");
-    expect(nextState.filters.priority).toBe("all");
-  });
-
-  it("resets task filters", () => {
-    const initialState = createTasksState({
-      filters: {
-        status: "done",
-        priority: "high",
-        keyword: "redux",
-      },
+        expect(nextState.items[0]?.status).toBe('done');
     });
 
-    const nextState = tasksReducer(initialState, resetTaskFilters());
+    it('sets task filters', () => {
+        const nextState = tasksReducer(
+            createTasksState(),
+            setTaskFilters({
+                status: 'done',
+                keyword: 'redux',
+            }),
+        );
 
-    expect(nextState.filters).toEqual({
-      status: "all",
-      priority: "all",
-      keyword: "",
+        expect(nextState.filters.status).toBe('done');
+        expect(nextState.filters.keyword).toBe('redux');
+        expect(nextState.filters.priority).toBe('all');
     });
-  });
+
+    it('resets task filters', () => {
+        const initialState = createTasksState({
+            filters: {
+                status: 'done',
+                priority: 'high',
+                keyword: 'redux',
+            },
+        });
+
+        const nextState = tasksReducer(initialState, resetTaskFilters());
+
+        expect(nextState.filters).toEqual({
+            status: 'all',
+            priority: 'all',
+            keyword: '',
+        });
+    });
 });
-//#endregion setup
+//#endregion slice tests
 
 //#region selector tests
-describe("taskSelectors", () => {
-  it("returns filtered tasks", () => {
-    const tasksState = createTasksState({
-      items: [
-        createTask({
-          id: "task-1",
-          title: "Learn Redux Toolkit",
-          status: "todo",
-          priority: "high",
-        }),
-        createTask({
-          id: "task-2",
-          title: "Write tests",
-          status: "done",
-          priority: "medium",
-        }),
-      ],
-      filters: {
-        status: "done",
-        priority: "all",
-        keyword: "write",
-      },
+describe('taskSelectors', () => {
+    it('returns filtered tasks', () => {
+        const tasksState = createTasksState({
+            items: [
+                createTask({
+                    id: 'task-1',
+                    title: 'Learn Redux Toolkit',
+                    status: 'todo',
+                    order: 0,
+                    priority: 'high',
+                }),
+                createTask({
+                    id: 'task-2',
+                    title: 'Write tests',
+                    status: 'done',
+                    order: 1,
+                    priority: 'medium',
+                }),
+            ],
+            filters: {
+                status: 'done',
+                priority: 'all',
+                keyword: 'write',
+            },
+        });
+
+        const state = createRootState(tasksState);
+        const result = selectFilteredTasks(state);
+
+        expect(result).toHaveLength(1);
+        expect(result[0]?.id).toBe('task-2');
     });
 
-    const state = createRootState(tasksState);
-    const result = selectFilteredTasks(state);
+    it('returns completed and pending counts', () => {
+        const tasksState = createTasksState({
+            items: [
+                createTask({ id: 'task-1', status: 'done', order: 0 }),
+                createTask({ id: 'task-2', status: 'todo', order: 1 }),
+                createTask({ id: 'task-3', status: 'done', order: 2 }),
+            ],
+        });
 
-    expect(result).toHaveLength(1);
-    expect(result[0]?.id).toBe("task-2");
-  });
+        const state = createRootState(tasksState);
 
-  it("returns completed and pending counts", () => {
-    const tasksState = createTasksState({
-      items: [
-        createTask({ id: "task-1", status: "done" }),
-        createTask({ id: "task-2", status: "todo" }),
-        createTask({ id: "task-3", status: "done" }),
-      ],
+        expect(selectCompletedTaskCount(state)).toBe(2);
+        expect(selectPendingTaskCount(state)).toBe(1);
     });
-
-    const state = createRootState(tasksState);
-
-    expect(selectCompletedTaskCount(state)).toBe(2);
-    expect(selectPendingTaskCount(state)).toBe(1);
-  });
 });
 //#endregion selector tests
