@@ -1,10 +1,10 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from 'vitest'
 
 import {
   selectFilteredNotes,
   selectFilteredPinnedNotes,
   selectFilteredUnpinnedNotes,
-} from "@/features/notes/store/selectors/noteSelectors";
+} from '@/features/notes/store/selectors/noteSelectors'
 import noteReducer, {
   addNote,
   deleteNote,
@@ -12,39 +12,37 @@ import noteReducer, {
   setNoteFilters,
   togglePinNote,
   updateNote,
-} from "@/features/notes/store/slices/noteSlice";
+} from '@/features/notes/store/slices/noteSlice'
 
-import type { RootState } from "@/app/store/store";
-import type { INote, INotesState } from "@/features/notes/types/noteTypes";
+import type { RootState } from '@/app/store/store'
+import type { INote, INotesState } from '@/features/notes/types/noteTypes'
 
 //#region helpers
 const createNote = (overrides: Partial<INote> = {}): INote => ({
-  id: "note-1",
-  title: "Redux notes",
-  content: "Remember selectors",
-  color: "yellow",
-  category: "learning",
+  id: 'note-1',
+  title: 'Redux notes',
+  content: 'Remember selectors',
+  color: 'yellow',
+  category: 'learning',
   isPinned: false,
-  createdAt: "2026-04-12T00:00:00.000Z",
-  updatedAt: "2026-04-12T00:00:00.000Z",
+  createdAt: '2026-04-12T00:00:00.000Z',
+  updatedAt: '2026-04-12T00:00:00.000Z',
   ...overrides,
-});
+})
 
-const createNotesState = (
-  overrides: Partial<INotesState> = {},
-): INotesState => ({
+const createNotesState = (overrides: Partial<INotesState> = {}): INotesState => ({
   items: overrides.items ?? [],
   filters: {
-    keyword: "",
+    keyword: '',
     ...(overrides.filters ?? {}),
   },
-});
+})
 
 const createRootState = (notes: INotesState): RootState =>
   ({
     app: {
       initialized: false,
-      pageTitle: "",
+      pageTitle: '',
       isSidebarCollapsed: false,
     },
     auth: {
@@ -57,146 +55,150 @@ const createRootState = (notes: INotesState): RootState =>
     tasks: {
       items: [],
       filters: {
-        status: "all",
-        priority: "all",
-        keyword: "",
+        status: 'all',
+        priority: 'all',
+        keyword: '',
       },
+    },
+    taskDetail: {
+      selectedTaskId: null,
+      isOpen: false,
     },
     notes,
     links: {
       items: [],
       filters: {
-        keyword: "",
-        category: "all",
+        keyword: '',
+        category: 'all',
       },
     },
     _persist: {
       version: -1,
       rehydrated: true,
     },
-  }) as RootState;
+  }) as RootState
 //#endregion helpers
 
 //#region slice tests
-describe("noteSlice", () => {
-  it("adds a note", () => {
-    const initialState = createNotesState();
+describe('noteSlice', () => {
+  it('adds a note', () => {
+    const initialState = createNotesState()
 
-    const nextState = noteReducer(initialState, addNote(createNote()));
+    const nextState = noteReducer(initialState, addNote(createNote()))
 
-    expect(nextState.items).toHaveLength(1);
-    expect(nextState.items[0]?.title).toBe("Redux notes");
-  });
+    expect(nextState.items).toHaveLength(1)
+    expect(nextState.items[0]?.title).toBe('Redux notes')
+  })
 
-  it("updates a note", () => {
+  it('updates a note', () => {
     const initialState = createNotesState({
       items: [createNote()],
-    });
+    })
 
     const nextState = noteReducer(
       initialState,
       updateNote({
-        id: "note-1",
+        id: 'note-1',
         changes: {
-          title: "Updated Redux notes",
-          color: "blue",
+          title: 'Updated Redux notes',
+          color: 'blue',
         },
       }),
-    );
+    )
 
-    expect(nextState.items[0]?.title).toBe("Updated Redux notes");
-    expect(nextState.items[0]?.color).toBe("blue");
-  });
+    expect(nextState.items[0]?.title).toBe('Updated Redux notes')
+    expect(nextState.items[0]?.color).toBe('blue')
+  })
 
-  it("deletes a note", () => {
+  it('deletes a note', () => {
     const initialState = createNotesState({
       items: [createNote()],
-    });
+    })
 
-    const nextState = noteReducer(initialState, deleteNote("note-1"));
+    const nextState = noteReducer(initialState, deleteNote('note-1'))
 
-    expect(nextState.items).toHaveLength(0);
-  });
+    expect(nextState.items).toHaveLength(0)
+  })
 
-  it("toggles pin state", () => {
+  it('toggles pin state', () => {
     const initialState = createNotesState({
       items: [createNote({ isPinned: false })],
-    });
+    })
 
-    const nextState = noteReducer(initialState, togglePinNote("note-1"));
+    const nextState = noteReducer(initialState, togglePinNote('note-1'))
 
-    expect(nextState.items[0]?.isPinned).toBe(true);
-  });
+    expect(nextState.items[0]?.isPinned).toBe(true)
+  })
 
-  it("sets note filters", () => {
-    const initialState = createNotesState();
+  it('sets note filters', () => {
+    const initialState = createNotesState()
 
     const nextState = noteReducer(
       initialState,
       setNoteFilters({
-        keyword: "redux",
+        keyword: 'redux',
       }),
-    );
+    )
 
-    expect(nextState.filters.keyword).toBe("redux");
-  });
+    expect(nextState.filters.keyword).toBe('redux')
+  })
 
-  it("resets note filters", () => {
+  it('resets note filters', () => {
     const initialState = createNotesState({
       filters: {
-        keyword: "redux",
+        keyword: 'redux',
       },
-    });
+    })
 
-    const nextState = noteReducer(initialState, resetNoteFilters());
+    const nextState = noteReducer(initialState, resetNoteFilters())
 
     expect(nextState.filters).toEqual({
-      keyword: "",
-    });
-  });
-});
+      keyword: '',
+    })
+  })
+})
 //#endregion slice tests
 
 //#region selector tests
-describe("noteSelectors", () => {
-  it("returns filtered notes by keyword", () => {
+describe('noteSelectors', () => {
+  it('returns filtered notes by keyword', () => {
     const notesState = createNotesState({
       items: [
         createNote({
-          id: "note-1",
-          title: "Redux notes",
+          id: 'note-1',
+          title: 'Redux notes',
           isPinned: true,
         }),
         createNote({
-          id: "note-2",
-          title: "Tailwind notes",
+          id: 'note-2',
+          title: 'Tailwind notes',
           isPinned: false,
         }),
       ],
       filters: {
-        keyword: "redux",
+        keyword: 'redux',
       },
-    });
+    })
 
-    const state = createRootState(notesState);
-    const result = selectFilteredNotes(state);
+    const state = createRootState(notesState)
+    const result = selectFilteredNotes(state)
 
-    expect(result).toHaveLength(1);
-    expect(result[0]?.id).toBe("note-1");
-  });
+    expect(result).toHaveLength(1)
+    expect(result[0]?.id).toBe('note-1')
+  })
 
-  it("returns filtered pinned and unpinned notes", () => {
+  it('returns filtered pinned and unpinned notes', () => {
     const notesState = createNotesState({
       items: [
-        createNote({ id: "note-1", isPinned: true }),
-        createNote({ id: "note-2", isPinned: false }),
+        createNote({ id: 'note-1', isPinned: true }),
+        createNote({ id: 'note-2', isPinned: false }),
       ],
-    });
+    })
 
-    const state = createRootState(notesState);
+    const state = createRootState(notesState)
 
-    expect(selectFilteredPinnedNotes(state)).toHaveLength(1);
-    expect(selectFilteredUnpinnedNotes(state)).toHaveLength(1);
-  });
-});
+    expect(selectFilteredPinnedNotes(state)).toHaveLength(1)
+    expect(selectFilteredUnpinnedNotes(state)).toHaveLength(1)
+  })
+})
 //#endregion selector tests

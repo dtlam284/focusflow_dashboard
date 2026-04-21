@@ -47,38 +47,42 @@ const createTasksState = (overrides: Partial<ITasksState> = {}): ITasksState => 
 });
 
 const createRootState = (tasks: ITasksState): RootState =>
-    ({
-        app: {
-            initialized: false,
-            pageTitle: '',
-            isSidebarCollapsed: false,
-        },
-        auth: {
-            user: null,
-            isAuthenticated: false,
-            isLoading: false,
-            isSubmitting: false,
-            error: null,
-        },
-        tasks,
-        notes: {
-            items: [],
-            filters: {
-                keyword: '',
-            },
-        },
-        links: {
-            items: [],
-            filters: {
-                keyword: '',
-                category: 'all',
-            },
-        },
-        _persist: {
-            version: -1,
-            rehydrated: true,
-        },
-    }) as RootState;
+  ({
+    app: {
+      initialized: false,
+      pageTitle: '',
+      isSidebarCollapsed: false,
+    },
+    auth: {
+      user: null,
+      isAuthenticated: false,
+      isLoading: false,
+      isSubmitting: false,
+      error: null,
+    },
+    tasks,
+    taskDetail: {
+      selectedTaskId: null,
+      isOpen: false,
+    },
+    notes: {
+      items: [],
+      filters: {
+        keyword: '',
+      },
+    },
+    links: {
+      items: [],
+      filters: {
+        keyword: '',
+        category: 'all',
+      },
+    },
+    _persist: {
+      version: -1,
+      rehydrated: true,
+    },
+  }) as RootState
 //#endregion helpers
 
 //#region slice tests
