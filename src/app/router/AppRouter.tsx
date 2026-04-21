@@ -1,29 +1,29 @@
-import React from "react"
-import { createBrowserRouter } from "react-router"
+import React from 'react'
+import { createBrowserRouter } from 'react-router'
 
-import { LoginScreen } from "@/screens/Auth/LoginScreen"
-import { NotFoundScreen } from "@/screens/NotFound/NotFoundScreen"
-import { ErrorBoundaryScreen } from "@/screens/ErrorBoundaryScreen"
-import { SessionRequiredScreen } from "@/screens/Auth/SessionRequiredScreen"
+import { LoginScreen } from '@/screens/Auth/LoginScreen'
+import { NotFoundScreen } from '@/screens/NotFound/NotFoundScreen'
+import { ErrorBoundaryScreen } from '@/screens/ErrorBoundaryScreen'
+import { SessionRequiredScreen } from '@/screens/Auth/SessionRequiredScreen'
 
-import { ProtectedAdminLayout } from "./layouts/ProtectedAdminLayout"
+import { ProtectedAdminLayout } from './layouts/ProtectedAdminLayout'
 
 //#region lazy screens
 const DashboardScreen = React.lazy(() =>
-  import("@/screens/Dashboard/DashboardScreen").then((m) => ({ default: m.DashboardScreen })),
+  import('@/screens/Dashboard/DashboardScreen').then((m) => ({ default: m.DashboardScreen })),
 )
 
 const TasksScreen = React.lazy(() =>
-  import("@/screens/Tasks/TasksScreen").then((m) => ({ default: m.TasksScreen })),
+  import('@/screens/Tasks/TasksScreen').then((m) => ({ default: m.TasksScreen })),
 )
 
 const NotesScreen = React.lazy(() =>
-  import("@/screens/Notes/NotesScreen").then((m) => ({ default: m.NotesScreen })),
-);
+  import('@/screens/Notes/NotesScreen').then((m) => ({ default: m.NotesScreen })),
+)
 
 const LinksScreen = React.lazy(() =>
-  import("@/screens/Links/LinksScreen").then((m) => ({ default: m.LinksScreen })),
-);
+  import('@/screens/Links/LinksScreen').then((m) => ({ default: m.LinksScreen })),
+)
 //#endregion lazy screens
 
 //#region helpers
@@ -55,25 +55,25 @@ function lazyRoute(LazyComponent: React.LazyExoticComponent<React.ComponentType>
 //#region routes
 export const router = createBrowserRouter([
   {
-    path: "/auth/login",
+    path: '/auth/login',
     Component: LoginScreen,
     ErrorBoundary: ErrorBoundaryScreen,
   },
   {
-    path: "/auth/session-required",
+    path: '/auth/session-required',
     Component: SessionRequiredScreen,
     ErrorBoundary: ErrorBoundaryScreen,
   },
   {
-    path: "/",
+    path: '/',
     Component: ProtectedAdminLayout,
     ErrorBoundary: ErrorBoundaryScreen,
     children: [
       { index: true, Component: lazyRoute(DashboardScreen) },
-      { path: "tasks", Component: lazyRoute(TasksScreen) },
-      { path: "notes", Component: lazyRoute(NotesScreen) },
-      { path: "links", Component: lazyRoute(LinksScreen) },
-      { path: "*", Component: NotFoundScreen },
+      { path: 'tasks', Component: lazyRoute(TasksScreen) },
+      { path: 'notes', Component: lazyRoute(NotesScreen) },
+      { path: 'links', Component: lazyRoute(LinksScreen) },
+      { path: '*', Component: NotFoundScreen },
     ],
   },
 ])

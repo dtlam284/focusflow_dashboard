@@ -1,13 +1,13 @@
-import type { ILink } from "@/features/links/types/linkTypes";
+import type { ILink } from '@/features/links/types/linkTypes'
 
-import { LinkCard } from "./LinkCard";
+import { LinkCard } from './LinkCard'
 
 //#region types
 type LinksListProps = {
-  links: ILink[];
-  onDelete: (id: string) => void;
-  onEdit?: (link: ILink) => void;
-};
+  links: ILink[]
+  onDelete: (id: string) => void
+  onEdit?: (link: ILink) => void
+}
 //#endregion types
 
 //#region component
@@ -23,7 +23,7 @@ export function LinksList({ links, onDelete, onEdit }: LinksListProps) {
           </p>
         </div>
       </div>
-    );
+    )
     //#endregion render
   }
 
@@ -39,7 +39,7 @@ export function LinksList({ links, onDelete, onEdit }: LinksListProps) {
         />
       ))}
     </div>
-  );
+  )
   //#endregion render
 }
 //#endregion component

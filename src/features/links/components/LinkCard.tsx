@@ -1,17 +1,17 @@
-import type { ILink } from "@/features/links/types/linkTypes";
+import type { ILink } from '@/features/links/types/linkTypes'
 
 //#region types
 type LinkCardProps = {
-  link: ILink;
-  onDelete: (id: string) => void;
-  onEdit?: (link: ILink) => void;
-};
+  link: ILink
+  onDelete: (id: string) => void
+  onEdit?: (link: ILink) => void
+}
 //#endregion types
 
 //#region component
 export function LinkCard({ link, onDelete, onEdit }: LinkCardProps) {
-  const hostname = getHostname(link.url);
-  const displayUrl = getDisplayUrl(link.url);
+  const hostname = getHostname(link.url)
+  const displayUrl = getDisplayUrl(link.url)
 
   //#region render
   return (
@@ -19,9 +19,7 @@ export function LinkCard({ link, onDelete, onEdit }: LinkCardProps) {
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0 flex-1 space-y-2">
           <div className="flex flex-wrap items-center gap-2">
-            <h3 className="line-clamp-2 text-base font-semibold text-foreground">
-              {link.title}
-            </h3>
+            <h3 className="line-clamp-2 text-base font-semibold text-foreground">{link.title}</h3>
             <span className="inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-medium text-muted-foreground">
               {formatCategoryLabel(link.category)}
             </span>
@@ -70,7 +68,7 @@ export function LinkCard({ link, onDelete, onEdit }: LinkCardProps) {
         </div>
       </div>
     </article>
-  );
+  )
   //#endregion render
 }
 //#endregion component
@@ -78,20 +76,20 @@ export function LinkCard({ link, onDelete, onEdit }: LinkCardProps) {
 //#region utils
 function getHostname(url: string) {
   try {
-    return new URL(url).hostname.replace(/^www\./, "");
+    return new URL(url).hostname.replace(/^www\./, '')
   } catch {
-    return "";
+    return ''
   }
 }
 
 function getDisplayUrl(url: string, maxLength = 56) {
-  const value = url.replace(/^https?:\/\//, "");
+  const value = url.replace(/^https?:\/\//, '')
 
-  if (value.length <= maxLength) return value;
-  return `${value.slice(0, maxLength - 1)}…`;
+  if (value.length <= maxLength) return value
+  return `${value.slice(0, maxLength - 1)}…`
 }
 
 function formatCategoryLabel(category: string) {
-  return category.charAt(0).toUpperCase() + category.slice(1);
+  return category.charAt(0).toUpperCase() + category.slice(1)
 }
 //#endregion utils

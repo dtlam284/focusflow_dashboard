@@ -14,9 +14,20 @@ export interface SectionCardProps {
   actions?: React.ReactNode
 }
 
-export function SectionCard({ title, description, children, className, actions }: SectionCardProps) {
+export function SectionCard({
+  title,
+  description,
+  children,
+  className,
+  actions,
+}: SectionCardProps) {
   return (
-    <div className={cn('rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-950', className)}>
+    <div
+      className={cn(
+        'rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-950',
+        className,
+      )}
+    >
       {(title || actions) && (
         <div className="mb-4 flex items-center justify-between">
           <div>

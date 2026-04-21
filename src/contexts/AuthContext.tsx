@@ -50,7 +50,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   React.useEffect(() => {
-    if (meQuery.error instanceof ApiError && (meQuery.error.status === 401 || meQuery.error.status === 403)) {
+    if (
+      meQuery.error instanceof ApiError &&
+      (meQuery.error.status === 401 || meQuery.error.status === 403)
+    ) {
       authService.clearStoredTokens()
       setHasSession(false)
       queryClient.setQueryData(queryKeys.auth.me, null)

@@ -1,41 +1,41 @@
-import * as React from "react";
-import { Controller, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus, Save, X } from "lucide-react";
+import * as React from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Plus, Save, X } from 'lucide-react'
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { FormField } from "@/components/shared/FormField";
-import { SectionCard } from "@/components/shared/SectionCard";
-import { useI18n } from "@/contexts/I18nContext";
+} from '@/components/ui/select'
+import { FormField } from '@/components/shared/FormField'
+import { SectionCard } from '@/components/shared/SectionCard'
+import { useI18n } from '@/contexts/I18nContext'
 
-import { noteFormSchema, type NoteFormValues } from "../schemas/noteSchema";
+import { noteFormSchema, type NoteFormValues } from '../schemas/noteSchema'
 
 //#region props
 export interface INoteFormProps {
-  mode: "create" | "edit";
-  initialValues?: Partial<NoteFormValues>;
-  onSubmit: (values: NoteFormValues) => void | Promise<void>;
-  onCancelEdit?: () => void;
-  isSubmitting?: boolean;
+  mode: 'create' | 'edit'
+  initialValues?: Partial<NoteFormValues>
+  onSubmit: (values: NoteFormValues) => void | Promise<void>
+  onCancelEdit?: () => void
+  isSubmitting?: boolean
 }
 //#endregion props
 
 //#region constants
 const EMPTY_VALUES: NoteFormValues = {
-  title: "",
-  content: "",
-  color: "default",
-  category: "other",
-};
+  title: '',
+  content: '',
+  color: 'default',
+  category: 'other',
+}
 //#endregion constants
 
 //#region component
@@ -46,7 +46,7 @@ export function NoteForm({
   onCancelEdit,
   isSubmitting = false,
 }: INoteFormProps) {
-  const { t } = useI18n();
+  const { t } = useI18n()
 
   //#region form setup
   const {
@@ -61,7 +61,7 @@ export function NoteForm({
       ...EMPTY_VALUES,
       ...initialValues,
     },
-  });
+  })
   //#endregion form setup
 
   //#region effects
@@ -69,87 +69,79 @@ export function NoteForm({
     reset({
       ...EMPTY_VALUES,
       ...initialValues,
-    });
-  }, [initialValues, reset]);
+    })
+  }, [initialValues, reset])
   //#endregion effects
 
   //#region derived values
-  const isEditMode = mode === "edit";
-  const submitting = isSubmitting || isFormSubmitting;
+  const isEditMode = mode === 'edit'
+  const submitting = isSubmitting || isFormSubmitting
   //#endregion derived values
 
   //#region handlers
   const submitHandler = async (values: NoteFormValues) => {
-    await onSubmit(values);
+    await onSubmit(values)
 
     if (!isEditMode) {
-      reset(EMPTY_VALUES);
+      reset(EMPTY_VALUES)
     }
-  };
+  }
   //#endregion handlers
 
   //#region render
   return (
     <SectionCard
-      title={isEditMode ? t("Edit note") : t("Create a new note")}
+      title={isEditMode ? t('Edit note') : t('Create a new note')}
       description={
         isEditMode
-          ? t("Update the selected note details.")
-          : t("Capture quick ideas, reminders, and useful notes.")
+          ? t('Update the selected note details.')
+          : t('Capture quick ideas, reminders, and useful notes.')
       }
     >
       <form onSubmit={handleSubmit(submitHandler)} className="space-y-4">
         <FormField
-          label={t("Title")}
+          label={t('Title')}
           htmlFor="note-title"
           required
-          hint={t("Use a short title that is easy to scan.")}
+          hint={t('Use a short title that is easy to scan.')}
         >
           <Input
             id="note-title"
-            placeholder={t("Enter note title")}
-            aria-invalid={errors.title ? "true" : "false"}
-            {...register("title")}
+            placeholder={t('Enter note title')}
+            aria-invalid={errors.title ? 'true' : 'false'}
+            {...register('title')}
           />
           {errors.title ? (
-            <p className="text-sm text-rose-600 dark:text-rose-400">
-              {errors.title.message}
-            </p>
+            <p className="text-sm text-rose-600 dark:text-rose-400">{errors.title.message}</p>
           ) : null}
         </FormField>
 
         <FormField
-          label={t("Content")}
+          label={t('Content')}
           htmlFor="note-content"
           required
-          hint={t("Keep it concise but meaningful.")}
+          hint={t('Keep it concise but meaningful.')}
         >
           <Textarea
             id="note-content"
-            placeholder={t("Write your note")}
+            placeholder={t('Write your note')}
             className="h-28 resize-none overflow-y-auto"
-            aria-invalid={errors.content ? "true" : "false"}
-            {...register("content")}
+            aria-invalid={errors.content ? 'true' : 'false'}
+            {...register('content')}
           />
           {errors.content ? (
-            <p className="text-sm text-rose-600 dark:text-rose-400">
-              {errors.content.message}
-            </p>
+            <p className="text-sm text-rose-600 dark:text-rose-400">{errors.content.message}</p>
           ) : null}
         </FormField>
 
         <div className="grid gap-4 md:grid-cols-2">
-          <FormField
-            label={t("Color")}
-            required
-            hint={t("Use color as a light visual accent.")}
-          >
+          <FormField label={t('Color')} required hint={t('Use color as a light visual accent.')}>
             <Controller
               name="color"
               control={control}
               render={({ field }) => (
                 <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger aria-invalid={errors.color ? "true" : "false"}>
+                  <SelectTrigger aria-invalid={errors.color ? 'true' : 'false'}>
                     <SelectValue placeholder="Select color" />
                   </SelectTrigger>
                   <SelectContent>
@@ -164,23 +156,17 @@ export function NoteForm({
               )}
             />
             {errors.color ? (
-              <p className="text-sm text-rose-600 dark:text-rose-400">
-                {errors.color.message}
-              </p>
+              <p className="text-sm text-rose-600 dark:text-rose-400">{errors.color.message}</p>
             ) : null}
           </FormField>
 
-          <FormField
-            label={t("Category")}
-            required
-            hint={t("Choose the note type or topic.")}
-          >
+          <FormField label={t('Category')} required hint={t('Choose the note type or topic.')}>
             <Controller
               name="category"
               control={control}
               render={({ field }) => (
                 <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger aria-invalid={errors.category ? "true" : "false"}>
+                  <SelectTrigger aria-invalid={errors.category ? 'true' : 'false'}>
                     <SelectValue placeholder="Select category" />
                   </SelectTrigger>
                   <SelectContent>
@@ -194,9 +180,7 @@ export function NoteForm({
               )}
             />
             {errors.category ? (
-              <p className="text-sm text-rose-600 dark:text-rose-400">
-                {errors.category.message}
-              </p>
+              <p className="text-sm text-rose-600 dark:text-rose-400">{errors.category.message}</p>
             ) : null}
           </FormField>
         </div>
@@ -206,12 +190,12 @@ export function NoteForm({
             {isEditMode ? (
               <>
                 <Save className="h-4 w-4" />
-                {t("Save changes")}
+                {t('Save changes')}
               </>
             ) : (
               <>
                 <Plus className="h-4 w-4" />
-                {t("Add note")}
+                {t('Add note')}
               </>
             )}
           </Button>
@@ -219,13 +203,13 @@ export function NoteForm({
           {isEditMode && onCancelEdit ? (
             <Button type="button" variant="outline" onClick={onCancelEdit}>
               <X className="h-4 w-4" />
-              {t("Cancel")}
+              {t('Cancel')}
             </Button>
           ) : null}
         </div>
       </form>
     </SectionCard>
-  );
+  )
   //#endregion render
 }
 //#endregion component

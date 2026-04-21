@@ -40,12 +40,12 @@
 
 ### Core Principles
 
-| Principle | What It Means |
-|-----------|--------------|
-| **Separation of Concerns** | UI renders state, hooks orchestrate, slices own state, services talk to APIs. Each layer has one job. |
-| **Unidirectional Data Flow** | Data flows: API → Service → Slice → Hook → Component. Events flow back the same path in reverse. |
-| **Colocation** | Keep related code close. Screen-specific components live inside that screen folder, not in global `components/`. |
-| **Progressive Disclosure** | Simple things stay simple. Only add abstraction when you have 3+ concrete use cases (Rule of Three). |
+| Principle                     | What It Means                                                                                                             |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| **Separation of Concerns**    | UI renders state, hooks orchestrate, slices own state, services talk to APIs. Each layer has one job.                     |
+| **Unidirectional Data Flow**  | Data flows: API → Service → Slice → Hook → Component. Events flow back the same path in reverse.                          |
+| **Colocation**                | Keep related code close. Screen-specific components live inside that screen folder, not in global `components/`.          |
+| **Progressive Disclosure**    | Simple things stay simple. Only add abstraction when you have 3+ concrete use cases (Rule of Three).                      |
 | **Type Safety at Boundaries** | Strictly type all external boundaries (API responses, URL params, form inputs). Internal code can rely on inferred types. |
 
 ### Why This Architecture?
@@ -184,49 +184,49 @@ src/
 
 ### Ideas Behind Each Folder
 
-| Folder | Purpose | Why It Exists |
-|--------|---------|---------------|
-| `components/ui/` | Primitive, domain-agnostic UI components (Button, Input, Dialog, Card, Table) | These are the **atomic building blocks**. They know nothing about your business domain. You could copy this folder into a completely different project and it would still work. Keeping them domain-free ensures maximum reusability. |
-| `components/shared/` | Business-aware reusable components (PageHeader, DataTable, StatusChip, ConfirmDialog) | These understand your app's patterns (e.g., "a page always has breadcrumbs + title + actions") but are reused across **multiple screens**. They bridge the gap between raw UI primitives and full screens. |
-| `screens/` | Feature pages with screen-scoped sub-components | Each screen folder is a **self-contained feature**. Screen-specific components live inside `screens/Feature/components/` — NOT in the global `components/` folder. This prevents the global components folder from becoming a dumping ground and makes it clear which components belong where. |
-| `models/common/` | Shared type primitives (`ISODateString`, `RoleRef`, `PaginationQuery`) | Types used across multiple domains live here. Keeps domain models DRY without creating circular dependencies. |
-| `models/<domain>/` | Domain contracts: `Interface` (entity shapes), `DTO` (request payloads), `Response` (API response shapes), `Mapper` (transform functions) | Separating contracts from services means **types are importable without pulling in HTTP code**. Backend and frontend can compare contracts easily. Each file has a single responsibility: shape vs. payload vs. response vs. mapping. |
-| `services/core/` | HTTP transport infrastructure | Isolates all HTTP concerns (auth headers, token refresh, timeouts, error normalization) into **one place**. When you need to change how HTTP works (add retry logic, switch from fetch to axios, add request deduplication), you change one folder. |
-| `services/<domain>/` | Domain-specific API calls | Each domain service file maps 1:1 to a backend controller. The service **hides the HTTP details** and exposes typed async functions. Types are imported from `models/<domain>/`, not defined here. Components never import `httpClient` directly. |
-| `store/slices/` | Client-side state ownership | Each slice owns a **specific domain of client state**. The slice defines initial state, reducers (sync mutations), and async thunks (API-calling actions). This is your single source of truth for client state. |
-| `contexts/` | Cross-cutting concerns via React Context | Auth status, theme, and language need to be accessible **everywhere** without prop drilling. Context is the right tool for values that change infrequently and are consumed by many components. |
-| `hooks/` | Shared custom hooks | Encapsulate **reusable stateful logic** that doesn't belong to a single screen. Only promote a hook here if 2+ screens use it. Screen-specific hooks stay inside their screen folder. |
-| `navigators/` | Route definitions and layout wrappers | Separating routes from screens means you can **see the entire app's URL structure** in one file. Layout wrappers (sidebar, auth guards) live here because they're routing concerns, not UI components. |
-| `constants/` | Immutable configuration values | API endpoints, magic numbers, and enum-like values live here. Using a centralized endpoint registry means changing a URL updates it **everywhere** at once. |
-| `config/` | Runtime environment configuration | Reads from `import.meta.env` and provides typed, validated config. One import, no scattered `import.meta.env.VITE_*` calls throughout the codebase. |
-| `styles/` | Global CSS and design tokens | CSS custom properties (`--color-primary`, `--radius`) define the **design system**. Tailwind consumes these variables, ensuring your utility classes and custom CSS always agree. |
-| `utils/` | Pure functions with no side effects | Date formatting, string manipulation, number parsing. These functions take input, return output, and **never touch state or APIs**. Easy to test, easy to reuse. |
-| `validations/` | Form validation rules and schemas | Centralized validation ensures the **same rules** apply whether used in a create form, edit form, or inline validation. |
+| Folder               | Purpose                                                                                                                                   | Why It Exists                                                                                                                                                                                                                                                                                  |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `components/ui/`     | Primitive, domain-agnostic UI components (Button, Input, Dialog, Card, Table)                                                             | These are the **atomic building blocks**. They know nothing about your business domain. You could copy this folder into a completely different project and it would still work. Keeping them domain-free ensures maximum reusability.                                                          |
+| `components/shared/` | Business-aware reusable components (PageHeader, DataTable, StatusChip, ConfirmDialog)                                                     | These understand your app's patterns (e.g., "a page always has breadcrumbs + title + actions") but are reused across **multiple screens**. They bridge the gap between raw UI primitives and full screens.                                                                                     |
+| `screens/`           | Feature pages with screen-scoped sub-components                                                                                           | Each screen folder is a **self-contained feature**. Screen-specific components live inside `screens/Feature/components/` — NOT in the global `components/` folder. This prevents the global components folder from becoming a dumping ground and makes it clear which components belong where. |
+| `models/common/`     | Shared type primitives (`ISODateString`, `RoleRef`, `PaginationQuery`)                                                                    | Types used across multiple domains live here. Keeps domain models DRY without creating circular dependencies.                                                                                                                                                                                  |
+| `models/<domain>/`   | Domain contracts: `Interface` (entity shapes), `DTO` (request payloads), `Response` (API response shapes), `Mapper` (transform functions) | Separating contracts from services means **types are importable without pulling in HTTP code**. Backend and frontend can compare contracts easily. Each file has a single responsibility: shape vs. payload vs. response vs. mapping.                                                          |
+| `services/core/`     | HTTP transport infrastructure                                                                                                             | Isolates all HTTP concerns (auth headers, token refresh, timeouts, error normalization) into **one place**. When you need to change how HTTP works (add retry logic, switch from fetch to axios, add request deduplication), you change one folder.                                            |
+| `services/<domain>/` | Domain-specific API calls                                                                                                                 | Each domain service file maps 1:1 to a backend controller. The service **hides the HTTP details** and exposes typed async functions. Types are imported from `models/<domain>/`, not defined here. Components never import `httpClient` directly.                                              |
+| `store/slices/`      | Client-side state ownership                                                                                                               | Each slice owns a **specific domain of client state**. The slice defines initial state, reducers (sync mutations), and async thunks (API-calling actions). This is your single source of truth for client state.                                                                               |
+| `contexts/`          | Cross-cutting concerns via React Context                                                                                                  | Auth status, theme, and language need to be accessible **everywhere** without prop drilling. Context is the right tool for values that change infrequently and are consumed by many components.                                                                                                |
+| `hooks/`             | Shared custom hooks                                                                                                                       | Encapsulate **reusable stateful logic** that doesn't belong to a single screen. Only promote a hook here if 2+ screens use it. Screen-specific hooks stay inside their screen folder.                                                                                                          |
+| `navigators/`        | Route definitions and layout wrappers                                                                                                     | Separating routes from screens means you can **see the entire app's URL structure** in one file. Layout wrappers (sidebar, auth guards) live here because they're routing concerns, not UI components.                                                                                         |
+| `constants/`         | Immutable configuration values                                                                                                            | API endpoints, magic numbers, and enum-like values live here. Using a centralized endpoint registry means changing a URL updates it **everywhere** at once.                                                                                                                                    |
+| `config/`            | Runtime environment configuration                                                                                                         | Reads from `import.meta.env` and provides typed, validated config. One import, no scattered `import.meta.env.VITE_*` calls throughout the codebase.                                                                                                                                            |
+| `styles/`            | Global CSS and design tokens                                                                                                              | CSS custom properties (`--color-primary`, `--radius`) define the **design system**. Tailwind consumes these variables, ensuring your utility classes and custom CSS always agree.                                                                                                              |
+| `utils/`             | Pure functions with no side effects                                                                                                       | Date formatting, string manipulation, number parsing. These functions take input, return output, and **never touch state or APIs**. Easy to test, easy to reuse.                                                                                                                               |
+| `validations/`       | Form validation rules and schemas                                                                                                         | Centralized validation ensures the **same rules** apply whether used in a create form, edit form, or inline validation.                                                                                                                                                                        |
 
 ---
 
 ## 3. Naming Conventions
 
-| Category | Convention | Example | Why |
-|----------|-----------|---------|-----|
-| **Screen Components** | PascalCase + `Screen` suffix | `DashboardScreen.tsx` | Distinguishes pages from reusable components at a glance |
-| **UI Components** | PascalCase | `Button.tsx`, `DataTable.tsx` | React convention for components |
-| **Hooks** | camelCase + `use` prefix | `useTheme.tsx`, `useMobile.ts` | React convention; ESLint enforces this for Rules of Hooks |
-| **Services** | camelCase + `Service` suffix | `authService.ts`, `contentService.ts` | Clearly marks API-facing modules |
-| **Redux Slices** | camelCase + `Slice` suffix | `authSlice.ts`, `appSlice.ts` | Identifies Redux state files |
-| **Contexts** | PascalCase + `Context` suffix | `AuthContext.tsx` | Follows React naming for createContext |
-| **Types / Interfaces** | PascalCase | `AdminUser`, `PaginatedResponse` | TypeScript convention |
-| **Model Interface files** | PascalCase `<Domain>Interface.ts` | `AccountInterface.ts`, `AuthenticationInterface.ts` | Entity shapes — the domain's core data structures |
-| **Model DTO files** | PascalCase `<Domain>DTO.ts` | `AccountDTO.ts`, `AuthenticationDTO.ts` | Request payloads going TO the API |
-| **Model Response files** | PascalCase `<Domain>Response.ts` | `AuthenticationResponse.ts` | Response shapes coming FROM the API |
-| **Model Mapper files** | PascalCase `<Domain>Mapper.ts` | `AccountMapper.ts` | Transform functions between API and domain shapes |
-| **Request DTOs** | PascalCase + `Request` suffix | `AuthLoginRequest`, `CreateUserRequest` | Marks data going TO the API |
-| **Response DTOs** | PascalCase + `Response` suffix | `AuthLoginResponse`, `DataResponse` | Marks data coming FROM the API |
-| **Constants** | UPPER_SNAKE_CASE | `API_ENDPOINTS`, `MAX_RETRIES` | Signals immutability |
-| **Utility functions** | camelCase | `toDisplayDate()`, `parsePositiveInt()` | Standard JS function naming |
-| **CSS variables** | kebab-case with `--` prefix | `--color-primary`, `--radius` | CSS custom property convention |
-| **Route paths** | kebab-case | `/user-segments`, `/pregnancy-care` | URL convention |
-| **Barrel exports** | `index.ts` with `export *` | `services/core/index.ts` | Enables clean imports |
+| Category                  | Convention                        | Example                                             | Why                                                       |
+| ------------------------- | --------------------------------- | --------------------------------------------------- | --------------------------------------------------------- |
+| **Screen Components**     | PascalCase + `Screen` suffix      | `DashboardScreen.tsx`                               | Distinguishes pages from reusable components at a glance  |
+| **UI Components**         | PascalCase                        | `Button.tsx`, `DataTable.tsx`                       | React convention for components                           |
+| **Hooks**                 | camelCase + `use` prefix          | `useTheme.tsx`, `useMobile.ts`                      | React convention; ESLint enforces this for Rules of Hooks |
+| **Services**              | camelCase + `Service` suffix      | `authService.ts`, `contentService.ts`               | Clearly marks API-facing modules                          |
+| **Redux Slices**          | camelCase + `Slice` suffix        | `authSlice.ts`, `appSlice.ts`                       | Identifies Redux state files                              |
+| **Contexts**              | PascalCase + `Context` suffix     | `AuthContext.tsx`                                   | Follows React naming for createContext                    |
+| **Types / Interfaces**    | PascalCase                        | `AdminUser`, `PaginatedResponse`                    | TypeScript convention                                     |
+| **Model Interface files** | PascalCase `<Domain>Interface.ts` | `AccountInterface.ts`, `AuthenticationInterface.ts` | Entity shapes — the domain's core data structures         |
+| **Model DTO files**       | PascalCase `<Domain>DTO.ts`       | `AccountDTO.ts`, `AuthenticationDTO.ts`             | Request payloads going TO the API                         |
+| **Model Response files**  | PascalCase `<Domain>Response.ts`  | `AuthenticationResponse.ts`                         | Response shapes coming FROM the API                       |
+| **Model Mapper files**    | PascalCase `<Domain>Mapper.ts`    | `AccountMapper.ts`                                  | Transform functions between API and domain shapes         |
+| **Request DTOs**          | PascalCase + `Request` suffix     | `AuthLoginRequest`, `CreateUserRequest`             | Marks data going TO the API                               |
+| **Response DTOs**         | PascalCase + `Response` suffix    | `AuthLoginResponse`, `DataResponse`                 | Marks data coming FROM the API                            |
+| **Constants**             | UPPER_SNAKE_CASE                  | `API_ENDPOINTS`, `MAX_RETRIES`                      | Signals immutability                                      |
+| **Utility functions**     | camelCase                         | `toDisplayDate()`, `parsePositiveInt()`             | Standard JS function naming                               |
+| **CSS variables**         | kebab-case with `--` prefix       | `--color-primary`, `--radius`                       | CSS custom property convention                            |
+| **Route paths**           | kebab-case                        | `/user-segments`, `/pregnancy-care`                 | URL convention                                            |
+| **Barrel exports**        | `index.ts` with `export *`        | `services/core/index.ts`                            | Enables clean imports                                     |
 
 ### File Naming Examples
 
@@ -261,9 +261,9 @@ Configure the `@/` alias in both `tsconfig.json` and `vite.config.ts`:
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
-    }
-  }
+      "@/*": ["./src/*"],
+    },
+  },
 }
 ```
 
@@ -322,9 +322,9 @@ import type { AdminUser } from '@/models/account'
 {
   "compilerOptions": {
     "strict": true,
-    "noUncheckedIndexedAccess": true,  // Arrays/objects might be undefined
-    "forceConsistentCasingInImports": true
-  }
+    "noUncheckedIndexedAccess": true, // Arrays/objects might be undefined
+    "forceConsistentCasingInImports": true,
+  },
 }
 ```
 
@@ -374,12 +374,7 @@ const user = response as AdminUser
 
 // Good — runtime check that TypeScript understands
 function isAdminUser(value: unknown): value is AdminUser {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'id' in value &&
-    'email' in value
-  )
+  return typeof value === 'object' && value !== null && 'id' in value && 'email' in value
 }
 
 if (isAdminUser(response)) {
@@ -422,7 +417,7 @@ export const API_ENDPOINTS = {
   "trailingComma": "all",
   "arrowParens": "always",
   "bracketSpacing": true,
-  "endOfLine": "lf"
+  "endOfLine": "lf",
 }
 ```
 
@@ -434,10 +429,13 @@ export default [
   {
     rules: {
       'no-console': ['warn', { allow: ['warn', 'error'] }],
-      '@typescript-eslint/no-unused-vars': ['error', {
-        argsIgnorePattern: '^_',
-        varsIgnorePattern: '^_',
-      }],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+        },
+      ],
       'react-hooks/exhaustive-deps': 'warn',
       'react-hooks/rules-of-hooks': 'error',
     },
@@ -469,10 +467,10 @@ export default function DashboardScreen() { ... }
 
 This architecture uses **two complementary state systems**:
 
-| System | Purpose | Examples | When to Use |
-|--------|---------|----------|-------------|
-| **Redux Toolkit** | Client-owned state that the server doesn't know about | Auth state, UI preferences, theme, sidebar open/closed, form drafts | State that originates from user interaction and persists across navigations |
-| **TanStack React Query** | Server-owned state that we're caching locally | User lists, articles, analytics data | Data that comes from an API and needs caching, background refresh, and stale-while-revalidate |
+| System                   | Purpose                                               | Examples                                                            | When to Use                                                                                   |
+| ------------------------ | ----------------------------------------------------- | ------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| **Redux Toolkit**        | Client-owned state that the server doesn't know about | Auth state, UI preferences, theme, sidebar open/closed, form drafts | State that originates from user interaction and persists across navigations                   |
+| **TanStack React Query** | Server-owned state that we're caching locally         | User lists, articles, analytics data                                | Data that comes from an API and needs caching, background refresh, and stale-while-revalidate |
 
 **Why two systems?** Redux is great for **synchronous client state** but terrible at caching server data (no stale-while-revalidate, no background refetch, no request deduplication). React Query is great for **server state** but inappropriate for UI state (no reducers, no middleware, no persistence).
 
@@ -549,7 +547,7 @@ import type { AppDispatch, RootState } from './store'
 export const createAppAsyncThunk = createAsyncThunk.withTypes<{
   state: RootState
   dispatch: AppDispatch
-  rejectValue: string  // All thunk errors are strings for consistent error handling
+  rejectValue: string // All thunk errors are strings for consistent error handling
 }>()
 
 // Why?
@@ -571,8 +569,8 @@ import type { FeatureItem, FeatureFilters } from '@/models/feature'
 interface FeatureState {
   items: FeatureItem[]
   selectedItem: FeatureItem | null
-  isLoading: boolean       // For initial data fetch
-  isSubmitting: boolean    // For create/update/delete operations
+  isLoading: boolean // For initial data fetch
+  isSubmitting: boolean // For create/update/delete operations
   error: string | null
 }
 
@@ -678,7 +676,7 @@ export const queryClient = new QueryClient({
   }),
   defaultOptions: {
     queries: {
-      refetchOnWindowFocus: false,  // Don't refetch when user tabs back
+      refetchOnWindowFocus: false, // Don't refetch when user tabs back
       retry: (failureCount, error) => {
         // Don't retry auth errors — they won't magically fix themselves
         if (error instanceof ApiError && (error.status === 401 || error.status === 403)) {
@@ -749,14 +747,14 @@ export interface RequestOptions {
   body?: unknown
   headers?: HeadersInit
   query?: QueryParams
-  requiresAuth?: boolean      // Default: true — auto-attaches Bearer token
-  signal?: AbortSignal        // For React Query cancellation
-  timeoutMs?: number          // Override default timeout
-  retryOnUnauthorized?: boolean  // Default: true — auto-refresh on 401
+  requiresAuth?: boolean // Default: true — auto-attaches Bearer token
+  signal?: AbortSignal // For React Query cancellation
+  timeoutMs?: number // Override default timeout
+  retryOnUnauthorized?: boolean // Default: true — auto-refresh on 401
 }
 
 export class HttpClient {
-  private refreshPromise: Promise<string | null> | null = null  // Deduplication!
+  private refreshPromise: Promise<string | null> | null = null // Deduplication!
 
   // Typed convenience methods
   async get<T>(path: string, options?: Omit<RequestOptions, 'body'>): Promise<T>
@@ -808,9 +806,9 @@ import { HttpClient } from './httpClient'
 import { tokenStorage } from './tokenStorage'
 
 export const apiClient = new HttpClient({
-  baseUrl: env.apiBaseUrl,         // e.g., 'http://localhost:3000/api/v1'
-  timeoutMs: env.apiTimeoutMs,     // e.g., 30000
-  tokenStorage,                    // BrowserTokenStorage instance
+  baseUrl: env.apiBaseUrl, // e.g., 'http://localhost:3000/api/v1'
+  timeoutMs: env.apiTimeoutMs, // e.g., 30000
+  tokenStorage, // BrowserTokenStorage instance
   refreshPath: '/auth/refresh',
 })
 ```
@@ -895,7 +893,7 @@ export const authService = {
     const response = await apiClient.post<AuthLoginResponse>(
       API_ENDPOINTS.auth.loginEmail,
       payload,
-      { requiresAuth: false },  // Login doesn't have a token yet!
+      { requiresAuth: false }, // Login doesn't have a token yet!
     )
 
     // Side effect: store tokens immediately after login
@@ -967,6 +965,7 @@ models/
 ```
 
 **Why separate from services?**
+
 1. Services stay focused on HTTP logic — no type definitions mixed in
 2. Types can be imported without importing the service itself (smaller bundles)
 3. Backend and frontend can compare contracts easily
@@ -1118,7 +1117,7 @@ export const router = createBrowserRouter([
   // Protected routes — auth guard + layout shell
   {
     path: '/',
-    Component: ProtectedLayout,       // Auth check + sidebar + header
+    Component: ProtectedLayout, // Auth check + sidebar + header
     ErrorBoundary: ErrorBoundaryScreen,
     children: [
       { index: true, Component: lazyRoute(DashboardScreen) },
@@ -1132,13 +1131,13 @@ export const router = createBrowserRouter([
 
 ### Why These Routing Decisions?
 
-| Decision | Why |
-|----------|-----|
-| **Static import for LoginScreen** | Login is the first screen users see — no loading spinner delay |
-| **Lazy import for everything else** | Each screen becomes a separate JS chunk. Initial bundle stays small. |
-| **`lazyRoute()` helper** | Eliminates repetitive Suspense wrapping — one wrapper, many routes |
-| **ErrorBoundary on every route group** | A crash in one screen doesn't take down the entire app |
-| **Nested routes under ProtectedLayout** | Auth guard runs once for all child routes, not once per route |
+| Decision                                | Why                                                                  |
+| --------------------------------------- | -------------------------------------------------------------------- |
+| **Static import for LoginScreen**       | Login is the first screen users see — no loading spinner delay       |
+| **Lazy import for everything else**     | Each screen becomes a separate JS chunk. Initial bundle stays small. |
+| **`lazyRoute()` helper**                | Eliminates repetitive Suspense wrapping — one wrapper, many routes   |
+| **ErrorBoundary on every route group**  | A crash in one screen doesn't take down the entire app               |
+| **Nested routes under ProtectedLayout** | Auth guard runs once for all child routes, not once per route        |
 
 ### Protected Layout (Auth Guard)
 
@@ -1168,7 +1167,7 @@ export function ProtectedLayout() {
   }
 
   // Authenticated — render layout shell with child routes
-  return <AppLayout />  // Contains sidebar, header, and <Outlet />
+  return <AppLayout /> // Contains sidebar, header, and <Outlet />
 }
 ```
 
@@ -1194,7 +1193,7 @@ screens/      → Page-level components that compose everything
 ```tsx
 // components/ui/Button.tsx
 import React from 'react'
-import { cn } from '@/utils'  // clsx + tailwind-merge
+import { cn } from '@/utils' // clsx + tailwind-merge
 
 // ── Variant types ────────────────────────────────────────────
 type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive'
@@ -1258,7 +1257,7 @@ export function Button({
 interface PageHeaderProps {
   title: string
   description?: string
-  actions?: React.ReactNode  // Slot pattern for action buttons
+  actions?: React.ReactNode // Slot pattern for action buttons
   breadcrumbs?: Array<{ label: string; href?: string }>
 }
 
@@ -1411,7 +1410,9 @@ export function ThemeProvider({ children, defaultTheme = 'system', storageKey = 
     root.classList.remove('light', 'dark')
 
     if (theme === 'system') {
-      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
+        ? 'dark'
+        : 'light'
       root.classList.add(systemTheme)
     } else {
       root.classList.add(theme)
@@ -1480,8 +1481,7 @@ export const setCurrentLanguage = (lang: AppLanguage): void => {
   currentLanguage = lang
 }
 
-export const getCurrentLocaleTag = (): string =>
-  currentLanguage === 'vi' ? 'vi-VN' : 'en-US'
+export const getCurrentLocaleTag = (): string => (currentLanguage === 'vi' ? 'vi-VN' : 'en-US')
 
 // Usage in formatters:
 // new Intl.DateTimeFormat(getCurrentLocaleTag(), { dateStyle: 'medium' }).format(date)
@@ -1514,7 +1514,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const meQuery = useQuery({
     queryKey: queryKeys.auth.me,
     queryFn: () => authService.getMe(),
-    enabled: hasSession,  // Don't fire if no tokens exist
+    enabled: hasSession, // Don't fire if no tokens exist
   })
 
   // Listen for localStorage changes (cross-tab sync)
@@ -1530,8 +1530,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Auto-clear on 401/403
   React.useEffect(() => {
-    if (meQuery.error instanceof ApiError &&
-        (meQuery.error.status === 401 || meQuery.error.status === 403)) {
+    if (
+      meQuery.error instanceof ApiError &&
+      (meQuery.error.status === 401 || meQuery.error.status === 403)
+    ) {
       authService.clearStoredTokens()
       setHasSession(false)
       queryClient.setQueryData(queryKeys.auth.me, null)
@@ -1561,9 +1563,7 @@ export const useAuth = () => {
 ```ts
 // hooks/useMobile.ts
 export function useIsMobile(breakpoint = 768): boolean {
-  const [isMobile, setIsMobile] = React.useState(
-    () => window.innerWidth < breakpoint,
-  )
+  const [isMobile, setIsMobile] = React.useState(() => window.innerWidth < breakpoint)
 
   React.useEffect(() => {
     const mql = window.matchMedia(`(max-width: ${breakpoint - 1}px)`)
@@ -1654,7 +1654,11 @@ import { useForm, Controller } from 'react-hook-form'
 import { authSchemas } from '@/validations/schemas'
 
 export function LoginScreen() {
-  const { control, handleSubmit, formState: { errors, isSubmitting } } = useForm({
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm({
     defaultValues: { email: '', password: '' },
   })
 
@@ -1675,12 +1679,7 @@ export function LoginScreen() {
         control={control}
         rules={authSchemas.login.email}
         render={({ field }) => (
-          <Input
-            {...field}
-            type="email"
-            placeholder="Email"
-            error={errors.email?.message}
-          />
+          <Input {...field} type="email" placeholder="Email" error={errors.email?.message} />
         )}
       />
 
@@ -1739,9 +1738,9 @@ export function LoginScreen() {
 export class ApiError extends Error {
   constructor(
     message: string,
-    public readonly status: number,      // HTTP status code (0 for network errors)
-    public readonly url: string,         // Request URL for debugging
-    public readonly payload: unknown,    // Raw response body
+    public readonly status: number, // HTTP status code (0 for network errors)
+    public readonly url: string, // Request URL for debugging
+    public readonly payload: unknown, // Raw response body
   ) {
     super(message)
     this.name = 'ApiError'
@@ -1962,13 +1961,25 @@ Any API call returns HTTP 401
 
 ```tsx
 // App.tsx — order matters!
-<Provider store={store}>           {/* 1. Redux first — everything can use state */}
-  <PersistGate persistor={persistor}> {/* 2. Wait for rehydration before rendering */}
-    <I18nProvider>                  {/* 3. Translations available everywhere below */}
-      <ThemeProvider>               {/* 4. Theme context for dark/light mode */}
-        <QueryClientProvider>       {/* 5. React Query cache */}
-          <AuthProvider>            {/* 6. Auth uses React Query (needs #5) */}
-            <RouterProvider />      {/* 7. Routes consume auth (needs #6) */}
+<Provider store={store}>
+  {' '}
+  {/* 1. Redux first — everything can use state */}
+  <PersistGate persistor={persistor}>
+    {' '}
+    {/* 2. Wait for rehydration before rendering */}
+    <I18nProvider>
+      {' '}
+      {/* 3. Translations available everywhere below */}
+      <ThemeProvider>
+        {' '}
+        {/* 4. Theme context for dark/light mode */}
+        <QueryClientProvider>
+          {' '}
+          {/* 5. React Query cache */}
+          <AuthProvider>
+            {' '}
+            {/* 6. Auth uses React Query (needs #5) */}
+            <RouterProvider /> {/* 7. Routes consume auth (needs #6) */}
             <Toaster />
           </AuthProvider>
         </QueryClientProvider>
@@ -2011,9 +2022,15 @@ interface TokenStorage {
   clearTokens(): void
 }
 
-class BrowserTokenStorage implements TokenStorage { /* localStorage */ }
-class NativeTokenStorage implements TokenStorage { /* MMKV */ }
-class InMemoryTokenStorage implements TokenStorage { /* Map for tests */ }
+class BrowserTokenStorage implements TokenStorage {
+  /* localStorage */
+}
+class NativeTokenStorage implements TokenStorage {
+  /* MMKV */
+}
+class InMemoryTokenStorage implements TokenStorage {
+  /* Map for tests */
+}
 
 // HttpClient accepts any TokenStorage — it doesn't know the implementation
 new HttpClient({ tokenStorage: new BrowserTokenStorage() })
@@ -2067,10 +2084,10 @@ export const queryClient = new QueryClient({ ... })
 
 ```tsx
 <PageHeader
-  title="Users"                                    // Data prop
-  description="Manage accounts"                    // Data prop
-  actions={<Button>Add User</Button>}              // Slot: caller decides content
-  breadcrumbs={[{ label: 'Home', href: '/' }]}     // Data prop
+  title="Users" // Data prop
+  description="Manage accounts" // Data prop
+  actions={<Button>Add User</Button>} // Slot: caller decides content
+  breadcrumbs={[{ label: 'Home', href: '/' }]} // Data prop
 />
 ```
 
@@ -2083,8 +2100,8 @@ export const queryClient = new QueryClient({ ... })
 ```tsx
 // One guard wraps all protected routes
 <Route path="/" Component={ProtectedLayout}>
-  <Route path="users" Component={UsersScreen} />     {/* Auto-protected */}
-  <Route path="content" Component={ContentScreen} />  {/* Auto-protected */}
+  <Route path="users" Component={UsersScreen} /> {/* Auto-protected */}
+  <Route path="content" Component={ContentScreen} /> {/* Auto-protected */}
 </Route>
 ```
 
@@ -2183,10 +2200,10 @@ function SearchScreen() {
   const [isPending, startTransition] = React.useTransition()
 
   const handleSearch = (value: string) => {
-    setQuery(value)  // Urgent: update input immediately
+    setQuery(value) // Urgent: update input immediately
 
     startTransition(() => {
-      dispatch(searchItems(value))  // Non-urgent: can be interrupted
+      dispatch(searchItems(value)) // Non-urgent: can be interrupted
     })
   }
 
@@ -2212,7 +2229,7 @@ function VirtualList({ items }: { items: Item[] }) {
   const virtualizer = useVirtualizer({
     count: items.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 48,  // Estimated row height
+    estimateSize: () => 48, // Estimated row height
   })
 
   return (
@@ -2245,9 +2262,9 @@ function VirtualList({ items }: { items: Item[] }) {
 const { data } = useQuery({
   queryKey: queryKeys.users.list(filters),
   queryFn: () => usersService.list(filters),
-  staleTime: 30_000,     // Data is "fresh" for 30s — no refetch
-  gcTime: 5 * 60_000,    // Keep unused data in cache for 5 min
-  placeholderData: keepPreviousData,  // Show old data while fetching new (pagination)
+  staleTime: 30_000, // Data is "fresh" for 30s — no refetch
+  gcTime: 5 * 60_000, // Keep unused data in cache for 5 min
+  placeholderData: keepPreviousData, // Show old data while fetching new (pagination)
 })
 ```
 
@@ -2280,10 +2297,11 @@ function UserRow({ user }: { user: AdminUser }) {
 // React Query automatically aborts stale requests via AbortSignal
 const { data } = useQuery({
   queryKey: ['search', debouncedQuery],
-  queryFn: ({ signal }) => apiClient.get('/search', {
-    query: { q: debouncedQuery },
-    signal,  // Pass to fetch — aborted when queryKey changes
-  }),
+  queryFn: ({ signal }) =>
+    apiClient.get('/search', {
+      query: { q: debouncedQuery },
+      signal, // Pass to fetch — aborted when queryKey changes
+    }),
 })
 ```
 
@@ -2364,11 +2382,11 @@ Every slice follows the same shape:
 
 ```ts
 interface FeatureState {
-  items: Item[]              // List data
-  selectedItem: Item | null  // Currently viewed/editing
-  isLoading: boolean         // Initial fetch
-  isSubmitting: boolean      // Create/update/delete
-  error: string | null       // Human-readable error
+  items: Item[] // List data
+  selectedItem: Item | null // Currently viewed/editing
+  isLoading: boolean // Initial fetch
+  isSubmitting: boolean // Create/update/delete
+  error: string | null // Human-readable error
 }
 ```
 
@@ -2441,12 +2459,12 @@ function DataTable<T extends { id: string | number }>({
 }
 
 // Usage — TypeScript catches column key typos at compile time:
-<DataTable<AdminUser>
+;<DataTable<AdminUser>
   data={users}
   columns={[
     { key: 'email', header: 'Email' },
     { key: 'firstName', header: 'Name' },
-    { key: 'typo', header: 'Oops' },  // ← TS error! 'typo' not in AdminUser
+    { key: 'typo', header: 'Oops' }, // ← TS error! 'typo' not in AdminUser
   ]}
 />
 ```
@@ -2498,7 +2516,9 @@ function useUserManagement() {
 // Screen becomes trivially simple:
 function UsersScreen() {
   const { users, isLoading, loadUsers, removeUser } = useUserManagement()
-  React.useEffect(() => { loadUsers() }, [loadUsers])
+  React.useEffect(() => {
+    loadUsers()
+  }, [loadUsers])
   // ... render
 }
 ```
@@ -2507,8 +2527,7 @@ function UsersScreen() {
 
 ```ts
 const mutation = useMutation({
-  mutationFn: (payload: UpdateUserRequest) =>
-    usersService.update(userId, payload),
+  mutationFn: (payload: UpdateUserRequest) => usersService.update(userId, payload),
 
   // Optimistic update — instant UI feedback
   onMutate: async (payload) => {
@@ -2605,14 +2624,16 @@ class ErrorBoundary extends React.Component<
 
   render() {
     if (this.state.hasError) {
-      return this.props.fallback || (
-        <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
-          <h2 className="text-lg font-semibold">Something went wrong</h2>
-          <p className="text-sm text-muted-foreground">{this.state.error?.message}</p>
-          <Button onClick={() => this.setState({ hasError: false, error: null })}>
-            Try again
-          </Button>
-        </div>
+      return (
+        this.props.fallback || (
+          <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
+            <h2 className="text-lg font-semibold">Something went wrong</h2>
+            <p className="text-sm text-muted-foreground">{this.state.error?.message}</p>
+            <Button onClick={() => this.setState({ hasError: false, error: null })}>
+              Try again
+            </Button>
+          </div>
+        )
       )
     }
 
@@ -2666,15 +2687,15 @@ When adding a new feature domain, follow these steps in order:
 
 ## Quick Reference Card
 
-| Need | Go To | Pattern |
-|------|-------|---------|
-| Add an API endpoint | `constants/api.ts` | `domain: { root: '/path', byId: (id) => ... }` |
-| Add an API call | `services/<domain>/` | `apiClient.get/post/patch/delete` |
-| Add client state | `store/slices/` | `createSlice` + `createAppAsyncThunk` |
-| Add a page | `screens/<Feature>/` | Lazy-loaded via `AppNavigator.tsx` |
-| Add a reusable component | `components/shared/` or `ui/` | Named export + props interface |
-| Add a form | Screen + `validations/` | `react-hook-form` + `Controller` + rules |
-| Add an auth check | `navigators/ProtectedLayout.tsx` | Guard pattern with `useAuth()` |
-| Add a theme token | `styles/theme.css` | CSS variable + `@theme inline` mapping |
-| Add a translation | `i18n/translate.ts` | Dictionary entry |
-| Debug an API error | `services/core/apiError.ts` | Check `error.status`, `error.url`, `error.payload` |
+| Need                     | Go To                            | Pattern                                            |
+| ------------------------ | -------------------------------- | -------------------------------------------------- |
+| Add an API endpoint      | `constants/api.ts`               | `domain: { root: '/path', byId: (id) => ... }`     |
+| Add an API call          | `services/<domain>/`             | `apiClient.get/post/patch/delete`                  |
+| Add client state         | `store/slices/`                  | `createSlice` + `createAppAsyncThunk`              |
+| Add a page               | `screens/<Feature>/`             | Lazy-loaded via `AppNavigator.tsx`                 |
+| Add a reusable component | `components/shared/` or `ui/`    | Named export + props interface                     |
+| Add a form               | Screen + `validations/`          | `react-hook-form` + `Controller` + rules           |
+| Add an auth check        | `navigators/ProtectedLayout.tsx` | Guard pattern with `useAuth()`                     |
+| Add a theme token        | `styles/theme.css`               | CSS variable + `@theme inline` mapping             |
+| Add a translation        | `i18n/translate.ts`              | Dictionary entry                                   |
+| Debug an API error       | `services/core/apiError.ts`      | Check `error.status`, `error.url`, `error.payload` |

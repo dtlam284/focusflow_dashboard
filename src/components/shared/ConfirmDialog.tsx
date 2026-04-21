@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react'
 
 import {
   AlertDialog,
@@ -9,27 +9,27 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "../ui/alert-dialog";
+} from '../ui/alert-dialog'
 
 type ConfirmDialogProps = {
-  open: boolean;
-  title: string;
-  description: string;
-  confirmLabel?: string;
-  cancelLabel?: string;
-  processingLabel?: string;
-  loading?: boolean;
-  onOpenChange: (open: boolean) => void;
-  onConfirm: () => void;
-};
+  open: boolean
+  title: string
+  description: string
+  confirmLabel?: string
+  cancelLabel?: string
+  processingLabel?: string
+  loading?: boolean
+  onOpenChange: (open: boolean) => void
+  onConfirm: () => void
+}
 
 export function ConfirmDialog({
   open,
   title,
   description,
-  confirmLabel = "Confirm",
-  cancelLabel = "Cancel",
-  processingLabel = "Processing...",
+  confirmLabel = 'Confirm',
+  cancelLabel = 'Cancel',
+  processingLabel = 'Processing...',
   loading = false,
   onOpenChange,
   onConfirm,
@@ -50,5 +50,5 @@ export function ConfirmDialog({
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-  );
+  )
 }

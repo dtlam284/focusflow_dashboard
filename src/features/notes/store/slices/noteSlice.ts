@@ -1,34 +1,34 @@
-import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 
-import type { INote, INoteFilters, INotesState } from "../../types/noteTypes";
+import type { INote, INoteFilters, INotesState } from '../../types/noteTypes'
 
 //#region state
 const initialState: INotesState = {
   items: [],
   filters: {
-    keyword: "",
+    keyword: '',
   },
-};
+}
 //#endregion state
 
 //#region payload types
 type UpdateNotePayload = {
-  id: string;
-  changes: Partial<Omit<INote, "id" | "createdAt">>;
-};
+  id: string
+  changes: Partial<Omit<INote, 'id' | 'createdAt'>>
+}
 //#endregion payload types
 
 //#region slice
 const noteSlice = createSlice({
-  name: "notes",
+  name: 'notes',
   initialState,
   reducers: {
     addNote(state, action: PayloadAction<INote>) {
-      state.items.unshift(action.payload);
+      state.items.unshift(action.payload)
     },
 
     updateNote(state, action: PayloadAction<UpdateNotePayload>) {
-      const { id, changes } = action.payload;
+      const { id, changes } = action.payload
 
       state.items = state.items.map((item) =>
         item.id === id
@@ -38,11 +38,11 @@ const noteSlice = createSlice({
               updatedAt: new Date().toISOString(),
             }
           : item,
-      );
+      )
     },
 
     deleteNote(state, action: PayloadAction<string>) {
-      state.items = state.items.filter((item) => item.id !== action.payload);
+      state.items = state.items.filter((item) => item.id !== action.payload)
     },
 
     togglePinNote(state, action: PayloadAction<string>) {
@@ -54,25 +54,25 @@ const noteSlice = createSlice({
               updatedAt: new Date().toISOString(),
             }
           : item,
-      );
+      )
     },
 
     setNoteFilters(state, action: PayloadAction<Partial<INoteFilters>>) {
       state.filters = {
         ...state.filters,
         ...action.payload,
-      };
+      }
     },
 
     resetNoteFilters(state) {
-      state.filters = initialState.filters;
+      state.filters = initialState.filters
     },
 
     hydrateNotes(state, action: PayloadAction<INote[]>) {
-      state.items = action.payload;
+      state.items = action.payload
     },
   },
-});
+})
 //#endregion slice
 
 //#region exports
@@ -84,7 +84,7 @@ export const {
   setNoteFilters,
   resetNoteFilters,
   hydrateNotes,
-} = noteSlice.actions;
+} = noteSlice.actions
 
-export default noteSlice.reducer;
+export default noteSlice.reducer
 //#endregion exports

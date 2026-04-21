@@ -1,8 +1,8 @@
 export function normalizeUrl(input: string): string {
-  const trimmed = input.trim();
+  const trimmed = input.trim()
 
-  if (!trimmed) return trimmed;
+  if (!trimmed) return trimmed
 
-  const hasProtocol = /^https?:\/\//i.test(trimmed);
-  return hasProtocol ? trimmed : `https://${trimmed}`;
+  const hasProtocol = /^https?:\/\//i.test(trimmed)
+  return hasProtocol ? trimmed : `https://${trimmed}`
 }

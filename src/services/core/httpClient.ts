@@ -30,8 +30,7 @@ export interface HttpClientOptions {
 
 const isAbsoluteUrl = (value: string): boolean => /^https?:\/\//i.test(value)
 
-const ensureLeadingSlash = (value: string): string =>
-  value.startsWith('/') ? value : `/${value}`
+const ensureLeadingSlash = (value: string): string => (value.startsWith('/') ? value : `/${value}`)
 
 const stripTrailingSlash = (value: string): string => value.replace(/\/+$/, '')
 
@@ -51,11 +50,7 @@ const normalizeQueryValue = (value: Exclude<QueryValue, ApiRecord>): string => {
   return String(value)
 }
 
-const appendQueryParam = (
-  searchParams: URLSearchParams,
-  key: string,
-  value: QueryValue,
-): void => {
+const appendQueryParam = (searchParams: URLSearchParams, key: string, value: QueryValue): void => {
   if (value === undefined || value === null) {
     return
   }
@@ -200,19 +195,34 @@ export class HttpClient {
     this.tokenStorage.clearTokens()
   }
 
-  async get<TResponse>(path: string, options: Omit<RequestOptions, 'body'> = {}): Promise<TResponse> {
+  async get<TResponse>(
+    path: string,
+    options: Omit<RequestOptions, 'body'> = {},
+  ): Promise<TResponse> {
     return this.request<TResponse>('GET', path, options)
   }
 
-  async post<TResponse>(path: string, body?: unknown, options: Omit<RequestOptions, 'body'> = {}): Promise<TResponse> {
+  async post<TResponse>(
+    path: string,
+    body?: unknown,
+    options: Omit<RequestOptions, 'body'> = {},
+  ): Promise<TResponse> {
     return this.request<TResponse>('POST', path, { ...options, body })
   }
 
-  async patch<TResponse>(path: string, body?: unknown, options: Omit<RequestOptions, 'body'> = {}): Promise<TResponse> {
+  async patch<TResponse>(
+    path: string,
+    body?: unknown,
+    options: Omit<RequestOptions, 'body'> = {},
+  ): Promise<TResponse> {
     return this.request<TResponse>('PATCH', path, { ...options, body })
   }
 
-  async put<TResponse>(path: string, body?: unknown, options: Omit<RequestOptions, 'body'> = {}): Promise<TResponse> {
+  async put<TResponse>(
+    path: string,
+    body?: unknown,
+    options: Omit<RequestOptions, 'body'> = {},
+  ): Promise<TResponse> {
     return this.request<TResponse>('PUT', path, { ...options, body })
   }
 
@@ -259,7 +269,12 @@ export class HttpClient {
         signal,
       })
 
-      if (response.status === 401 && requiresAuth && retryOnUnauthorized && path !== this.refreshPath) {
+      if (
+        response.status === 401 &&
+        requiresAuth &&
+        retryOnUnauthorized &&
+        path !== this.refreshPath
+      ) {
         const refreshedToken = await this.tryRefreshToken()
 
         if (refreshedToken) {

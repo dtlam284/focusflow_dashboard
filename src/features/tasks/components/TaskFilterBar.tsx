@@ -1,21 +1,27 @@
-import * as React from "react";
-import { Search, RotateCcw } from "lucide-react";
+import * as React from 'react'
+import { Search, RotateCcw } from 'lucide-react'
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from "@/components/ui/select";
-import { useI18n } from "@/contexts/I18nContext";
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { useI18n } from '@/contexts/I18nContext'
 
-import type { ITaskFilters } from "../types/taskTypes";
+import type { ITaskFilters } from '../types/taskTypes'
 
 //#region props
 export interface ITaskFilterBarProps {
-  filters: ITaskFilters;
-  visibleCount?: number;
-  onStatusChange: (status: ITaskFilters["status"]) => void;
-  onPriorityChange: (priority: ITaskFilters["priority"]) => void;
-  onKeywordChange: (keyword: string) => void;
-  onReset: () => void;
+  filters: ITaskFilters
+  visibleCount?: number
+  onStatusChange: (status: ITaskFilters['status']) => void
+  onPriorityChange: (priority: ITaskFilters['priority']) => void
+  onKeywordChange: (keyword: string) => void
+  onReset: () => void
 }
 //#endregion props
 
@@ -29,14 +35,12 @@ export function TaskFilterBar({
   onReset,
 }: ITaskFilterBarProps) {
   //#region hooks
-  const { t } = useI18n();
+  const { t } = useI18n()
   //#endregion hooks
 
   //#region derived values
   const hasActiveFilters =
-    filters.status !== "all" ||
-    filters.priority !== "all" ||
-    filters.keyword.trim().length > 0;
+    filters.status !== 'all' || filters.priority !== 'all' || filters.keyword.trim().length > 0
   //#endregion derived values
 
   //#region render
@@ -45,23 +49,18 @@ export function TaskFilterBar({
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-            {t("Task filters")}
+            {t('Task filters')}
           </h2>
           <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-            {typeof visibleCount === "number"
-              ? t("Showing {count} tasks", { count: visibleCount })
-              : t("Refine the task list by status, priority, or keyword.")}
+            {typeof visibleCount === 'number'
+              ? t('Showing {count} tasks', { count: visibleCount })
+              : t('Refine the task list by status, priority, or keyword.')}
           </p>
         </div>
 
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={onReset}
-          disabled={!hasActiveFilters}
-        >
+        <Button variant="outline" size="sm" onClick={onReset} disabled={!hasActiveFilters}>
           <RotateCcw className="h-4 w-4" />
-          {t("Reset filters")}
+          {t('Reset filters')}
         </Button>
       </div>
 
@@ -71,8 +70,8 @@ export function TaskFilterBar({
           <Input
             value={filters.keyword}
             onChange={(event) => onKeywordChange(event.target.value)}
-            placeholder={t("Search tasks...")}
-            aria-label={t("Search tasks")}
+            placeholder={t('Search tasks...')}
+            aria-label={t('Search tasks')}
             data-skip-auto-label="true"
             className="pl-9"
           />
@@ -80,7 +79,7 @@ export function TaskFilterBar({
 
         <Select
           value={filters.status}
-          onValueChange={(value) => onStatusChange(value as ITaskFilters["status"])}
+          onValueChange={(value) => onStatusChange(value as ITaskFilters['status'])}
         >
           <SelectTrigger>
             <SelectValue placeholder="All statuses" />
@@ -95,7 +94,7 @@ export function TaskFilterBar({
 
         <Select
           value={filters.priority}
-          onValueChange={(value) => onPriorityChange(value as ITaskFilters["priority"])}
+          onValueChange={(value) => onPriorityChange(value as ITaskFilters['priority'])}
         >
           <SelectTrigger>
             <SelectValue placeholder="All priorities" />
@@ -109,7 +108,7 @@ export function TaskFilterBar({
         </Select>
       </div>
     </div>
-  );
+  )
   //#endregion render
 }
 //#endregion component

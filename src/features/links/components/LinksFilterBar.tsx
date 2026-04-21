@@ -1,15 +1,15 @@
-import { LINK_CATEGORY_OPTIONS, type ILinkFilters } from "@/features/links/types/linkTypes";
+import { LINK_CATEGORY_OPTIONS, type ILinkFilters } from '@/features/links/types/linkTypes'
 
 //#region types
 type LinksFilterBarProps = {
-  keyword: string;
-  category: ILinkFilters["category"];
-  totalCount: number;
-  filteredCount: number;
-  onKeywordChange: (value: string) => void;
-  onCategoryChange: (value: ILinkFilters["category"]) => void;
-  onReset: () => void;
-};
+  keyword: string
+  category: ILinkFilters['category']
+  totalCount: number
+  filteredCount: number
+  onKeywordChange: (value: string) => void
+  onCategoryChange: (value: ILinkFilters['category']) => void
+  onReset: () => void
+}
 //#endregion types
 
 //#region component
@@ -22,9 +22,8 @@ export function LinksFilterBar({
   onCategoryChange,
   onReset,
 }: LinksFilterBarProps) {
-
   //#region variables
-  const isFiltered = keyword.trim().length > 0 || category !== "all";
+  const isFiltered = keyword.trim().length > 0 || category !== 'all'
   //#endregion variables
 
   //#region render
@@ -53,9 +52,7 @@ export function LinksFilterBar({
             <select
               id="links-category"
               value={category}
-              onChange={(event) =>
-                onCategoryChange(event.target.value as ILinkFilters["category"])
-              }
+              onChange={(event) => onCategoryChange(event.target.value as ILinkFilters['category'])}
               className="w-full rounded-xl border bg-background px-3 py-2 text-sm outline-none transition focus:border-primary"
             >
               <option value="all">All categories</option>
@@ -71,7 +68,7 @@ export function LinksFilterBar({
         <div className="flex items-center gap-3">
           <div className="text-sm text-muted-foreground">
             Showing <span className="font-medium text-foreground">{filteredCount}</span>
-            {" / "}
+            {' / '}
             <span className="font-medium text-foreground">{totalCount}</span>
           </div>
 
@@ -86,13 +83,13 @@ export function LinksFilterBar({
         </div>
       </div>
     </div>
-  );
+  )
   //#endregion render
 }
 //#endregion component
 
 //#region utils
 function formatCategoryLabel(category: string) {
-  return category.charAt(0).toUpperCase() + category.slice(1);
+  return category.charAt(0).toUpperCase() + category.slice(1)
 }
 //#endregion utils

@@ -1,1 +1,1 @@
-export * from "./linkTypes";
+export * from './linkTypes'

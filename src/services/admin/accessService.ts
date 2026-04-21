@@ -22,22 +22,13 @@ import type {
 } from '@/models/authentication'
 
 type QueryParamPrimitive = string | number | boolean
-type SerializedQueryParams = Record<
-  string,
-  QueryParamPrimitive | QueryParamPrimitive[]
->
+type SerializedQueryParams = Record<string, QueryParamPrimitive | QueryParamPrimitive[]>
 
 function isQueryParamPrimitive(value: unknown): value is QueryParamPrimitive {
-  return (
-    typeof value === 'string' ||
-    typeof value === 'number' ||
-    typeof value === 'boolean'
-  )
+  return typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean'
 }
 
-function toQueryParams<T extends object>(
-  input?: T,
-): SerializedQueryParams | undefined {
+function toQueryParams<T extends object>(input?: T): SerializedQueryParams | undefined {
   if (!input) return undefined
 
   const params: SerializedQueryParams = {}
@@ -59,10 +50,7 @@ function toQueryParams<T extends object>(
 
       const primitiveItems = value.filter(isQueryParamPrimitive)
 
-      params[key] =
-        primitiveItems.length === value.length
-          ? primitiveItems
-          : JSON.stringify(value)
+      params[key] = primitiveItems.length === value.length ? primitiveItems : JSON.stringify(value)
 
       continue
     }
@@ -181,9 +169,7 @@ export const usersService = {
         ? [{ id: normalizedRoleId }, ...inheritedRoles]
         : inheritedRoles
 
-    const dedupedRoles = Array.from(
-      new Map(roleFilters.map((item) => [item.id, item])).values(),
-    )
+    const dedupedRoles = Array.from(new Map(roleFilters.map((item) => [item.id, item])).values())
 
     const normalizedQuery = {
       page: query?.page,
@@ -197,24 +183,18 @@ export const usersService = {
       sort: query?.sort,
       search: query?.search?.trim() || undefined,
       role:
-        typeof normalizedRoleId === 'number' &&
-        Number.isFinite(normalizedRoleId)
+        typeof normalizedRoleId === 'number' && Number.isFinite(normalizedRoleId)
           ? normalizedRoleId
           : undefined,
       status:
-        query?.status !== undefined &&
-        query.status !== null &&
-        query.status !== ''
+        query?.status !== undefined && query.status !== null && query.status !== ''
           ? String(query.status)
           : undefined,
     }
 
-    return apiClient.get<PaginatedResponse<AdminUser>>(
-      API_ENDPOINTS.users.root,
-      {
-        query: toQueryParams(normalizedQuery),
-      },
-    )
+    return apiClient.get<PaginatedResponse<AdminUser>>(API_ENDPOINTS.users.root, {
+      query: toQueryParams(normalizedQuery),
+    })
   },
 
   async listAll(
@@ -243,9 +223,7 @@ export const usersService = {
 
       users.push(...(response.data ?? []))
 
-      totalPages =
-        response.totalPages ||
-        Math.max(1, Math.ceil((response.total ?? 0) / pageSize))
+      totalPages = response.totalPages || Math.max(1, Math.ceil((response.total ?? 0) / pageSize))
 
       page += 1
     }
@@ -254,24 +232,15 @@ export const usersService = {
   },
 
   create(payload: CreateUserRequest): Promise<DataResponse<AdminUser>> {
-    return apiClient.post<DataResponse<AdminUser>>(
-      API_ENDPOINTS.users.root,
-      payload,
-    )
+    return apiClient.post<DataResponse<AdminUser>>(API_ENDPOINTS.users.root, payload)
   },
 
   getById(id: EntityId): Promise<DataResponse<AdminUser>> {
     return apiClient.get<DataResponse<AdminUser>>(API_ENDPOINTS.users.byId(id))
   },
 
-  update(
-    id: EntityId,
-    payload: UpdateUserRequest,
-  ): Promise<DataResponse<AdminUser>> {
-    return apiClient.patch<DataResponse<AdminUser>>(
-      API_ENDPOINTS.users.byId(id),
-      payload,
-    )
+  update(id: EntityId, payload: UpdateUserRequest): Promise<DataResponse<AdminUser>> {
+    return apiClient.patch<DataResponse<AdminUser>>(API_ENDPOINTS.users.byId(id), payload)
   },
 
   remove(id: EntityId): Promise<void> {
@@ -281,18 +250,11 @@ export const usersService = {
 
 export const permissionsService = {
   list(): Promise<DataResponse<PermissionItem[]>> {
-    return apiClient.get<DataResponse<PermissionItem[]>>(
-      API_ENDPOINTS.permissions.root,
-    )
+    return apiClient.get<DataResponse<PermissionItem[]>>(API_ENDPOINTS.permissions.root)
   },
 
-  create(
-    payload: CreatePermissionRequest,
-  ): Promise<DataResponse<PermissionItem>> {
-    return apiClient.post<DataResponse<PermissionItem>>(
-      API_ENDPOINTS.permissions.root,
-      payload,
-    )
+  create(payload: CreatePermissionRequest): Promise<DataResponse<PermissionItem>> {
+    return apiClient.post<DataResponse<PermissionItem>>(API_ENDPOINTS.permissions.root, payload)
   },
 
   remove(id: EntityId): Promise<void> {
@@ -302,20 +264,14 @@ export const permissionsService = {
 
 export const loginAuditService = {
   list(query?: LoginAuditFilters): Promise<PaginatedResponse<LoginAuditItem>> {
-    return apiClient.get<PaginatedResponse<LoginAuditItem>>(
-      API_ENDPOINTS.loginAudit.root,
-      {
-        query: toQueryParams(query),
-      },
-    )
+    return apiClient.get<PaginatedResponse<LoginAuditItem>>(API_ENDPOINTS.loginAudit.root, {
+      query: toQueryParams(query),
+    })
   },
 
   getStats(query?: LoginAuditFilters): Promise<DataResponse<LoginAuditStats>> {
-    return apiClient.get<DataResponse<LoginAuditStats>>(
-      API_ENDPOINTS.loginAudit.stats,
-      {
-        query: toQueryParams(query),
-      },
-    )
+    return apiClient.get<DataResponse<LoginAuditStats>>(API_ENDPOINTS.loginAudit.stats, {
+      query: toQueryParams(query),
+    })
   },
 }

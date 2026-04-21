@@ -1,30 +1,30 @@
-import { Button } from "@/components/ui/button";
-import { useAuth } from "@/contexts/AuthContext";
-import { ShieldAlert } from "lucide-react";
-import React from "react";
-import { useNavigate, useSearchParams } from "react-router";
+import { Button } from '@/components/ui/button'
+import { useAuth } from '@/contexts/AuthContext'
+import { ShieldAlert } from 'lucide-react'
+import React from 'react'
+import { useNavigate, useSearchParams } from 'react-router'
 
 export function SessionRequiredScreen() {
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const { refreshProfile } = useAuth();
-  const [isChecking, setIsChecking] = React.useState(false);
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const { refreshProfile } = useAuth()
+  const [isChecking, setIsChecking] = React.useState(false)
 
-  const redirect = searchParams.get("redirect") || "/";
-  const reason = searchParams.get("reason");
+  const redirect = searchParams.get('redirect') || '/'
+  const reason = searchParams.get('reason')
 
   const handleRetry = async () => {
-    setIsChecking(true);
+    setIsChecking(true)
 
     try {
-      const user = await refreshProfile();
+      const user = await refreshProfile()
       if (user) {
-        navigate(redirect, { replace: true });
+        navigate(redirect, { replace: true })
       }
     } finally {
-      setIsChecking(false);
+      setIsChecking(false)
     }
-  };
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4">
@@ -34,28 +34,22 @@ export function SessionRequiredScreen() {
         </div>
 
         <h1 className="text-xl font-semibold text-slate-900">
-          {reason === "forbidden" ? "Access denied" : "Session required"}
+          {reason === 'forbidden' ? 'Access denied' : 'Session required'}
         </h1>
         <p className="mt-2 text-sm text-slate-600">
-          {reason === "forbidden"
-            ? "Your account does not have admin access to this dashboard."
-            : "You need a valid admin session before using this dashboard."}
+          {reason === 'forbidden'
+            ? 'Your account does not have admin access to this dashboard.'
+            : 'You need a valid admin session before using this dashboard.'}
         </p>
 
         <div className="mt-6 flex items-center justify-center gap-3 flex-wrap">
-          <Button
-            onClick={handleRetry}
-            disabled={isChecking}
-            className="min-w-40"
-          >
-            {isChecking ? "Checking..." : "Retry session check"}
+          <Button onClick={handleRetry} disabled={isChecking} className="min-w-40">
+            {isChecking ? 'Checking...' : 'Retry session check'}
           </Button>
-          {reason !== "forbidden" ? (
+          {reason !== 'forbidden' ? (
             <Button
               variant="outline"
-              onClick={() =>
-                navigate(`/auth/login?redirect=${encodeURIComponent(redirect)}`)
-              }
+              onClick={() => navigate(`/auth/login?redirect=${encodeURIComponent(redirect)}`)}
             >
               Go To Login
             </Button>
@@ -63,5 +57,5 @@ export function SessionRequiredScreen() {
         </div>
       </div>
     </div>
-  );
+  )
 }

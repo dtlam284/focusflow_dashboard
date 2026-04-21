@@ -1,30 +1,27 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useEffect } from 'react'
+import { useForm } from 'react-hook-form'
 
 import {
   linkFormDefaultValues,
   linkFormSchema,
   type LinkFormValues,
-} from "@/features/links/schemas/linkSchema";
-import {
-  LINK_CATEGORY_OPTIONS,
-  type ICreateLinkFormValues,
-} from "@/features/links/types/linkTypes";
+} from '@/features/links/schemas/linkSchema'
+import { LINK_CATEGORY_OPTIONS, type ICreateLinkFormValues } from '@/features/links/types/linkTypes'
 
 //#region types
 type LinkFormProps = {
-  mode?: "create" | "edit";
-  initialValues?: Partial<ICreateLinkFormValues>;
-  submitLabel?: string;
-  onSubmit: (values: LinkFormValues) => void | Promise<void>;
-  onCancel?: () => void;
-};
+  mode?: 'create' | 'edit'
+  initialValues?: Partial<ICreateLinkFormValues>
+  submitLabel?: string
+  onSubmit: (values: LinkFormValues) => void | Promise<void>
+  onCancel?: () => void
+}
 //#endregion types
 
 //#region component
 export function LinkForm({
-  mode = "create",
+  mode = 'create',
   initialValues,
   submitLabel,
   onSubmit,
@@ -42,7 +39,7 @@ export function LinkForm({
       ...linkFormDefaultValues,
       ...initialValues,
     },
-  });
+  })
   //#endregion form setup
 
   //#region effects
@@ -50,26 +47,24 @@ export function LinkForm({
     reset({
       ...linkFormDefaultValues,
       ...initialValues,
-    });
-  }, [initialValues, reset]);
+    })
+  }, [initialValues, reset])
   //#endregion effects
 
   //#region handlers
   const handleFormSubmit = async (values: LinkFormValues) => {
-    await onSubmit(values);
-    if (mode === "create") {
-        reset(linkFormDefaultValues);
+    await onSubmit(values)
+    if (mode === 'create') {
+      reset(linkFormDefaultValues)
     }
-  };
+  }
   //#endregion handlers
 
   //#region render
   return (
     <div className="rounded-2xl border bg-card p-5 shadow-sm">
       <div className="mb-4 space-y-1">
-        <h2 className="text-lg font-semibold">
-          {mode === "create" ? "Add link" : "Edit link"}
-        </h2>
+        <h2 className="text-lg font-semibold">{mode === 'create' ? 'Add link' : 'Edit link'}</h2>
         <p className="text-sm text-muted-foreground">
           Save a useful resource with a valid URL and clear category.
         </p>
@@ -85,11 +80,9 @@ export function LinkForm({
             type="text"
             placeholder="e.g. React docs"
             className="w-full rounded-xl border bg-background px-3 py-2 text-sm outline-none transition focus:border-primary"
-            {...register("title")}
+            {...register('title')}
           />
-          {errors.title ? (
-            <p className="text-sm text-destructive">{errors.title.message}</p>
-          ) : null}
+          {errors.title ? <p className="text-sm text-destructive">{errors.title.message}</p> : null}
         </div>
 
         <div className="space-y-2">
@@ -102,11 +95,9 @@ export function LinkForm({
             inputMode="url"
             placeholder="e.g. react.dev or https://react.dev"
             className="w-full rounded-xl border bg-background px-3 py-2 text-sm outline-none transition focus:border-primary"
-            {...register("url")}
+            {...register('url')}
           />
-          {errors.url ? (
-            <p className="text-sm text-destructive">{errors.url.message}</p>
-          ) : null}
+          {errors.url ? <p className="text-sm text-destructive">{errors.url.message}</p> : null}
         </div>
 
         <div className="space-y-2">
@@ -116,7 +107,7 @@ export function LinkForm({
           <select
             id="link-category"
             className="w-full rounded-xl border bg-background px-3 py-2 text-sm outline-none transition focus:border-primary"
-            {...register("category")}
+            {...register('category')}
           >
             {LINK_CATEGORY_OPTIONS.map((category) => (
               <option key={category} value={category}>
@@ -125,9 +116,7 @@ export function LinkForm({
             ))}
           </select>
           {errors.category ? (
-            <p className="text-sm text-destructive">
-              {errors.category.message}
-            </p>
+            <p className="text-sm text-destructive">{errors.category.message}</p>
           ) : null}
         </div>
 
@@ -138,13 +127,13 @@ export function LinkForm({
             className="inline-flex h-10 items-center justify-center rounded-xl bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:opacity-90 disabled:pointer-events-none disabled:opacity-60"
           >
             {isSubmitting
-              ? mode === "create"
-                ? "Adding..."
-                : "Saving..."
-              : submitLabel ?? (mode === "create" ? "Add link" : "Save changes")}
+              ? mode === 'create'
+                ? 'Adding...'
+                : 'Saving...'
+              : (submitLabel ?? (mode === 'create' ? 'Add link' : 'Save changes'))}
           </button>
 
-          {mode === "edit" && onCancel ? (
+          {mode === 'edit' && onCancel ? (
             <button
               type="button"
               onClick={onCancel}
@@ -156,13 +145,13 @@ export function LinkForm({
         </div>
       </form>
     </div>
-  );
+  )
   //#endregion render
 }
 //#endregion component
 
 //#region utils
 function formatCategoryLabel(category: string) {
-  return category.charAt(0).toUpperCase() + category.slice(1);
+  return category.charAt(0).toUpperCase() + category.slice(1)
 }
 //#endregion utils

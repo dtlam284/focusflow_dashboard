@@ -1,15 +1,15 @@
-import React from "react"
-import { ChevronRight, Home } from "lucide-react"
+import React from 'react'
+import { ChevronRight, Home } from 'lucide-react'
 
-import { cn } from "@/utils"
-import { useI18n } from "@/contexts/I18nContext"
+import { cn } from '@/utils'
+import { useI18n } from '@/contexts/I18nContext'
 
 export interface PageHeaderProps {
-  title: string;
-  description?: string;
-  breadcrumbs?: { label: string; href?: string }[];
-  actions?: React.ReactNode;
-  className?: string;
+  title: string
+  description?: string
+  breadcrumbs?: { label: string; href?: string }[]
+  actions?: React.ReactNode
+  className?: string
 }
 
 export function PageHeader({
@@ -19,26 +19,26 @@ export function PageHeader({
   actions,
   className,
 }: PageHeaderProps) {
-  const { t } = useI18n();
+  const { t } = useI18n()
 
   return (
     <header
       className={cn(
-        "mb-4 flex flex-col gap-4 md:flex-row md:items-start md:justify-between",
+        'mb-4 flex flex-col gap-4 md:flex-row md:items-start md:justify-between',
         className,
       )}
     >
       <div className="min-w-0 space-y-2">
         {breadcrumbs.length > 0 ? (
           <nav
-            aria-label={t("Breadcrumb")}
+            aria-label={t('Breadcrumb')}
             className="flex flex-wrap items-center text-xs font-medium text-slate-500 dark:text-slate-400"
           >
             <a
               href="/"
               className="flex items-center gap-1 transition-colors hover:text-slate-900 dark:hover:text-slate-200"
-              aria-label={t("Dashboard")}
-              title={t("Dashboard")}
+              aria-label={t('Dashboard')}
+              title={t('Dashboard')}
             >
               <Home className="h-3.5 w-3.5" />
             </a>
@@ -69,9 +69,7 @@ export function PageHeader({
           </h1>
 
           {description ? (
-            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-              {t(description)}
-            </p>
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{t(description)}</p>
           ) : null}
         </div>
       </div>
@@ -82,5 +80,5 @@ export function PageHeader({
         </div>
       ) : null}
     </header>
-  );
+  )
 }

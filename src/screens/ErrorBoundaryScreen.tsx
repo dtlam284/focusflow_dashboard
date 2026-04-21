@@ -1,12 +1,12 @@
-import { useNavigate, useRouteError } from "react-router"
-import { Button } from "../components/ui/button"
+import { useNavigate, useRouteError } from 'react-router'
+import { Button } from '../components/ui/button'
 
 const toErrorMessage = (error: unknown): string => {
   if (!error) {
-    return "Unexpected error"
+    return 'Unexpected error'
   }
 
-  if (typeof error === "string") {
+  if (typeof error === 'string') {
     return error
   }
 
@@ -14,14 +14,14 @@ const toErrorMessage = (error: unknown): string => {
     return error.message
   }
 
-  if (typeof error === "object" && "statusText" in error) {
-    const statusText = String((error as { statusText?: unknown }).statusText ?? "")
+  if (typeof error === 'object' && 'statusText' in error) {
+    const statusText = String((error as { statusText?: unknown }).statusText ?? '')
     if (statusText.trim()) {
       return statusText
     }
   }
 
-  return "Unexpected error"
+  return 'Unexpected error'
 }
 
 export function ErrorBoundaryScreen() {
@@ -36,7 +36,7 @@ export function ErrorBoundaryScreen() {
         <p className="text-sm text-slate-600">{message}</p>
         <div className="flex flex-wrap items-center gap-2">
           <Button onClick={() => navigate(0)}>Reload</Button>
-          <Button variant="outline" onClick={() => navigate("/", { replace: true })}>
+          <Button variant="outline" onClick={() => navigate('/', { replace: true })}>
             Back to dashboard
           </Button>
         </div>

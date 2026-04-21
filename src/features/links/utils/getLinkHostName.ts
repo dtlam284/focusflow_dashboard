@@ -1,7 +1,7 @@
 export function getLinkHostname(url: string): string {
   try {
-    return new URL(url).hostname.replace(/^www\./, "");
+    return new URL(url).hostname.replace(/^www\./, '')
   } catch {
-    return "";
+    return ''
   }
 }

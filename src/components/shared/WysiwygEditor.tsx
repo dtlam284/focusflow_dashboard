@@ -1,4 +1,4 @@
-import React from "react"
+import React from 'react'
 import {
   Bold,
   Italic,
@@ -10,10 +10,10 @@ import {
   RemoveFormatting,
   Heading2,
   Pilcrow,
-} from "lucide-react"
+} from 'lucide-react'
 
-import { cn } from "@/utils"
-import { useI18n } from "@/contexts/I18nContext"
+import { cn } from '@/utils'
+import { useI18n } from '@/contexts/I18nContext'
 
 type WysiwygEditorProps = {
   value: string
@@ -26,23 +26,26 @@ type WysiwygEditorProps = {
 
 const toPlainText = (html: string): string => {
   if (!html.trim()) {
-    return ""
+    return ''
   }
 
-  if (typeof window === "undefined") {
-    return html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()
+  if (typeof window === 'undefined') {
+    return html
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
   }
 
-  const container = document.createElement("div")
+  const container = document.createElement('div')
   container.innerHTML = html
-  return (container.textContent || "").replace(/\u00A0/g, " ").trim()
+  return (container.textContent || '').replace(/\u00A0/g, ' ').trim()
 }
 
 export function WysiwygEditor({
   value,
   onChange,
-  placeholder = "Write content...",
-  minHeightClassName = "min-h-[220px]",
+  placeholder = 'Write content...',
+  minHeightClassName = 'min-h-[220px]',
   disabled = false,
   className,
 }: WysiwygEditorProps) {
@@ -56,7 +59,7 @@ export function WysiwygEditor({
     }
 
     if (editor.innerHTML !== value) {
-      editor.innerHTML = value || ""
+      editor.innerHTML = value || ''
     }
   }, [value])
 
@@ -89,18 +92,18 @@ export function WysiwygEditor({
   const hasContent = toPlainText(value).length > 0
 
   const toolbarButtonClassName =
-    "inline-flex h-8 w-8 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+    'inline-flex h-8 w-8 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50'
 
   return (
-    <div className={cn("space-y-2", className)}>
+    <div className={cn('space-y-2', className)}>
       <div className="flex flex-wrap items-center gap-2 rounded-md border border-slate-200 bg-slate-50 p-2">
         <button
           type="button"
           className={toolbarButtonClassName}
           disabled={disabled}
           onMouseDown={(event) => event.preventDefault()}
-          onClick={() => executeCommand("formatBlock", "H2")}
-          title={t("Heading")}
+          onClick={() => executeCommand('formatBlock', 'H2')}
+          title={t('Heading')}
         >
           <Heading2 className="h-4 w-4" />
         </button>
@@ -109,8 +112,8 @@ export function WysiwygEditor({
           className={toolbarButtonClassName}
           disabled={disabled}
           onMouseDown={(event) => event.preventDefault()}
-          onClick={() => executeCommand("formatBlock", "P")}
-          title={t("Paragraph")}
+          onClick={() => executeCommand('formatBlock', 'P')}
+          title={t('Paragraph')}
         >
           <Pilcrow className="h-4 w-4" />
         </button>
@@ -119,8 +122,8 @@ export function WysiwygEditor({
           className={toolbarButtonClassName}
           disabled={disabled}
           onMouseDown={(event) => event.preventDefault()}
-          onClick={() => executeCommand("bold")}
-          title={t("Bold")}
+          onClick={() => executeCommand('bold')}
+          title={t('Bold')}
         >
           <Bold className="h-4 w-4" />
         </button>
@@ -129,8 +132,8 @@ export function WysiwygEditor({
           className={toolbarButtonClassName}
           disabled={disabled}
           onMouseDown={(event) => event.preventDefault()}
-          onClick={() => executeCommand("italic")}
-          title={t("Italic")}
+          onClick={() => executeCommand('italic')}
+          title={t('Italic')}
         >
           <Italic className="h-4 w-4" />
         </button>
@@ -139,8 +142,8 @@ export function WysiwygEditor({
           className={toolbarButtonClassName}
           disabled={disabled}
           onMouseDown={(event) => event.preventDefault()}
-          onClick={() => executeCommand("underline")}
-          title={t("Underline")}
+          onClick={() => executeCommand('underline')}
+          title={t('Underline')}
         >
           <Underline className="h-4 w-4" />
         </button>
@@ -149,8 +152,8 @@ export function WysiwygEditor({
           className={toolbarButtonClassName}
           disabled={disabled}
           onMouseDown={(event) => event.preventDefault()}
-          onClick={() => executeCommand("insertUnorderedList")}
-          title={t("Bullet list")}
+          onClick={() => executeCommand('insertUnorderedList')}
+          title={t('Bullet list')}
         >
           <List className="h-4 w-4" />
         </button>
@@ -159,8 +162,8 @@ export function WysiwygEditor({
           className={toolbarButtonClassName}
           disabled={disabled}
           onMouseDown={(event) => event.preventDefault()}
-          onClick={() => executeCommand("insertOrderedList")}
-          title={t("Numbered list")}
+          onClick={() => executeCommand('insertOrderedList')}
+          title={t('Numbered list')}
         >
           <ListOrdered className="h-4 w-4" />
         </button>
@@ -169,8 +172,8 @@ export function WysiwygEditor({
           className={toolbarButtonClassName}
           disabled={disabled}
           onMouseDown={(event) => event.preventDefault()}
-          onClick={() => executeCommand("formatBlock", "BLOCKQUOTE")}
-          title={t("Quote")}
+          onClick={() => executeCommand('formatBlock', 'BLOCKQUOTE')}
+          title={t('Quote')}
         >
           <Quote className="h-4 w-4" />
         </button>
@@ -180,14 +183,14 @@ export function WysiwygEditor({
           disabled={disabled}
           onMouseDown={(event) => event.preventDefault()}
           onClick={() => {
-            const url = window.prompt(t("Enter URL"), "https://")
+            const url = window.prompt(t('Enter URL'), 'https://')
             if (!url) {
               return
             }
 
-            executeCommand("createLink", url.trim())
+            executeCommand('createLink', url.trim())
           }}
-          title={t("Insert link")}
+          title={t('Insert link')}
         >
           <Link2 className="h-4 w-4" />
         </button>
@@ -196,8 +199,8 @@ export function WysiwygEditor({
           className={toolbarButtonClassName}
           disabled={disabled}
           onMouseDown={(event) => event.preventDefault()}
-          onClick={() => executeCommand("removeFormat")}
-          title={t("Clear formatting")}
+          onClick={() => executeCommand('removeFormat')}
+          title={t('Clear formatting')}
         >
           <RemoveFormatting className="h-4 w-4" />
         </button>
@@ -216,9 +219,9 @@ export function WysiwygEditor({
           suppressContentEditableWarning
           onInput={emitValue}
           className={cn(
-            "w-full rounded-md border border-slate-200 bg-white p-3 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200",
+            'w-full rounded-md border border-slate-200 bg-white p-3 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200',
             minHeightClassName,
-            disabled ? "cursor-not-allowed bg-slate-100 text-slate-500" : "",
+            disabled ? 'cursor-not-allowed bg-slate-100 text-slate-500' : '',
           )}
         />
       </div>

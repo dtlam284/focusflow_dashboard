@@ -1,27 +1,21 @@
-import React from "react";
-import { Inbox } from "lucide-react";
+import React from 'react'
+import { Inbox } from 'lucide-react'
 
-import { cn } from "@/utils";
+import { cn } from '@/utils'
 
 export interface EmptyStateProps {
-  title: string;
-  description?: string;
-  icon?: React.ReactNode;
-  action?: React.ReactNode;
-  className?: string;
+  title: string
+  description?: string
+  icon?: React.ReactNode
+  action?: React.ReactNode
+  className?: string
 }
 
-export function EmptyState({
-  title,
-  description,
-  icon,
-  action,
-  className,
-}: EmptyStateProps) {
+export function EmptyState({ title, description, icon, action, className }: EmptyStateProps) {
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-50/80 px-6 py-10 text-center dark:border-slate-800 dark:bg-slate-900/40",
+        'flex flex-col items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-50/80 px-6 py-10 text-center dark:border-slate-800 dark:bg-slate-900/40',
         className,
       )}
     >
@@ -29,17 +23,13 @@ export function EmptyState({
         {icon ?? <Inbox className="h-6 w-6" />}
       </div>
 
-      <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-        {title}
-      </h3>
+      <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{title}</h3>
 
       {description ? (
-        <p className="mt-1 max-w-md text-sm text-slate-500 dark:text-slate-400">
-          {description}
-        </p>
+        <p className="mt-1 max-w-md text-sm text-slate-500 dark:text-slate-400">{description}</p>
       ) : null}
 
       {action ? <div className="mt-4 flex items-center gap-2">{action}</div> : null}
     </div>
-  );
+  )
 }

@@ -17,37 +17,45 @@ FocusFlow Dashboard helps users manage three core workflows:
 ## Tech Stack
 
 ### Core
+
 - React
 - TypeScript
 - Vite
 
 ### State Management
+
 - Redux Toolkit
 - React Redux
 
 ### Routing
+
 - React Router
 
 ### Forms and Validation
+
 - React Hook Form
 - Zod
 - `@hookform/resolvers`
 
 ### Styling and UI
+
 - Tailwind CSS
 - reusable UI primitives and shared components
 
 ### Persistence and Preferences
+
 - localStorage
 - persisted feature data and user preferences
 
 ### Testing
+
 - Vitest
 - React Testing Library
 - `@testing-library/user-event`
 - jsdom
 
 ### Tooling
+
 - ESLint
 - Prettier
 
@@ -56,6 +64,7 @@ FocusFlow Dashboard helps users manage three core workflows:
 ## Main Features
 
 ### 1. Task Management
+
 - Create, edit, delete, and toggle task status
 - Filter by status and priority
 - Search by title and description
@@ -63,12 +72,14 @@ FocusFlow Dashboard helps users manage three core workflows:
 - Empty states and validation feedback
 
 ### 2. Notes Management
+
 - Create, edit, delete, pin, and unpin notes
 - Pinned notes are prioritized in the UI
 - Search by title and content
 - Empty states and validation feedback
 
 ### 3. Links Management
+
 - Add and delete useful links
 - Filter by category
 - Search by title, category, and URL
@@ -76,6 +87,7 @@ FocusFlow Dashboard helps users manage three core workflows:
 - URL validation and compact card/list UI
 
 ### 4. Dashboard Summary
+
 - Total tasks
 - Completed tasks
 - Pending tasks
@@ -84,6 +96,7 @@ FocusFlow Dashboard helps users manage three core workflows:
 - Saved links count
 
 ### 5. Theme Toggle
+
 - Light mode
 - Dark mode
 - Persisted theme preference
@@ -94,6 +107,7 @@ FocusFlow Dashboard helps users manage three core workflows:
 ## Getting Started
 
 ### Prerequisites
+
 - Node.js 18+
 - npm 9+
 
@@ -117,6 +131,7 @@ npm run dev
 ```
 
 Expected result:
+
 - Vite dev server starts successfully
 - the app is available on the local URL shown in the terminal
 
@@ -136,6 +151,7 @@ npm run format:check
 ```
 
 ### Script Summary
+
 - `npm run dev` — start the development server
 - `npm run build` — build the project for production
 - `npm run lint` — run ESLint
@@ -171,6 +187,7 @@ src/
 ```
 
 ### Structure Principles
+
 - **Feature-first for business logic**  
   Tasks, notes, and links are organized by domain ownership.
 
@@ -192,11 +209,14 @@ src/
 ## Key Technical Decisions
 
 ### 1. Feature-First Architecture
+
 The codebase is organized by feature to keep related types, state, selectors, schemas, and UI close together.
 This reduces scatter and makes the project easier to maintain and extend.
 
 ### 2. Redux Toolkit for Shared Client State
+
 Redux Toolkit is used for shared client-side state such as:
+
 - tasks
 - notes
 - links
@@ -205,7 +225,9 @@ Redux Toolkit is used for shared client-side state such as:
 Typed hooks (`useAppDispatch`, `useAppSelector`) keep usage consistent across the app.
 
 ### 3. Derived State Through Selectors
+
 The app avoids storing duplicate data such as:
+
 - filtered items
 - dashboard summary counts
 - completed or pending metrics
@@ -213,21 +235,27 @@ The app avoids storing duplicate data such as:
 These are computed through selectors so the store stays simpler and more reliable.
 
 ### 4. Schema-Driven Forms
+
 Forms are built with React Hook Form + Zod so validation rules are:
+
 - centralized
 - reusable
 - easier to maintain
 - aligned between create and edit flows
 
 ### 5. Persistence Strategy
+
 Important user data is persisted so refresh does not wipe the workspace.
 At the same time, transient UI state such as modal visibility or temporary input typing is not persisted.
 
 ### 6. Global Theme Preference
+
 Theme is treated as a global user preference and handled centrally, rather than scattering theme logic across many components.
 
 ### 7. Testing Focused on Behavior
+
 Tests prioritize:
+
 - reducer logic
 - selector correctness
 - form validation behavior
@@ -253,6 +281,7 @@ This helps the project feel closer to a real product rather than a minimal CRUD 
 ## Testing
 
 The project includes automated tests for meaningful app behavior, including:
+
 - reducer tests
 - selector tests
 - form validation interaction tests
@@ -287,6 +316,7 @@ This project is intentionally frontend-focused, so a few limitations still remai
 ## Future Improvements
 
 Possible next steps:
+
 - connect to a real backend/API
 - add proper authentication and authorization flows
 - add richer dashboard analytics/widgets
