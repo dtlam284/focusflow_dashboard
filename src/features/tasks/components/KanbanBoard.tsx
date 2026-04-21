@@ -1,131 +1,301 @@
-import * as React from 'react'
-
-import { useAppDispatch } from '@/app/store/hooks'
-
-import { moveTaskToColumn, reorderTasksInColumn } from '../store/slices/taskSlice'
+import * as React from 'react';
 import {
-  TASK_STATUSES,
-  type ITask,
-  type ITaskBoardColumn,
-  type TaskStatus,
-} from '../types/taskTypes'
-import { KanbanColumn } from './KanbanColumn'
+    DndContext,
+    DragOverlay,
+    KeyboardSensor,
+    PointerSensor,
+    pointerWithin,
+    rectIntersection,
+    useSensor,
+    useSensors,
+    type CollisionDetection,
+    type DragEndEvent,
+    type DragOverEvent,
+    type DragStartEvent,
+    type UniqueIdentifier,
+} from '@dnd-kit/core';
+import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
+
+import { useAppDispatch } from '@/app/store/hooks';
+
+import {
+    moveTaskToColumn,
+    reorderTasksInColumn,
+} from '../store/slices/taskSlice';
+import {
+    TASK_STATUSES,
+    type ITask,
+    type ITaskBoardColumn,
+    type TaskStatus,
+} from '../types/taskTypes';
+import {
+    KanbanColumn,
+    type IKanbanColumnDragPreview,
+} from './KanbanColumn';
+import { KanbanDragOverlay } from './KanbanDragOverlay';
 
 //#region types
 interface IKanbanBoardProps {
-  tasks: ITask[]
-  onEditTask: (task: ITask) => void
-  onDeleteTask: (taskId: string) => void
+    tasks: ITask[];
+    onEditTask: (task: ITask) => void;
+    onDeleteTask: (taskId: string) => void;
+}
+
+interface IDragTaskData {
+    type: 'task';
+    taskId: string;
+    status: TaskStatus;
+    index: number;
+}
+
+interface IDragColumnData {
+    type: 'column';
+    status: TaskStatus;
 }
 //#endregion types
 
 //#region helpers
-const nextStatusMap: Partial<Record<TaskStatus, TaskStatus>> = {
-  todo: 'in_progress',
-  in_progress: 'review',
-  review: 'done',
-}
+const isTaskDragData = (value: unknown): value is IDragTaskData => {
+    if (!value || typeof value !== 'object') {
+        return false;
+    }
 
-const previousStatusMap: Partial<Record<TaskStatus, TaskStatus>> = {
-  in_progress: 'todo',
-  review: 'in_progress',
-  done: 'review',
-}
+    const candidate = value as Partial<IDragTaskData>;
+
+    return (
+        candidate.type === 'task' &&
+        typeof candidate.taskId === 'string' &&
+        typeof candidate.status === 'string' &&
+        typeof candidate.index === 'number'
+    );
+};
+
+const isColumnDragData = (value: unknown): value is IDragColumnData => {
+    if (!value || typeof value !== 'object') {
+        return false;
+    }
+
+    const candidate = value as Partial<IDragColumnData>;
+
+    return candidate.type === 'column' && typeof candidate.status === 'string';
+};
+
+const getColumnTasks = (columns: ITaskBoardColumn[], status: TaskStatus): ITask[] => {
+    return columns.find((column) => column.status === status)?.tasks ?? [];
+};
+
+const getTaskIndexById = (
+    columns: ITaskBoardColumn[],
+    status: TaskStatus,
+    taskId: string,
+): number => {
+    return getColumnTasks(columns, status).findIndex((task) => task.id === taskId);
+};
+
+const strictPointerCollision: CollisionDetection = (args) => {
+    if (args.pointerCoordinates) {
+        return pointerWithin(args);
+    }
+
+    return rectIntersection(args);
+};
+
+const getPreviewFromOverData = (
+    columns: ITaskBoardColumn[],
+    overData: unknown,
+): IKanbanColumnDragPreview | null => {
+    if (isTaskDragData(overData)) {
+        const targetIndex = getTaskIndexById(columns, overData.status, overData.taskId);
+
+        if (targetIndex === -1) {
+            return null;
+        }
+
+        return {
+            status: overData.status,
+            index: targetIndex,
+        };
+    }
+
+    if (isColumnDragData(overData)) {
+        return {
+            status: overData.status,
+            index: getColumnTasks(columns, overData.status).length,
+        };
+    }
+
+    return null;
+};
 //#endregion helpers
 
 //#region component
-export function KanbanBoard({ tasks, onEditTask, onDeleteTask }: IKanbanBoardProps) {
-  //#region hooks
-  const dispatch = useAppDispatch()
-  //#endregion hooks
+export function KanbanBoard({
+    tasks,
+    onEditTask,
+    onDeleteTask,
+}: IKanbanBoardProps) {
+    //#region hooks
+    const dispatch = useAppDispatch();
 
-  //#region derived values
-  const columns = React.useMemo<ITaskBoardColumn[]>(() => {
-    return TASK_STATUSES.map((status) => ({
-      status,
-      tasks: tasks.filter((task) => task.status === status).sort((a, b) => a.order - b.order),
-    }))
-  }, [tasks])
-  //#endregion derived values
+    const sensors = useSensors(
+        useSensor(PointerSensor, {
+            activationConstraint: {
+                distance: 6,
+            },
+        }),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        }),
+    );
+    //#endregion hooks
 
-  //#region handlers
-  const handleMoveTaskUp = (task: ITask, index: number) => {
-    if (index <= 0) return
+    //#region local state
+    const [activeTaskId, setActiveTaskId] = React.useState<UniqueIdentifier | null>(null);
+    const [dragPreview, setDragPreview] = React.useState<IKanbanColumnDragPreview | null>(null);
+    //#endregion local state
 
-    dispatch(
-      reorderTasksInColumn({
-        status: task.status,
-        fromIndex: index,
-        toIndex: index - 1,
-      }),
-    )
-  }
+    //#region derived values
+    const columns = React.useMemo<ITaskBoardColumn[]>(() => {
+        return TASK_STATUSES.map((status) => ({
+            status,
+            tasks: tasks
+                .filter((task) => task.status === status)
+                .sort((a, b) => a.order - b.order),
+        }));
+    }, [tasks]);
 
-  const handleMoveTaskDown = (task: ITask, index: number) => {
-    const column = columns.find((item) => item.status === task.status)
-    if (!column || index >= column.tasks.length - 1) return
+    const activeTask = React.useMemo(() => {
+        if (!activeTaskId) {
+            return null;
+        }
 
-    dispatch(
-      reorderTasksInColumn({
-        status: task.status,
-        fromIndex: index,
-        toIndex: index + 1,
-      }),
-    )
-  }
+        return tasks.find((task) => task.id === activeTaskId) ?? null;
+    }, [activeTaskId, tasks]);
+    //#endregion derived values
 
-  const handleMoveTaskLeft = (task: ITask) => {
-    const previousStatus = previousStatusMap[task.status]
-    if (!previousStatus) return
+    //#region handlers
+    const clearDragState = () => {
+        setActiveTaskId(null);
+        setDragPreview(null);
+    };
 
-    dispatch(
-      moveTaskToColumn({
-        taskId: task.id,
-        toStatus: previousStatus,
-        toIndex: 0,
-      }),
-    )
-  }
+    const handleDragStart = (event: DragStartEvent) => {
+        const activeData = event.active.data.current;
 
-  const handleMoveTaskRight = (task: ITask, index: number) => {
-    const nextStatus = nextStatusMap[task.status]
-    if (!nextStatus) return
+        if (!isTaskDragData(activeData)) {
+            return;
+        }
 
-    const currentColumn = columns.find((item) => item.status === task.status)
-    const targetColumn = columns.find((item) => item.status === nextStatus)
+        setActiveTaskId(activeData.taskId);
+        setDragPreview({
+            status: activeData.status,
+            index: activeData.index,
+        });
+    };
 
-    const targetIndex =
-      currentColumn && index >= currentColumn.tasks.length - 1
-        ? (targetColumn?.tasks.length ?? 0)
-        : 0
+    const handleDragOver = (event: DragOverEvent) => {
+        const { over } = event;
 
-    dispatch(
-      moveTaskToColumn({
-        taskId: task.id,
-        toStatus: nextStatus,
-        toIndex: targetIndex,
-      }),
-    )
-  }
-  //#endregion handlers
+        if (!over) {
+            setDragPreview(null);
+            return;
+        }
 
-  //#region render
-  return (
-    <div className="grid gap-4 md:grid-cols-2 2xl:grid-cols-4">
-      {columns.map((column) => (
-        <KanbanColumn
-          key={column.status}
-          column={column}
-          onMoveTaskUp={handleMoveTaskUp}
-          onMoveTaskDown={handleMoveTaskDown}
-          onMoveTaskLeft={handleMoveTaskLeft}
-          onMoveTaskRight={handleMoveTaskRight}
-          onEditTask={onEditTask}
-          onDeleteTask={onDeleteTask}
-        />
-      ))}
-    </div>
-  )
-  //#endregion render
+        const preview = getPreviewFromOverData(columns, over.data.current);
+        setDragPreview(preview);
+    };
+
+    const handleDragCancel = () => {
+        clearDragState();
+    };
+
+    const handleDragEnd = (event: DragEndEvent) => {
+        const { active, over } = event;
+
+        if (!over) {
+            clearDragState();
+            return;
+        }
+
+        const activeData = active.data.current;
+        const overData = over.data.current;
+
+        if (!isTaskDragData(activeData)) {
+            clearDragState();
+            return;
+        }
+
+        const sourceStatus = activeData.status;
+        const activeTaskIdValue = activeData.taskId;
+        const destination = getPreviewFromOverData(columns, overData);
+
+        if (!destination) {
+            clearDragState();
+            return;
+        }
+
+        if (sourceStatus === destination.status) {
+            const sourceIndex = getTaskIndexById(columns, sourceStatus, activeTaskIdValue);
+
+            if (sourceIndex === -1) {
+                clearDragState();
+                return;
+            }
+
+            if (sourceIndex !== destination.index) {
+                dispatch(
+                    reorderTasksInColumn({
+                        status: sourceStatus,
+                        fromIndex: sourceIndex,
+                        toIndex: destination.index,
+                    }),
+                );
+            }
+
+            clearDragState();
+            return;
+        }
+
+        dispatch(
+            moveTaskToColumn({
+                taskId: activeTaskIdValue,
+                toStatus: destination.status,
+                toIndex: destination.index,
+            }),
+        );
+
+        clearDragState();
+    };
+    //#endregion handlers
+
+    //#region render
+    return (
+        <DndContext
+            sensors={sensors}
+            collisionDetection={strictPointerCollision}
+            onDragStart={handleDragStart}
+            onDragOver={handleDragOver}
+            onDragCancel={handleDragCancel}
+            onDragEnd={handleDragEnd}
+        >
+            <div className='grid gap-4 md:grid-cols-2 2xl:grid-cols-4'>
+                {columns.map((column) => (
+                    <KanbanColumn
+                        key={column.status}
+                        column={column}
+                        dragPreview={dragPreview}
+                        isDraggingTask={Boolean(activeTaskId)}
+                        onEditTask={onEditTask}
+                        onDeleteTask={onDeleteTask}
+                    />
+                ))}
+            </div>
+
+            <DragOverlay>
+                {activeTask ? <KanbanDragOverlay task={activeTask} /> : null}
+            </DragOverlay>
+        </DndContext>
+    );
+    //#endregion render
 }
 //#endregion component
