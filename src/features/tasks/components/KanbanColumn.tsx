@@ -19,6 +19,7 @@ export interface IKanbanColumnProps {
     column: ITaskBoardColumn;
     dragPreview: IKanbanColumnDragPreview | null;
     isDraggingTask: boolean;
+    onOpenTask: (task: ITask) => void;
     onEditTask: (task: ITask) => void;
     onDeleteTask: (taskId: string) => void;
 }
@@ -38,6 +39,7 @@ export function KanbanColumn({
     column,
     dragPreview,
     isDraggingTask,
+    onOpenTask,
     onEditTask,
     onDeleteTask,
 }: IKanbanColumnProps) {
@@ -95,7 +97,7 @@ export function KanbanColumn({
                     ) : (
                         <>
                             {column.tasks.map((task, index) => (
-                                <React.Fragment key={task.id}>
+                                <React.Fragment key={`${task.id}-${task.updatedAt}`}>
                                     {isDraggingTask && previewIndex === index ? (
                                         <KanbanDropIndicator isActive />
                                     ) : null}
@@ -104,6 +106,7 @@ export function KanbanColumn({
                                         task={task}
                                         index={index}
                                         columnStatus={column.status}
+                                        onOpen={onOpenTask}
                                         onEdit={onEditTask}
                                         onDelete={onDeleteTask}
                                     />
@@ -127,4 +130,3 @@ export function KanbanColumn({
     //#endregion render
 }
 //#endregion component
-    

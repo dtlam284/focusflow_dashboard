@@ -18,6 +18,7 @@ import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 
 import { useAppDispatch } from '@/app/store/hooks';
 
+import { openTaskDetail } from '../store/slices/taskDetailSlice';
 import {
     moveTaskToColumn,
     reorderTasksInColumn,
@@ -266,6 +267,10 @@ export function KanbanBoard({
 
         clearDragState();
     };
+
+    const handleOpenTask = (task: ITask) => {
+        dispatch(openTaskDetail(task.id));
+    };
     //#endregion handlers
 
     //#region render
@@ -285,6 +290,7 @@ export function KanbanBoard({
                         column={column}
                         dragPreview={dragPreview}
                         isDraggingTask={Boolean(activeTaskId)}
+                        onOpenTask={handleOpenTask}
                         onEditTask={onEditTask}
                         onDeleteTask={onDeleteTask}
                     />
