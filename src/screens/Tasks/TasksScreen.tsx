@@ -1,23 +1,23 @@
-import * as React from "react";
-import { AlertTriangle, CheckCircle2, Clock3, ListTodo } from "lucide-react";
+import * as React from 'react'
+import { AlertTriangle, CheckCircle2, Clock3, ListTodo, Plus } from 'lucide-react'
 
-import { PageHeader } from "@/components/shared/PageHeader";
-import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
-import { StatCard } from "@/components/shared/StatCard";
-import { useI18n } from "@/contexts/I18nContext";
-import { useAppDispatch, useAppSelector } from "@/app/store/hooks";
+import { useAppDispatch, useAppSelector } from '@/app/store/hooks'
+import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
+import { PageHeader } from '@/components/shared/PageHeader'
+import { StatCard } from '@/components/shared/StatCard'
+import { Button } from '@/components/ui/button'
+import { useI18n } from '@/contexts/I18nContext'
 
-import { TaskForm } from "@/features/tasks/components/TaskForm";
-import { TaskFilterBar } from "@/features/tasks/components/TaskFilterBar";
-import { TaskList } from "@/features/tasks/components/TaskList";
+import { KanbanBoard } from '@/features/tasks/components/KanbanBoard'
+import { TaskFilterBar } from '@/features/tasks/components/TaskFilterBar'
+import type { TaskFormValues } from '@/features/tasks/schemas/taskSchema'
 import {
   addTask,
   deleteTask,
   resetTaskFilters,
   setTaskFilters,
-  toggleTaskStatus,
   updateTask,
-} from "@/features/tasks/store/slices/taskSlice";
+} from '@/features/tasks/store/slices/taskSlice'
 import {
   selectCompletedTaskCount,
   selectFilteredTasks,
@@ -25,46 +25,52 @@ import {
   selectTaskFilters,
   selectTaskItems,
   selectUnfinishedTaskCount,
-} from "@/features/tasks/store/selectors/taskSelectors";
+} from '@/features/tasks/store/selectors/taskSelectors'
+import type { ITask, ITaskFilters } from '@/features/tasks/types/taskTypes'
 
-import type { ITask, ITaskFilters } from "@/features/tasks/types/taskTypes";
-import type { TaskFormValues } from "@/features/tasks/schemas/taskSchema";
+import { TaskEditorDialog } from '@/features/tasks/components/TaskEditorDialog'
 
 //#region component
 export function TasksScreen() {
-  const { t } = useI18n();
-  const dispatch = useAppDispatch();
-  
+  //#region hooks
+  const { t } = useI18n()
+  const dispatch = useAppDispatch()
+  //#endregion hooks
+
   //#region selectors
-  const tasks = useAppSelector(selectTaskItems);
-  const filters = useAppSelector(selectTaskFilters);
-  const filteredTasks = useAppSelector(selectFilteredTasks);
-  const completedCount = useAppSelector(selectCompletedTaskCount);
-  const pendingCount = useAppSelector(selectPendingTaskCount);
-  const unfinishedCount = useAppSelector(selectUnfinishedTaskCount);
+  const tasks = useAppSelector(selectTaskItems)
+  const filters = useAppSelector(selectTaskFilters)
+  const filteredTasks = useAppSelector(selectFilteredTasks)
+  const completedCount = useAppSelector(selectCompletedTaskCount)
+  const pendingCount = useAppSelector(selectPendingTaskCount)
+  const unfinishedCount = useAppSelector(selectUnfinishedTaskCount)
   //#endregion selectors
 
-  //#region state
-  const [editingTaskId, setEditingTaskId] = React.useState<string | null>(null);
-  const [taskPendingDelete, setTaskPendingDelete] = React.useState<ITask | null>(null);
+  //#region local state
+  const [editingTaskId, setEditingTaskId] = React.useState<string | null>(null)
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = React.useState(false)
+  const [taskPendingDelete, setTaskPendingDelete] = React.useState<ITask | null>(null)
+  //#endregion local state
 
-  const editingTask = tasks.find((task) => task.id === editingTaskId) ?? null;
-  const totalCount = tasks.length;
-  //#endregion state
+  //#region derived values
+  const editingTask = tasks.find((task) => task.id === editingTaskId) ?? null
+  const isEditDialogOpen = Boolean(editingTask)
+  const totalCount = tasks.length
 
-  //#region handlers
   const initialFormValues = editingTask
     ? {
         title: editingTask.title,
-        description: editingTask.description ?? "",
-        priority: editingTask.priority === "all" ? "medium" : editingTask.priority,
-        dueDate: editingTask.dueDate ?? "",
-        dueTime: editingTask.dueTime ?? "",
+        description: editingTask.description ?? '',
+        priority: editingTask.priority,
+        dueDate: editingTask.dueDate ?? '',
+        dueTime: editingTask.dueTime ?? '',
       }
-    : undefined;
+    : undefined
+  //#endregion derived values
 
-  const handleCreateTask = (values: TaskFormValues) => {
-    const now = new Date().toISOString();
+  //#region handlers
+  const handleCreateTask = async (values: TaskFormValues) => {
+    const now = new Date().toISOString()
 
     dispatch(
       addTask({
@@ -74,15 +80,15 @@ export function TasksScreen() {
         priority: values.priority,
         dueDate: values.dueDate.trim(),
         dueTime: values.dueTime?.trim() || undefined,
-        status: "todo",
+        status: 'todo',
         createdAt: now,
         updatedAt: now,
       }),
-    );
-  };
+    )
+  }
 
-  const handleUpdateTask = (values: TaskFormValues) => {
-    if (!editingTask) return;
+  const handleUpdateTask = async (values: TaskFormValues) => {
+    if (!editingTask) return
 
     dispatch(
       updateTask({
@@ -95,145 +101,139 @@ export function TasksScreen() {
           dueTime: values.dueTime?.trim() || undefined,
         },
       }),
-    );
+    )
 
-    setEditingTaskId(null);
-  };
-
-  const handleSubmitTask = async (values: TaskFormValues) => {
-    if (editingTask) {
-      handleUpdateTask(values);
-      return;
-    }
-
-    handleCreateTask(values);
-  };
+    setEditingTaskId(null)
+  }
 
   const handleStartEdit = (task: ITask) => {
-    setEditingTaskId(task.id);
-  };
-
-  const handleCancelEdit = () => {
-    setEditingTaskId(null);
-  };
-
-  const handleToggleStatus = (taskId: string) => {
-    dispatch(toggleTaskStatus(taskId));
-  };
+    setEditingTaskId(task.id)
+  }
 
   const handleRequestDelete = (taskId: string) => {
-    const task = tasks.find((item) => item.id === taskId) ?? null;
-    setTaskPendingDelete(task);
-  };
+    const task = tasks.find((item) => item.id === taskId) ?? null
+    setTaskPendingDelete(task)
+  }
 
   const handleConfirmDelete = () => {
-    if (!taskPendingDelete) return;
+    if (!taskPendingDelete) return
 
-    dispatch(deleteTask(taskPendingDelete.id));
+    dispatch(deleteTask(taskPendingDelete.id))
 
     if (editingTaskId === taskPendingDelete.id) {
-      setEditingTaskId(null);
+      setEditingTaskId(null)
     }
 
-    setTaskPendingDelete(null);
-  };
+    setTaskPendingDelete(null)
+  }
 
-  const handleStatusChange = (status: ITaskFilters["status"]) => {
-    dispatch(setTaskFilters({ status }));
-  };
+  const handleStatusChange = (status: ITaskFilters['status']) => {
+    dispatch(setTaskFilters({ status }))
+  }
 
-  const handlePriorityChange = (priority: ITaskFilters["priority"]) => {
-    dispatch(setTaskFilters({ priority }));
-  };
+  const handlePriorityChange = (priority: ITaskFilters['priority']) => {
+    dispatch(setTaskFilters({ priority }))
+  }
 
   const handleKeywordChange = (keyword: string) => {
-    dispatch(setTaskFilters({ keyword }));
-  };
+    dispatch(setTaskFilters({ keyword }))
+  }
 
   const handleResetFilters = () => {
-    dispatch(resetTaskFilters());
-  };
+    dispatch(resetTaskFilters())
+  }
   //#endregion handlers
 
   //#region render
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Tasks"
-        description="Manage your tasks with a clean and focused workflow."
+        title={t('Tasks')}
+        description={t('Manage your tasks with a clean and focused workflow.')}
+        actions={
+          <Button onClick={() => setIsCreateDialogOpen(true)}>
+            <Plus className="h-4 w-4" />
+            {t('Add task')}
+          </Button>
+        }
       />
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <StatCard
-          title={t("Total tasks")}
+          title={t('Total tasks')}
           value={totalCount}
           icon={<ListTodo className="h-4 w-4" />}
         />
+        <StatCard title={t('Pending')} value={pendingCount} icon={<Clock3 className="h-4 w-4" />} />
         <StatCard
-          title={t("Pending")}
-          value={pendingCount}
-          icon={<Clock3 className="h-4 w-4" />}
-        />
-        <StatCard
-          title={t("Completed")}
+          title={t('Completed')}
           value={completedCount}
           icon={<CheckCircle2 className="h-4 w-4" />}
         />
         <StatCard
-          title={t("Unfinished")}
+          title={t('Unfinished')}
           value={unfinishedCount}
           icon={<AlertTriangle className="h-4 w-4" />}
         />
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[380px_minmax(0,1fr)]">
-        <TaskForm
-          key={editingTask ? editingTask.id : "create"}
-          mode={editingTask ? "edit" : "create"}
-          initialValues={initialFormValues}
-          onSubmit={handleSubmitTask}
-          onCancelEdit={editingTask ? handleCancelEdit : undefined}
+      <div className="space-y-4">
+        <TaskFilterBar
+          filters={filters}
+          visibleCount={filteredTasks.length}
+          onKeywordChange={handleKeywordChange}
+          onStatusChange={handleStatusChange}
+          onPriorityChange={handlePriorityChange}
+          onReset={handleResetFilters}
         />
 
-        <div className="space-y-4">
-          <TaskFilterBar
-            filters={filters}
-            visibleCount={filteredTasks.length}
-            onStatusChange={handleStatusChange}
-            onPriorityChange={handlePriorityChange}
-            onKeywordChange={handleKeywordChange}
-            onReset={handleResetFilters}
-          />
-
-          <TaskList
-            tasks={filteredTasks}
-            filters={filters}
-            onEdit={handleStartEdit}
-            onDelete={handleRequestDelete}
-            onToggleStatus={handleToggleStatus}
-          />
-        </div>
+        <KanbanBoard
+          tasks={filteredTasks}
+          onEditTask={handleStartEdit}
+          onDeleteTask={handleRequestDelete}
+        />
       </div>
+
+      <TaskEditorDialog
+        open={isCreateDialogOpen}
+        mode="create"
+        onOpenChange={setIsCreateDialogOpen}
+        onSubmit={handleCreateTask}
+      />
+
+      <TaskEditorDialog
+        open={isEditDialogOpen}
+        mode="edit"
+        initialValues={initialFormValues}
+        onOpenChange={(open) => {
+          if (!open) {
+            setEditingTaskId(null)
+          }
+        }}
+        onSubmit={handleUpdateTask}
+      />
 
       <ConfirmDialog
         open={Boolean(taskPendingDelete)}
-        title={t("Delete task")}
+        title={t('Delete task')}
         description={
           taskPendingDelete
             ? t('Are you sure you want to delete "{title}"?', {
                 title: taskPendingDelete.title,
               })
-            : t("Are you sure you want to delete this task?")
+            : t('Are you sure you want to delete this task?')
         }
-        confirmLabel={t("Delete")}
-        cancelLabel={t("Cancel")}
+        confirmLabel={t('Delete')}
+        cancelLabel={t('Cancel')}
         onOpenChange={(open) => {
-          if (!open) setTaskPendingDelete(null);
+          if (!open) {
+            setTaskPendingDelete(null)
+          }
         }}
         onConfirm={handleConfirmDelete}
       />
     </div>
-  );
+  )
   //#endregion render
 }
 //#endregion component
