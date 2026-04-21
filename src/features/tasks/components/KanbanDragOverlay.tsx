@@ -1,21 +1,14 @@
-import { useSortable } from '@dnd-kit/sortable'
-import { CSS } from '@dnd-kit/utilities'
-import { CalendarDays, GripVertical, Pencil, Trash2 } from 'lucide-react'
+import { CalendarDays, GripVertical } from 'lucide-react'
 
-import { Button } from '@/components/ui/button'
 import { useI18n } from '@/contexts/I18nContext'
 import { cn } from '@/utils'
 
 import { getTaskEffectiveStatus } from '../store/selectors/taskSelectors'
-import type { ITask, TaskComputedStatus, TaskStatus } from '../types/taskTypes'
+import type { ITask, TaskComputedStatus } from '../types/taskTypes'
 
 //#region types
-export interface IKanbanTaskCardProps {
+export interface IKanbanDragOverlayProps {
   task: ITask
-  index: number
-  columnStatus: TaskStatus
-  onEdit: (task: ITask) => void
-  onDelete: (taskId: string) => void
 }
 //#endregion types
 
@@ -54,56 +47,19 @@ const priorityLabels: Record<ITask['priority'], string> = {
 //#endregion constants
 
 //#region component
-export function KanbanTaskCard({
-  task,
-  index,
-  columnStatus,
-  onEdit,
-  onDelete,
-}: IKanbanTaskCardProps) {
+export function KanbanDragOverlay({ task }: IKanbanDragOverlayProps) {
   //#region hooks
   const { t } = useI18n()
-
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    setActivatorNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({
-    id: task.id,
-    data: {
-      type: 'task',
-      taskId: task.id,
-      status: columnStatus,
-      index,
-    },
-  })
   //#endregion hooks
 
   //#region derived values
   const effectiveStatus = getTaskEffectiveStatus(task)
   const isDone = task.status === 'done'
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  }
   //#endregion derived values
 
   //#region render
   return (
-    <article
-      ref={setNodeRef}
-      style={style}
-      className={cn(
-        'rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-shadow dark:border-slate-800 dark:bg-slate-950',
-        !isDragging && 'hover:shadow-md',
-        isDragging && 'z-10 opacity-40 shadow-lg ring-2 ring-blue-500/30',
-      )}
-    >
+    <article className='w-[280px] rounded-xl border border-slate-200 bg-white p-4 shadow-2xl ring-1 ring-blue-500/20 dark:border-slate-800 dark:bg-slate-950'>
       <div className='space-y-3'>
         <div className='flex items-start justify-between gap-3'>
           <div className='min-w-0 space-y-1'>
@@ -128,7 +84,7 @@ export function KanbanTaskCard({
             ) : null}
           </div>
 
-          <div className='flex shrink-0 items-start gap-2'>
+          <div className='flex items-center gap-2'>
             <span
               className={cn(
                 'inline-flex rounded-full border px-2.5 py-1 text-[11px] font-medium',
@@ -138,20 +94,9 @@ export function KanbanTaskCard({
               {t(statusLabels[effectiveStatus])}
             </span>
 
-            <button
-              ref={setActivatorNodeRef}
-              type='button'
-              aria-label={t('Drag task')}
-              className={cn(
-                'inline-flex h-8 w-8 items-center justify-center rounded-md border border-slate-200 text-slate-500 transition-colors',
-                'hover:bg-slate-100 hover:text-slate-700 dark:border-slate-800 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-slate-200',
-                isDragging && 'cursor-grabbing',
-              )}
-              {...attributes}
-              {...listeners}
-            >
+            <span className='inline-flex h-8 w-8 items-center justify-center rounded-md border border-slate-200 text-slate-500 dark:border-slate-800 dark:text-slate-400'>
               <GripVertical className='h-4 w-4' />
-            </button>
+            </span>
           </div>
         </div>
 
@@ -172,30 +117,6 @@ export function KanbanTaskCard({
               {task.dueTime ? ` ${task.dueTime}` : ''}
             </span>
           ) : null}
-        </div>
-
-        <div className='flex items-center gap-2 pt-1'>
-          <Button
-            type='button'
-            size='sm'
-            variant='outline'
-            className='flex-1'
-            onClick={() => onEdit(task)}
-          >
-            <Pencil className='h-4 w-4' />
-            {t('Edit')}
-          </Button>
-
-          <Button
-            type='button'
-            size='sm'
-            variant='destructive'
-            className='flex-1'
-            onClick={() => onDelete(task.id)}
-          >
-            <Trash2 className='h-4 w-4' />
-            {t('Delete')}
-          </Button>
         </div>
       </div>
     </article>
