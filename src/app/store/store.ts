@@ -4,9 +4,10 @@ import storage from 'redux-persist/lib/storage'
 
 import appReducer from '@/app/store/slices/appSlice'
 import authReducer from '@/features/auth/store/slices/authSlice'
-import tasksReducer, { hydrateTasks } from '@/features/tasks/store/slices/taskSlice'
-import notesReducer, { hydrateNotes } from '@/features/notes/store/slices/noteSlice'
 import linksReducer, { hydrateLinks } from '@/features/links/store/slices/linkSlice'
+import notesReducer, { hydrateNotes } from '@/features/notes/store/slices/noteSlice'
+import taskDetailReducer from '@/features/tasks/store/slices/taskDetailSlice'
+import tasksReducer, { hydrateTasks } from '@/features/tasks/store/slices/taskSlice'
 
 import { loadState, saveState } from '@/utils/storage'
 
@@ -21,6 +22,7 @@ const rootReducer = combineReducers({
   app: appReducer,
   auth: authReducer,
   tasks: tasksReducer,
+  taskDetail: taskDetailReducer,
   notes: notesReducer,
   links: linksReducer,
 })
