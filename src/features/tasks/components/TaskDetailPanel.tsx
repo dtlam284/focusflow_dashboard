@@ -23,6 +23,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { useI18n } from '@/contexts/I18nContext'
 import { cn } from '@/utils'
 
+import { addTaskActivity } from '../store/slices/taskActivitySlice'
 import { closeTaskDetail } from '../store/slices/taskDetailSlice'
 import { updateTask } from '../store/slices/taskSlice'
 import {
@@ -32,6 +33,7 @@ import {
 } from '../store/selectors/taskDetailSelectors'
 import { getTaskEffectiveStatus } from '../store/selectors/taskSelectors'
 import type { TaskComputedStatus } from '../types/taskTypes'
+import { TaskActivityTimeline } from './TaskActivityTimeline'
 import { TaskCommentsSection } from './TaskCommentsSection'
 
 //#region constants
@@ -152,6 +154,7 @@ export function TaskDetailPanel() {
 
     const nextTitle = draftTitle.trim()
     const nextDescription = draftDescription.trim()
+    const hasTitleChanged = nextTitle !== selectedTask.title
 
     if (!nextTitle) return
 
@@ -164,6 +167,17 @@ export function TaskDetailPanel() {
         },
       }),
     )
+
+    if (hasTitleChanged) {
+      dispatch(
+        addTaskActivity({
+          id: crypto.randomUUID(),
+          taskId: selectedTask.id,
+          type: 'updated',
+          createdAt: new Date().toISOString(),
+        }),
+      )
+    }
 
     setDraftTitle(nextTitle)
     setDraftDescription(nextDescription)
@@ -316,6 +330,8 @@ export function TaskDetailPanel() {
                 </div>
               </section>
 
+              <TaskActivityTimeline taskId={selectedTask.id} />
+
               <TaskCommentsSection taskId={selectedTask.id} />
             </div>
           </div>
@@ -323,5 +339,6 @@ export function TaskDetailPanel() {
       </SheetContent>
     </Sheet>
   )
+  //#endregion render
 }
 //#endregion component
