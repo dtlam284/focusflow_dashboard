@@ -1,6 +1,6 @@
-import * as React from 'react'
-import { Search, RotateCcw } from 'lucide-react'
+import { RotateCcw, Search, Tag } from 'lucide-react'
 
+import { useAppSelector } from '@/app/store/hooks'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -12,15 +12,17 @@ import {
 } from '@/components/ui/select'
 import { useI18n } from '@/contexts/I18nContext'
 
+import { selectLabelItems } from '../store/selectors/labelSelectors'
 import type { ITaskFilters } from '../types/taskTypes'
 
 //#region props
-export interface ITaskFilterBarProps {
+interface ITaskFilterBarProps {
   filters: ITaskFilters
-  visibleCount?: number
+  visibleCount: number
+  onKeywordChange: (keyword: string) => void
   onStatusChange: (status: ITaskFilters['status']) => void
   onPriorityChange: (priority: ITaskFilters['priority']) => void
-  onKeywordChange: (keyword: string) => void
+  onLabelChange: (labelId: ITaskFilters['labelId']) => void
   onReset: () => void
 }
 //#endregion props
@@ -29,51 +31,45 @@ export interface ITaskFilterBarProps {
 export function TaskFilterBar({
   filters,
   visibleCount,
+  onKeywordChange,
   onStatusChange,
   onPriorityChange,
-  onKeywordChange,
+  onLabelChange,
   onReset,
 }: ITaskFilterBarProps) {
-  //#region hooks
   const { t } = useI18n()
-  //#endregion hooks
+  const labels = useAppSelector(selectLabelItems)
 
-  //#region derived values
-  const hasActiveFilters =
-    filters.status !== 'all' || filters.priority !== 'all' || filters.keyword.trim().length > 0
-  //#endregion derived values
-
-  //#region render
   return (
-    <div className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-950">
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+    <section className='rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-950/40'>
+      <div className='mb-4 flex items-start justify-between gap-3'>
         <div>
-          <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+          <h2 className='text-sm font-semibold text-slate-900 dark:text-slate-100'>
             {t('Task filters')}
           </h2>
-          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-            {typeof visibleCount === 'number'
-              ? t('Showing {count} tasks', { count: visibleCount })
-              : t('Refine the task list by status, priority, or keyword.')}
+          <p className='text-sm text-slate-500 dark:text-slate-400'>
+            {t('Showing {count} tasks', { count: String(visibleCount) })}
           </p>
         </div>
 
-        <Button variant="outline" size="sm" onClick={onReset} disabled={!hasActiveFilters}>
-          <RotateCcw className="h-4 w-4" />
+        <Button type='button' variant='outline' onClick={onReset}>
+          <RotateCcw className='h-4 w-4' />
           {t('Reset filters')}
         </Button>
       </div>
 
-      <div className="grid gap-3 md:grid-cols-3">
-        <div className="relative md:col-span-1">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+      <div className='grid gap-3 md:grid-cols-2 xl:grid-cols-4'>
+        <div className='relative'>
+          <label htmlFor='task-search' className='sr-only'>
+            {t('Search tasks')}
+          </label>
+          <Search className='pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400' />
           <Input
+            id='task-search'
             value={filters.keyword}
             onChange={(event) => onKeywordChange(event.target.value)}
             placeholder={t('Search tasks...')}
-            aria-label={t('Search tasks')}
-            data-skip-auto-label="true"
-            className="pl-9"
+            className='pl-9'
           />
         </div>
 
@@ -82,33 +78,54 @@ export function TaskFilterBar({
           onValueChange={(value) => onStatusChange(value as ITaskFilters['status'])}
         >
           <SelectTrigger>
-            <SelectValue placeholder="All statuses" />
+            <SelectValue placeholder={t('All statuses')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All statuses</SelectItem>
-            <SelectItem value="todo">To do</SelectItem>
-            <SelectItem value="done">Done</SelectItem>
-            <SelectItem value="unfinished">Unfinished</SelectItem>
+            <SelectItem value='all'>{t('All statuses')}</SelectItem>
+            <SelectItem value='todo'>{t('To do')}</SelectItem>
+            <SelectItem value='in_progress'>{t('In progress')}</SelectItem>
+            <SelectItem value='review'>{t('Review')}</SelectItem>
+            <SelectItem value='done'>{t('Done')}</SelectItem>
+            <SelectItem value='unfinished'>{t('Unfinished')}</SelectItem>
           </SelectContent>
         </Select>
 
         <Select
           value={filters.priority}
-          onValueChange={(value) => onPriorityChange(value as ITaskFilters['priority'])}
+          onValueChange={(value) =>
+            onPriorityChange(value as ITaskFilters['priority'])
+          }
         >
           <SelectTrigger>
-            <SelectValue placeholder="All priorities" />
+            <SelectValue placeholder={t('All priorities')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All priorities</SelectItem>
-            <SelectItem value="low">Low</SelectItem>
-            <SelectItem value="medium">Medium</SelectItem>
-            <SelectItem value="high">High</SelectItem>
+            <SelectItem value='all'>{t('All priorities')}</SelectItem>
+            <SelectItem value='low'>{t('Low priority')}</SelectItem>
+            <SelectItem value='medium'>{t('Medium priority')}</SelectItem>
+            <SelectItem value='high'>{t('High priority')}</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select
+          value={filters.labelId}
+          onValueChange={(value) => onLabelChange(value as ITaskFilters['labelId'])}
+        >
+          <SelectTrigger className='flex items-center gap-2'>
+            <Tag className='h-4 w-4 text-slate-400' />
+            <SelectValue placeholder={t('All labels')} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value='all'>{t('All labels')}</SelectItem>
+            {labels.map((label) => (
+              <SelectItem key={label.id} value={label.id}>
+                {t(label.name)}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>
-    </div>
+    </section>
   )
-  //#endregion render
 }
 //#endregion component
