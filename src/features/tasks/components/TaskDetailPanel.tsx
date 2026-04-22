@@ -35,6 +35,7 @@ import { getTaskEffectiveStatus } from '../store/selectors/taskSelectors'
 import type { TaskComputedStatus } from '../types/taskTypes'
 import { TaskActivityTimeline } from './TaskActivityTimeline'
 import { TaskCommentsSection } from './TaskCommentsSection'
+import { TaskLabelChips } from './TaskLabelChips'
 
 //#region constants
 const statusLabels: Record<TaskComputedStatus, string> = {
@@ -203,7 +204,7 @@ export function TaskDetailPanel() {
             <SheetHeader className='border-b border-slate-200 px-6 py-5 dark:border-slate-800'>
               <SheetTitle>{t('Task details')}</SheetTitle>
               <SheetDescription>
-                {t('Review task information and update its content in real time.')}
+                {t('Task information.')}
               </SheetDescription>
             </SheetHeader>
 
@@ -283,6 +284,8 @@ export function TaskDetailPanel() {
                       {t(priorityLabels[selectedTask.priority])}
                     </span>
                   </div>
+
+                  <TaskLabelChips labelIds={selectedTask.labelIds} />
 
                   <div className='grid gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900/40'>
                     <div className='flex items-start gap-3 text-sm text-slate-600 dark:text-slate-300'>
