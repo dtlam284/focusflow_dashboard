@@ -28,6 +28,7 @@ import {
     selectUnfinishedTaskCount,
 } from '@/features/tasks/store/selectors/taskSelectors';
 import type { ITask, ITaskFilters } from '@/features/tasks/types/taskTypes';
+import { removeCommentsByTaskId } from '@/features/tasks/store/slices/taskCommentsSlice'
 
 import { TaskEditorDialog } from '@/features/tasks/components/TaskEditorDialog';
 
@@ -120,6 +121,7 @@ export function TasksScreen() {
         if (!taskPendingDelete) return;
 
         dispatch(deleteTask(taskPendingDelete.id));
+        dispatch(removeCommentsByTaskId(taskPendingDelete.id))
 
         if (editingTaskId === taskPendingDelete.id) {
             setEditingTaskId(null);
