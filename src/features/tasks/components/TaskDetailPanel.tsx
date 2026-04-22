@@ -204,7 +204,7 @@ export function TaskDetailPanel() {
             <SheetHeader className='border-b border-slate-200 px-6 py-5 dark:border-slate-800'>
               <SheetTitle>{t('Task details')}</SheetTitle>
               <SheetDescription>
-                {t('Task information.')}
+                {t('')}
               </SheetDescription>
             </SheetHeader>
 

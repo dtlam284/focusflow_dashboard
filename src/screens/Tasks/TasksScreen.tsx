@@ -190,7 +190,7 @@ export function TasksScreen() {
     <div className='space-y-6'>
       <PageHeader
         title={t('Tasks')}
-        description={t('Manage your tasks with a clean and focused workflow.')}
+        // description={t('Manage your tasks with a clean and focused workflow.')}
         actions={
           <Button onClick={() => setIsCreateDialogOpen(true)}>
             <Plus className='h-4 w-4' />
