@@ -31,8 +31,8 @@ import {
   selectSelectedTaskId,
 } from '../store/selectors/taskDetailSelectors'
 import { getTaskEffectiveStatus } from '../store/selectors/taskSelectors'
-import { TaskCommentsSection } from './TaskCommentsSection'
 import type { TaskComputedStatus } from '../types/taskTypes'
+import { TaskCommentsSection } from './TaskCommentsSection'
 
 //#region constants
 const statusLabels: Record<TaskComputedStatus, string> = {
@@ -112,7 +112,7 @@ export function TaskDetailPanel() {
       setDraftDescription('')
     }
   }, [selectedTask, isOpen])
-  
+
   React.useEffect(() => {
     if (isOpen && selectedTaskId && !selectedTask) {
       dispatch(closeTaskDetail())
@@ -165,7 +165,6 @@ export function TaskDetailPanel() {
       }),
     )
 
-    // sync local draft immediately after save
     setDraftTitle(nextTitle)
     setDraftDescription(nextDescription)
   }
@@ -316,6 +315,7 @@ export function TaskDetailPanel() {
                   </div>
                 </div>
               </section>
+
               <TaskCommentsSection taskId={selectedTask.id} />
             </div>
           </div>
