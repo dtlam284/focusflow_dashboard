@@ -20,7 +20,7 @@ export type TaskPriority = (typeof TASK_PRIORITIES)[number]
 export type TaskFilterPriority = (typeof TASK_FILTER_PRIORITIES)[number]
 
 export type TaskActivityType = 'created' | 'moved' | 'updated' | 'commented'
-//#endregion unions
+//#endregion union
 
 //#region task entity
 export interface ITask {
@@ -32,6 +32,7 @@ export interface ITask {
   priority: TaskPriority
   dueDate?: string
   dueTime?: string
+  labelIds: string[]
   createdAt: string
   updatedAt: string
 }
@@ -42,6 +43,7 @@ export interface ITaskFilters {
   status: TaskFilterStatus
   priority: TaskFilterPriority
   keyword: string
+  labelId: string | 'all'
 }
 
 export interface ITasksState {
@@ -57,6 +59,7 @@ export interface ICreateTaskFormValues {
   priority: TaskPriority
   dueDate?: string
   dueTime?: string
+  labelIds: string[]
 }
 
 export interface IUpdateTaskFormValues {
@@ -66,6 +69,7 @@ export interface IUpdateTaskFormValues {
   dueDate?: string
   dueTime?: string
   status: TaskStatus
+  labelIds: string[]
 }
 //#endregion form values
 
@@ -114,3 +118,15 @@ export interface ITaskActivitiesState {
   items: ITaskActivity[]
 }
 //#endregion activity
+
+//#region labels
+export interface ILabel {
+  id: string
+  name: string
+  color: string
+}
+
+export interface ITaskLabelsState {
+  items: ILabel[]
+}
+//#endregion labels

@@ -4,6 +4,7 @@ import type {
   ITask,
   ITaskActivitiesState,
   ITaskCommentsState,
+  ITaskLabelsState,
 } from '@/features/tasks/types/taskTypes'
 
 const STORAGE_KEY = 'cms-feature-state'
@@ -15,6 +16,7 @@ export interface IPersistedFeatureState {
   }
   taskComments?: ITaskCommentsState
   taskActivity?: ITaskActivitiesState
+  taskLabels?: ITaskLabelsState
   notes?: {
     items: INote[]
   }

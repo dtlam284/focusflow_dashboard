@@ -6,7 +6,12 @@ import appReducer from '@/app/store/slices/appSlice'
 import authReducer from '@/features/auth/store/slices/authSlice'
 import linksReducer, { hydrateLinks } from '@/features/links/store/slices/linkSlice'
 import notesReducer, { hydrateNotes } from '@/features/notes/store/slices/noteSlice'
-import taskActivityReducer, { hydrateTaskActivities,} from '@/features/tasks/store/slices/taskActivitySlice'
+import labelReducer, {
+  hydrateTaskLabels,
+} from '@/features/tasks/store/slices/labelSlice'
+import taskActivityReducer, {
+  hydrateTaskActivities,
+} from '@/features/tasks/store/slices/taskActivitySlice'
 import taskCommentsReducer, {
   hydrateTaskComments,
 } from '@/features/tasks/store/slices/taskCommentsSlice'
@@ -29,6 +34,7 @@ const rootReducer = combineReducers({
   taskDetail: taskDetailReducer,
   taskComments: taskCommentsReducer,
   taskActivity: taskActivityReducer,
+  taskLabels: labelReducer,
   notes: notesReducer,
   links: linksReducer,
 })
@@ -69,6 +75,10 @@ if (persistedFeatureState?.taskActivity?.items) {
   store.dispatch(hydrateTaskActivities(persistedFeatureState.taskActivity.items))
 }
 
+if (persistedFeatureState?.taskLabels?.items) {
+  store.dispatch(hydrateTaskLabels(persistedFeatureState.taskLabels.items))
+}
+
 if (persistedFeatureState?.notes?.items) {
   store.dispatch(hydrateNotes(persistedFeatureState.notes.items))
 }
@@ -91,6 +101,9 @@ store.subscribe(() => {
     },
     taskActivity: {
       items: state.taskActivity.items,
+    },
+    taskLabels: {
+      items: state.taskLabels.items,
     },
     notes: {
       items: state.notes.items,
