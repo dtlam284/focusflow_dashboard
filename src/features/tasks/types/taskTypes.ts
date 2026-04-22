@@ -92,6 +92,7 @@ export interface ITaskComment {
   taskId: string
   content: string
   createdAt: string
+  parentId?: string
 }
 
 export interface ITaskCommentsState {
