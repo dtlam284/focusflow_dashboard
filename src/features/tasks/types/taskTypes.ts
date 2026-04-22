@@ -18,6 +18,8 @@ export type TaskComputedStatus = TaskStatus | 'unfinished'
 export type TaskFilterStatus = (typeof TASK_FILTER_STATUSES)[number]
 export type TaskPriority = (typeof TASK_PRIORITIES)[number]
 export type TaskFilterPriority = (typeof TASK_FILTER_PRIORITIES)[number]
+
+export type TaskActivityType = 'created' | 'moved' | 'updated' | 'commented'
 //#endregion unions
 
 //#region task entity
@@ -99,3 +101,16 @@ export interface ITaskCommentsState {
   byTaskId: Record<string, ITaskComment[]>
 }
 //#endregion comments
+
+//#region activity
+export interface ITaskActivity {
+  id: string
+  taskId: string
+  type: TaskActivityType
+  createdAt: string
+}
+
+export interface ITaskActivitiesState {
+  items: ITaskActivity[]
+}
+//#endregion activity

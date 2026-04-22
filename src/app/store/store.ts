@@ -6,7 +6,10 @@ import appReducer from '@/app/store/slices/appSlice'
 import authReducer from '@/features/auth/store/slices/authSlice'
 import linksReducer, { hydrateLinks } from '@/features/links/store/slices/linkSlice'
 import notesReducer, { hydrateNotes } from '@/features/notes/store/slices/noteSlice'
-import taskCommentsReducer, { hydrateTaskComments, } from '@/features/tasks/store/slices/taskCommentsSlice'
+import taskActivityReducer, { hydrateTaskActivities,} from '@/features/tasks/store/slices/taskActivitySlice'
+import taskCommentsReducer, {
+  hydrateTaskComments,
+} from '@/features/tasks/store/slices/taskCommentsSlice'
 import taskDetailReducer from '@/features/tasks/store/slices/taskDetailSlice'
 import tasksReducer, { hydrateTasks } from '@/features/tasks/store/slices/taskSlice'
 
@@ -25,6 +28,7 @@ const rootReducer = combineReducers({
   tasks: tasksReducer,
   taskDetail: taskDetailReducer,
   taskComments: taskCommentsReducer,
+  taskActivity: taskActivityReducer,
   notes: notesReducer,
   links: linksReducer,
 })
@@ -57,16 +61,20 @@ if (persistedFeatureState?.tasks?.items) {
   store.dispatch(hydrateTasks(persistedFeatureState.tasks.items))
 }
 
+if (persistedFeatureState?.taskComments?.byTaskId) {
+  store.dispatch(hydrateTaskComments(persistedFeatureState.taskComments.byTaskId))
+}
+
+if (persistedFeatureState?.taskActivity?.items) {
+  store.dispatch(hydrateTaskActivities(persistedFeatureState.taskActivity.items))
+}
+
 if (persistedFeatureState?.notes?.items) {
   store.dispatch(hydrateNotes(persistedFeatureState.notes.items))
 }
 
 if (persistedFeatureState?.links?.items) {
   store.dispatch(hydrateLinks(persistedFeatureState.links.items))
-}
-
-if (persistedFeatureState?.taskComments?.byTaskId) {
-  store.dispatch(hydrateTaskComments(persistedFeatureState.taskComments.byTaskId))
 }
 //#endregion loading ui
 
@@ -80,6 +88,9 @@ store.subscribe(() => {
     },
     taskComments: {
       byTaskId: state.taskComments.byTaskId,
+    },
+    taskActivity: {
+      items: state.taskActivity.items,
     },
     notes: {
       items: state.notes.items,

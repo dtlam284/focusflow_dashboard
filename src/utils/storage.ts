@@ -1,6 +1,10 @@
 import type { ILink } from '@/features/links/types/linkTypes'
 import type { INote } from '@/features/notes/types/noteTypes'
-import type { ITask, ITaskCommentsState } from '@/features/tasks/types/taskTypes'
+import type {
+  ITask,
+  ITaskActivitiesState,
+  ITaskCommentsState,
+} from '@/features/tasks/types/taskTypes'
 
 const STORAGE_KEY = 'cms-feature-state'
 
@@ -10,6 +14,7 @@ export interface IPersistedFeatureState {
     items: ITask[]
   }
   taskComments?: ITaskCommentsState
+  taskActivity?: ITaskActivitiesState
   notes?: {
     items: INote[]
   }
