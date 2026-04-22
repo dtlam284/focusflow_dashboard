@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { useI18n } from '@/contexts/I18nContext'
 
+import { addTaskActivity } from '../store/slices/taskActivitySlice'
 import {
   selectCommentCountByTaskId,
   selectRootCommentsByTaskId,
@@ -50,6 +51,15 @@ export function TaskCommentsSection({ taskId }: ITaskCommentsSectionProps) {
         id: crypto.randomUUID(),
         taskId,
         content: nextContent,
+        createdAt: new Date().toISOString(),
+      }),
+    )
+
+    dispatch(
+      addTaskActivity({
+        id: crypto.randomUUID(),
+        taskId,
+        type: 'commented',
         createdAt: new Date().toISOString(),
       }),
     )
