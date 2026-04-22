@@ -1,65 +1,47 @@
-import type { ITask } from '@/features/tasks/types/taskTypes'
-import type { INote } from '@/features/notes/types/noteTypes'
 import type { ILink } from '@/features/links/types/linkTypes'
+import type { INote } from '@/features/notes/types/noteTypes'
+import type { ITask, ITaskCommentsState } from '@/features/tasks/types/taskTypes'
 
-const STORAGE_KEY = 'focusflow-persisted-state'
+const STORAGE_KEY = 'cms-feature-state'
 
+//#region types
 export interface IPersistedFeatureState {
-  tasks: {
+  tasks?: {
     items: ITask[]
   }
-  notes: {
+  taskComments?: ITaskCommentsState
+  notes?: {
     items: INote[]
   }
-  links: {
+  links?: {
     items: ILink[]
   }
 }
+//#endregion types
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null
-}
-
-function getItemsArray<T>(value: unknown): T[] {
-  return Array.isArray(value) ? (value as T[]) : []
-}
-
-export function loadState(): IPersistedFeatureState | undefined {
+//#region load state
+export const loadState = (): IPersistedFeatureState | undefined => {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
+    const serializedState = window.localStorage.getItem(STORAGE_KEY)
 
-    if (!raw) return undefined
-
-    const parsed: unknown = JSON.parse(raw)
-
-    if (!isRecord(parsed)) return undefined
-
-    const tasksRecord = isRecord(parsed.tasks) ? parsed.tasks : undefined
-    const notesRecord = isRecord(parsed.notes) ? parsed.notes : undefined
-    const linksRecord = isRecord(parsed.links) ? parsed.links : undefined
-
-    return {
-      tasks: {
-        items: getItemsArray<ITask>(tasksRecord?.items),
-      },
-      notes: {
-        items: getItemsArray<INote>(notesRecord?.items),
-      },
-      links: {
-        items: getItemsArray<ILink>(linksRecord?.items),
-      },
+    if (!serializedState) {
+      return undefined
     }
-  } catch (error) {
-    console.error('Failed to load state from localStorage:', error)
+
+    return JSON.parse(serializedState) as IPersistedFeatureState
+  } catch {
     return undefined
   }
 }
+//#endregion load state
 
-export function saveState(state: IPersistedFeatureState): void {
+//#region save state
+export const saveState = (state: IPersistedFeatureState) => {
   try {
-    const serialized = JSON.stringify(state)
-    localStorage.setItem(STORAGE_KEY, serialized)
-  } catch (error) {
-    console.error('Failed to save state to localStorage:', error)
+    const serializedState = JSON.stringify(state)
+    window.localStorage.setItem(STORAGE_KEY, serializedState)
+  } catch {
+    // ignore write errors
   }
 }
+//#endregion save state

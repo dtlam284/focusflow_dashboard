@@ -6,6 +6,7 @@ import appReducer from '@/app/store/slices/appSlice'
 import authReducer from '@/features/auth/store/slices/authSlice'
 import linksReducer, { hydrateLinks } from '@/features/links/store/slices/linkSlice'
 import notesReducer, { hydrateNotes } from '@/features/notes/store/slices/noteSlice'
+import taskCommentsReducer, { hydrateTaskComments, } from '@/features/tasks/store/slices/taskCommentsSlice'
 import taskDetailReducer from '@/features/tasks/store/slices/taskDetailSlice'
 import tasksReducer, { hydrateTasks } from '@/features/tasks/store/slices/taskSlice'
 
@@ -23,6 +24,7 @@ const rootReducer = combineReducers({
   auth: authReducer,
   tasks: tasksReducer,
   taskDetail: taskDetailReducer,
+  taskComments: taskCommentsReducer,
   notes: notesReducer,
   links: linksReducer,
 })
@@ -62,6 +64,10 @@ if (persistedFeatureState?.notes?.items) {
 if (persistedFeatureState?.links?.items) {
   store.dispatch(hydrateLinks(persistedFeatureState.links.items))
 }
+
+if (persistedFeatureState?.taskComments?.byTaskId) {
+  store.dispatch(hydrateTaskComments(persistedFeatureState.taskComments.byTaskId))
+}
 //#endregion loading ui
 
 //#region subscribe to store changes
@@ -71,6 +77,9 @@ store.subscribe(() => {
   saveState({
     tasks: {
       items: state.tasks.items,
+    },
+    taskComments: {
+      byTaskId: state.taskComments.byTaskId,
     },
     notes: {
       items: state.notes.items,
