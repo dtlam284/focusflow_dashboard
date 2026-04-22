@@ -8,6 +8,8 @@ import { useI18n } from '@/contexts/I18nContext';
 import { cn } from '@/utils';
 
 import { getTaskEffectiveStatus } from '../store/selectors/taskSelectors';
+import { InlineTaskTitle } from './InlineTaskTitle'
+
 import type { ITask, TaskComputedStatus, TaskStatus } from '../types/taskTypes';
 
 //#region types
@@ -117,14 +119,14 @@ export function KanbanTaskCard({
             <div className='space-y-3'>
                 <div className='flex items-start justify-between gap-3'>
                     <div className='min-w-0 space-y-1'>
-                        <h3
+                        <InlineTaskTitle
+                            taskId={task.id}
+                            title={task.title}
                             className={cn(
                                 'line-clamp-2 text-sm font-semibold text-slate-900 dark:text-slate-100',
                                 isDone && 'text-slate-500 line-through dark:text-slate-500',
                             )}
-                        >
-                            {task.title}
-                        </h3>
+                        />
 
                         {task.description ? (
                             <p
