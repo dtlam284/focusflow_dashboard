@@ -25,6 +25,7 @@ const createTask = (overrides: Partial<ITask> = {}): ITask => {
     status: 'todo',
     order: 0,
     priority: 'medium',
+    labelIds: [],
     createdAt: '2026-04-21T00:00:00.000Z',
     updatedAt: '2026-04-21T00:00:00.000Z',
   }
@@ -33,6 +34,7 @@ const createTask = (overrides: Partial<ITask> = {}): ITask => {
     ...baseTask,
     ...overrides,
     order: overrides.order ?? baseTask.order,
+    labelIds: overrides.labelIds ?? baseTask.labelIds,
   }
 }
 
@@ -42,6 +44,7 @@ const createTasksState = (overrides: Partial<ITasksState> = {}): ITasksState => 
     status: 'all',
     priority: 'all',
     keyword: '',
+    labelId: 'all',
   },
   ...overrides,
 })
@@ -69,6 +72,9 @@ const createRootState = (tasks: ITasksState): RootState =>
       byTaskId: {},
     },
     taskActivity: {
+      items: [],
+    },
+    taskLabels: {
       items: [],
     },
     notes: {
@@ -104,6 +110,7 @@ describe('tasksSlice', () => {
           status: 'todo',
           order: 0,
           priority: 'high',
+          labelIds: ['label-feature'],
           createdAt: '2026-04-06T00:00:00.000Z',
           updatedAt: '2026-04-06T00:00:00.000Z',
         }),
@@ -114,6 +121,7 @@ describe('tasksSlice', () => {
     expect(nextState.items[0]?.title).toBe('Learn Redux Toolkit')
     expect(nextState.items[0]?.priority).toBe('high')
     expect(nextState.items[0]?.order).toBe(0)
+    expect(nextState.items[0]?.labelIds).toEqual(['label-feature'])
   })
 
   it('updates a task', () => {
@@ -128,12 +136,14 @@ describe('tasksSlice', () => {
         changes: {
           title: 'Learn Redux Toolkit deeply',
           priority: 'medium',
+          labelIds: ['label-bug', 'label-feature'],
         },
       }),
     )
 
     expect(nextState.items[0]?.title).toBe('Learn Redux Toolkit deeply')
     expect(nextState.items[0]?.priority).toBe('medium')
+    expect(nextState.items[0]?.labelIds).toEqual(['label-bug', 'label-feature'])
   })
 
   it('deletes a task', () => {
@@ -162,12 +172,14 @@ describe('tasksSlice', () => {
       setTaskFilters({
         status: 'done',
         keyword: 'redux',
+        labelId: 'label-bug',
       }),
     )
 
     expect(nextState.filters.status).toBe('done')
     expect(nextState.filters.keyword).toBe('redux')
     expect(nextState.filters.priority).toBe('all')
+    expect(nextState.filters.labelId).toBe('label-bug')
   })
 
   it('resets task filters', () => {
@@ -176,6 +188,7 @@ describe('tasksSlice', () => {
         status: 'done',
         priority: 'high',
         keyword: 'redux',
+        labelId: 'label-bug',
       },
     })
 
@@ -185,6 +198,7 @@ describe('tasksSlice', () => {
       status: 'all',
       priority: 'all',
       keyword: '',
+      labelId: 'all',
     })
   })
 
@@ -197,6 +211,7 @@ describe('tasksSlice', () => {
           status: 'todo',
           order: 0,
           priority: 'high',
+          labelIds: ['label-feature'],
         }),
         createTask({
           id: 'task-2',
@@ -204,12 +219,14 @@ describe('tasksSlice', () => {
           status: 'done',
           order: 1,
           priority: 'medium',
+          labelIds: ['label-bug'],
         }),
       ],
       filters: {
         status: 'done',
         priority: 'all',
         keyword: 'write',
+        labelId: 'label-bug',
       },
     })
 

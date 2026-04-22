@@ -51,6 +51,7 @@ const createRootState = (links: ILinksState): RootState =>
         status: 'all',
         priority: 'all',
         keyword: '',
+        labelId: 'all',
       },
     },
     taskDetail: {
@@ -61,6 +62,9 @@ const createRootState = (links: ILinksState): RootState =>
       byTaskId: {},
     },
     taskActivity: {
+      items: [],
+    },
+    taskLabels: {
       items: [],
     },
     notes: {

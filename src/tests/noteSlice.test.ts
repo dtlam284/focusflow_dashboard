@@ -57,6 +57,7 @@ const createRootState = (notes: INotesState): RootState =>
         status: 'all',
         priority: 'all',
         keyword: '',
+        labelId: 'all',
       },
     },
     taskDetail: {
@@ -67,6 +68,9 @@ const createRootState = (notes: INotesState): RootState =>
       byTaskId: {},
     },
     taskActivity: {
+      items: [],
+    },
+    taskLabels: {
       items: [],
     },
     notes,

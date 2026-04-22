@@ -1,11 +1,46 @@
+import { createSelector } from '@reduxjs/toolkit'
+
 import type { RootState } from '@/app/store/store'
-import {
-  TASK_STATUSES,
-  type ITask,
-  type ITaskBoardColumn,
-  type TaskComputedStatus,
-  type TaskStatus,
+
+import type {
+  ITask,
+  ITaskBoardColumn,
+  TaskComputedStatus,
+  TaskStatus,
 } from '../../types/taskTypes'
+
+//#region helpers
+const sortTasksByOrder = (tasks: ITask[]) =>
+  [...tasks].sort((left, right) => left.order - right.order)
+
+export const getTaskIsUnfinished = (task: ITask) => {
+  if (task.status === 'done') {
+    return false
+  }
+
+  if (!task.dueDate) {
+    return true
+  }
+
+  const deadline = new Date(
+    `${task.dueDate}T${task.dueTime && task.dueTime.trim() ? task.dueTime : '23:59'}`,
+  )
+
+  if (Number.isNaN(deadline.getTime())) {
+    return true
+  }
+
+  return deadline.getTime() < Date.now()
+}
+
+export const getTaskEffectiveStatus = (task: ITask): TaskComputedStatus => {
+  if (getTaskIsUnfinished(task)) {
+    return 'unfinished'
+  }
+
+  return task.status
+}
+//#endregion helpers
 
 //#region base selectors
 export const selectTaskState = (state: RootState) => state.tasks
@@ -13,75 +48,73 @@ export const selectTaskItems = (state: RootState) => state.tasks.items
 export const selectTaskFilters = (state: RootState) => state.tasks.filters
 //#endregion base selectors
 
-//#region helpers
-const sortTasksByOrder = (tasks: ITask[]): ITask[] => {
-  return [...tasks].sort((a, b) => a.order - b.order)
-}
+//#region derived selectors
+export const selectFilteredTasks = createSelector(
+  [selectTaskItems, selectTaskFilters],
+  (items, filters) => {
+    const normalizedKeyword = filters.keyword.trim().toLowerCase()
 
-const getTaskDeadline = (task: ITask) => {
-  if (!task.dueDate) return null
+    return sortTasksByOrder(
+      items.filter((task: ITask) => {
+        const effectiveStatus = getTaskEffectiveStatus(task)
 
-  const time = task.dueTime?.trim() || '23:59'
-  return new Date(`${task.dueDate}T${time}:00`)
-}
+        const matchesStatus =
+          filters.status === 'all' || effectiveStatus === filters.status
 
-export const getTaskIsUnfinished = (task: ITask): boolean => {
-  if (task.status === 'done') return false
+        const matchesPriority =
+          filters.priority === 'all' || task.priority === filters.priority
 
-  const deadline = getTaskDeadline(task)
-  if (!deadline || Number.isNaN(deadline.getTime())) return false
+        const matchesKeyword =
+          normalizedKeyword.length === 0 ||
+          task.title.toLowerCase().includes(normalizedKeyword) ||
+          task.description?.toLowerCase().includes(normalizedKeyword)
 
-  return deadline < new Date()
-}
+        const matchesLabel =
+          filters.labelId === 'all' || task.labelIds.includes(filters.labelId)
 
-export const getTaskEffectiveStatus = (task: ITask): TaskComputedStatus => {
-  if (getTaskIsUnfinished(task)) return 'unfinished'
-  return task.status
-}
-//#endregion helpers
+        return (
+          matchesStatus &&
+          matchesPriority &&
+          matchesKeyword &&
+          matchesLabel
+        )
+      }),
+    )
+  },
+)
 
-//#region filtered selectors
-export const selectFilteredTasks = (state: RootState): ITask[] => {
-  const { items, filters } = state.tasks
-  const keyword = filters.keyword.trim().toLowerCase()
+export const selectTasksByStatus = createSelector(
+  [selectTaskItems, (_state: RootState, status: TaskStatus) => status],
+  (items, status) =>
+    sortTasksByOrder(items.filter((task: ITask) => task.status === status)),
+)
 
-  return items.filter((task) => {
-    const effectiveStatus = getTaskEffectiveStatus(task)
+export const selectTaskBoardColumns = createSelector([selectFilteredTasks], (tasks) => {
+  const statuses: TaskStatus[] = ['todo', 'in_progress', 'review', 'done']
 
-    const matchesStatus = filters.status === 'all' || effectiveStatus === filters.status
-
-    const matchesPriority = filters.priority === 'all' || task.priority === filters.priority
-
-    const matchesKeyword =
-      keyword.length === 0 ||
-      task.title.toLowerCase().includes(keyword) ||
-      task.description?.toLowerCase().includes(keyword)
-
-    return matchesStatus && matchesPriority && matchesKeyword
-  })
-}
-
-export const selectTasksByStatus = (state: RootState, status: TaskStatus): ITask[] => {
-  return sortTasksByOrder(state.tasks.items.filter((task) => task.status === status))
-}
-
-export const selectKanbanColumns = (state: RootState): ITaskBoardColumn[] => {
-  return TASK_STATUSES.map((status) => ({
+  return statuses.map<ITaskBoardColumn>((status) => ({
     status,
-    tasks: sortTasksByOrder(state.tasks.items.filter((task) => task.status === status)),
+    tasks: sortTasksByOrder(tasks.filter((task: ITask) => task.status === status)),
   }))
-}
-//#endregion filtered selectors
+})
 
-//#region metrics selectors
-export const selectTotalTaskCount = (state: RootState) => state.tasks.items.length
+export const selectTotalTaskCount = createSelector(
+  [selectTaskItems],
+  (items) => items.length,
+)
 
-export const selectCompletedTaskCount = (state: RootState) =>
-  state.tasks.items.filter((task) => task.status === 'done').length
+export const selectCompletedTaskCount = createSelector(
+  [selectTaskItems],
+  (items) => items.filter((task: ITask) => task.status === 'done').length,
+)
 
-export const selectPendingTaskCount = (state: RootState) =>
-  state.tasks.items.filter((task) => task.status !== 'done').length
+export const selectPendingTaskCount = createSelector(
+  [selectTaskItems],
+  (items) => items.filter((task: ITask) => task.status !== 'done').length,
+)
 
-export const selectUnfinishedTaskCount = (state: RootState) =>
-  state.tasks.items.filter((task) => getTaskIsUnfinished(task)).length
-//#endregion metrics selectors
+export const selectUnfinishedTaskCount = createSelector(
+  [selectTaskItems],
+  (items) => items.filter((task: ITask) => getTaskIsUnfinished(task)).length,
+)
+//#endregion derived selectors
