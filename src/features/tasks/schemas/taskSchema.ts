@@ -1,41 +1,33 @@
 import { z } from 'zod'
 
-//#region helpers
-const getTodayDateString = () => {
-  const today = new Date()
-  const year = today.getFullYear()
-  const month = String(today.getMonth() + 1).padStart(2, '0')
-  const day = String(today.getDate()).padStart(2, '0')
-
-  return `${year}-${month}-${day}`
-}
-//#endregion helpers
+import { TASK_PRIORITIES } from '../types/taskTypes'
 
 //#region schema
-export const taskFormSchema = z.object({
+export const taskSchema = z.object({
   title: z
     .string()
     .trim()
-    .min(3, 'Title must be at least 3 characters.')
-    .max(100, 'Title must not exceed 100 characters.'),
-  description: z
-    .string()
-    .trim()
-    .max(500, 'Description must not exceed 500 characters.')
-    .optional()
-    .or(z.literal('')),
-  priority: z.enum(['low', 'medium', 'high'] as const, {
-    message: 'Please select a priority.',
-  }),
-  dueDate: z
-    .string()
-    .trim()
-    .min(1, 'Please select a due date.')
-    .refine((value) => value >= getTodayDateString(), 'Due date cannot be earlier than today.'),
-  dueTime: z.string().trim().min(1, 'Please select a time.'),
+    .min(1, 'Please enter a task title')
+    .max(120, 'Task title must be at most 120 characters'),
+  description: z.string().optional(),
+  priority: z.enum(TASK_PRIORITIES),
+  dueDate: z.string().min(1, 'Please select a due date'),
+  dueTime: z.string().optional(),
+  labelIds: z.array(z.string()),
 })
 //#endregion schema
 
 //#region types
-export type TaskFormValues = z.infer<typeof taskFormSchema>
+export type TaskFormValues = z.infer<typeof taskSchema>
 //#endregion types
+
+//#region defaults
+export const defaultTaskFormValues: TaskFormValues = {
+  title: '',
+  description: '',
+  priority: 'medium',
+  dueDate: '',
+  dueTime: '',
+  labelIds: [],
+}
+//#endregion defaults

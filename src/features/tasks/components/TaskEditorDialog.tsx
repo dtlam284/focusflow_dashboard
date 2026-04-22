@@ -2,9 +2,9 @@ import { SectionCard } from '@/components/shared/SectionCard'
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from '@/components/ui/dialog'
 import { useI18n } from '@/contexts/I18nContext'
 
@@ -29,24 +29,21 @@ export function TaskEditorDialog({
   onOpenChange,
   onSubmit,
 }: ITaskEditorDialogProps) {
-  //#region hooks
   const { t } = useI18n()
   const isEditMode = mode === 'edit'
-  //#endregion hooks
 
-  //#region handlers
   const handleSubmit = async (values: TaskFormValues) => {
     await onSubmit(values)
     onOpenChange(false)
   }
-  //#endregion handlers
 
-  //#region render
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className='max-w-2xl'>
         <DialogHeader>
-          <DialogTitle>{isEditMode ? t('Edit task') : t('Create a new task')}</DialogTitle>
+          <DialogTitle>
+            {isEditMode ? t('Edit task') : t('Create a new task')}
+          </DialogTitle>
           <DialogDescription>
             {isEditMode
               ? t('Update the selected task details.')
@@ -54,9 +51,8 @@ export function TaskEditorDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <SectionCard className="border-0 bg-transparent p-0 shadow-none">
+        <SectionCard className='border-0 bg-transparent p-0 shadow-none'>
           <TaskForm
-            key={isEditMode ? 'edit-task-form' : 'create-task-form'}
             mode={mode}
             initialValues={initialValues}
             onSubmit={handleSubmit}
@@ -66,6 +62,5 @@ export function TaskEditorDialog({
       </DialogContent>
     </Dialog>
   )
-  //#endregion render
 }
 //#endregion component

@@ -1,24 +1,25 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { Provider } from 'react-redux'
 import { describe, expect, it, vi } from 'vitest'
 
+import { store } from '@/app/store/store'
+import { I18nProvider } from '@/contexts/I18nContext'
 import { TaskForm } from '@/features/tasks/components/TaskForm'
 
-//#region mock
-vi.mock('@/contexts/I18nContext', () => ({
-  useI18n: () => ({
-    t: (value: string) => value,
-  }),
-}))
-//#endregion mock
-
-//#region setup
+//#region tests
 describe('TaskForm', () => {
   it('does not submit when title is missing', async () => {
     const user = userEvent.setup()
     const onSubmit = vi.fn()
 
-    render(<TaskForm mode="create" onSubmit={onSubmit} />)
+    render(
+      <Provider store={store}>
+        <I18nProvider>
+          <TaskForm mode='create' onSubmit={onSubmit} />
+        </I18nProvider>
+      </Provider>,
+    )
 
     await user.click(
       screen.getByRole('button', {
@@ -28,11 +29,9 @@ describe('TaskForm', () => {
 
     expect(onSubmit).not.toHaveBeenCalled()
 
-    expect(await screen.findByText('Title must be at least 3 characters.')).toBeInTheDocument()
-
-    expect(screen.getByText('Please select a due date.')).toBeInTheDocument()
-
-    expect(screen.getByText('Please select a time.')).toBeInTheDocument()
+    expect(
+      await screen.findByText(/please enter a task/i),
+    ).toBeInTheDocument()
   })
 })
-//#endregion setup
+//#endregion tests

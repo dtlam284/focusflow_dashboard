@@ -12,7 +12,10 @@ import { KanbanBoard } from '@/features/tasks/components/KanbanBoard'
 import { TaskDetailPanel } from '@/features/tasks/components/TaskDetailPanel'
 import { TaskFilterBar } from '@/features/tasks/components/TaskFilterBar'
 import type { TaskFormValues } from '@/features/tasks/schemas/taskSchema'
-import { removeActivitiesByTaskId } from '@/features/tasks/store/slices/taskActivitySlice'
+import {
+  addTaskActivity,
+  removeActivitiesByTaskId,
+} from '@/features/tasks/store/slices/taskActivitySlice'
 import { removeCommentsByTaskId } from '@/features/tasks/store/slices/taskCommentsSlice'
 import {
   addTask,
@@ -21,7 +24,6 @@ import {
   setTaskFilters,
   updateTask,
 } from '@/features/tasks/store/slices/taskSlice'
-import { addTaskActivity } from '@/features/tasks/store/slices/taskActivitySlice'
 import {
   selectCompletedTaskCount,
   selectFilteredTasks,
@@ -33,6 +35,7 @@ import {
 import type { ITask, ITaskFilters } from '@/features/tasks/types/taskTypes'
 
 import { TaskEditorDialog } from '@/features/tasks/components/TaskEditorDialog'
+
 //#region component
 export function TasksScreen() {
   //#region hooks
@@ -56,7 +59,7 @@ export function TasksScreen() {
   //#endregion local state
 
   //#region derived values
-  const editingTask = tasks.find((task) => task.id === editingTaskId) ?? null
+  const editingTask = tasks.find((task: ITask) => task.id === editingTaskId) ?? null
   const isEditDialogOpen = Boolean(editingTask)
   const totalCount = tasks.length
 
@@ -67,6 +70,7 @@ export function TasksScreen() {
         priority: editingTask.priority,
         dueDate: editingTask.dueDate ?? '',
         dueTime: editingTask.dueTime ?? '',
+        labelIds: editingTask.labelIds,
       }
     : undefined
   //#endregion derived values
@@ -84,7 +88,9 @@ export function TasksScreen() {
         priority: values.priority,
         dueDate: values.dueDate.trim(),
         dueTime: values.dueTime?.trim() || undefined,
+        labelIds: values.labelIds,
         status: 'todo',
+        order: 0,
         createdAt: now,
         updatedAt: now,
       }),
@@ -116,6 +122,7 @@ export function TasksScreen() {
           priority: values.priority,
           dueDate: values.dueDate.trim(),
           dueTime: values.dueTime?.trim() || undefined,
+          labelIds: values.labelIds,
         },
       }),
     )
@@ -139,7 +146,7 @@ export function TasksScreen() {
   }
 
   const handleRequestDelete = (taskId: string) => {
-    const task = tasks.find((item) => item.id === taskId) ?? null
+    const task = tasks.find((item: ITask) => item.id === taskId) ?? null
     setTaskPendingDelete(task)
   }
 
@@ -171,6 +178,10 @@ export function TasksScreen() {
 
   const handleResetFilters = () => {
     dispatch(resetTaskFilters())
+  }
+
+  const handleLabelChange = (labelId: ITaskFilters['labelId']) => {
+    dispatch(setTaskFilters({ labelId }))
   }
   //#endregion handlers
 
@@ -213,12 +224,13 @@ export function TasksScreen() {
 
       <div className='space-y-4'>
         <TaskFilterBar
-          filters={filters}
-          visibleCount={filteredTasks.length}
-          onKeywordChange={handleKeywordChange}
-          onStatusChange={handleStatusChange}
-          onPriorityChange={handlePriorityChange}
-          onReset={handleResetFilters}
+            filters={filters}
+            visibleCount={filteredTasks.length}
+            onKeywordChange={handleKeywordChange}
+            onStatusChange={handleStatusChange}
+            onPriorityChange={handlePriorityChange}
+            onLabelChange={handleLabelChange}
+            onReset={handleResetFilters}
         />
 
         <KanbanBoard
@@ -239,7 +251,7 @@ export function TasksScreen() {
         open={isEditDialogOpen}
         mode='edit'
         initialValues={initialFormValues}
-        onOpenChange={(open) => {
+        onOpenChange={(open: boolean) => {
           if (!open) {
             setEditingTaskId(null)
           }
@@ -261,7 +273,7 @@ export function TasksScreen() {
         }
         confirmLabel={t('Delete')}
         cancelLabel={t('Cancel')}
-        onOpenChange={(open) => {
+        onOpenChange={(open: boolean) => {
           if (!open) {
             setTaskPendingDelete(null)
           }

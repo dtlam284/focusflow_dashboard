@@ -1,11 +1,10 @@
-import * as React from 'react'
-import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { CalendarDays, Clock3, Plus, Save, X } from 'lucide-react'
+import { useEffect } from 'react'
+import { useForm, useWatch } from 'react-hook-form'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
+import { Label } from '@/components/ui/label'
 import {
   Select,
   SelectContent,
@@ -13,43 +12,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { FormField } from '@/components/shared/FormField'
+import { Textarea } from '@/components/ui/textarea'
 import { useI18n } from '@/contexts/I18nContext'
 
-import { taskFormSchema, type TaskFormValues } from '../schemas/taskSchema'
+import {
+  defaultTaskFormValues,
+  taskSchema,
+  type TaskFormValues,
+} from '../schemas/taskSchema'
+import { TaskLabelField } from './TaskLabelField'
 
 //#region props
-export interface ITaskFormProps {
+interface ITaskFormProps {
   mode: 'create' | 'edit'
   initialValues?: Partial<TaskFormValues>
   onSubmit: (values: TaskFormValues) => void | Promise<void>
   onCancelEdit?: () => void
-  isSubmitting?: boolean
-  submitLabel?: string
-  className?: string
 }
 //#endregion props
-
-//#region helpers
-const getTodayDateString = () => {
-  const today = new Date()
-  const year = today.getFullYear()
-  const month = String(today.getMonth() + 1).padStart(2, '0')
-  const day = String(today.getDate()).padStart(2, '0')
-
-  return `${year}-${month}-${day}`
-}
-//#endregion helpers
-
-//#region constants
-const EMPTY_VALUES: TaskFormValues = {
-  title: '',
-  description: '',
-  priority: 'medium',
-  dueDate: '',
-  dueTime: '',
-}
-//#endregion constants
 
 //#region component
 export function TaskForm({
@@ -57,189 +37,153 @@ export function TaskForm({
   initialValues,
   onSubmit,
   onCancelEdit,
-  isSubmitting = false,
-  submitLabel,
-  className,
 }: ITaskFormProps) {
-  //#region hooks
   const { t } = useI18n()
-  const minDueDate = React.useMemo(() => {
-    if (mode === 'edit' && initialValues?.dueDate) {
-      return initialValues.dueDate
-    }
 
-    return getTodayDateString()
-  }, [mode, initialValues?.dueDate])
-  //#endregion hooks
-
-  //#region form setup
   const {
     register,
     control,
     handleSubmit,
+    formState: { errors, isSubmitting },
     reset,
-    formState: { errors, isSubmitting: isFormSubmitting },
+    setValue,
   } = useForm<TaskFormValues>({
-    resolver: zodResolver(taskFormSchema),
+    resolver: zodResolver(taskSchema),
     defaultValues: {
-      ...EMPTY_VALUES,
+      ...defaultTaskFormValues,
       ...initialValues,
+      labelIds: initialValues?.labelIds ?? defaultTaskFormValues.labelIds,
     },
   })
-  //#endregion form setup
 
-  //#region effects
-  React.useEffect(() => {
+  useEffect(() => {
     reset({
-      ...EMPTY_VALUES,
+      ...defaultTaskFormValues,
       ...initialValues,
+      labelIds: initialValues?.labelIds ?? defaultTaskFormValues.labelIds,
     })
   }, [initialValues, reset])
-  //#endregion effects
 
-  //#region derived values
-  const submitting = isSubmitting || isFormSubmitting
-  const isEditMode = mode === 'edit'
-  //#endregion derived values
+  const priority = useWatch({
+    control,
+    name: 'priority',
+  })
 
-  //#region handlers
-  const submitHandler = async (values: TaskFormValues) => {
-    await onSubmit(values)
+  const labelIds =
+    useWatch({
+      control,
+      name: 'labelIds',
+    }) ?? []
 
-    if (!isEditMode) {
-      reset(EMPTY_VALUES)
-    }
-  }
-  //#endregion handlers
+  const submitLabel = mode === 'edit' ? t('Save changes') : t('Add task')
 
-  //#region render
   return (
-    <form onSubmit={handleSubmit(submitHandler)} className={className ?? 'space-y-4'}>
-      <FormField
-        label={t('Title')}
-        htmlFor="task-title"
-        required
-        hint={t('Use a short, clear task title.')}
-      >
+    <form className='space-y-5' onSubmit={handleSubmit(onSubmit)}>
+      <div className='space-y-2'>
+        <Label htmlFor='task-title'>
+          {t('Title')}
+          <span className='text-rose-500'>*</span>
+        </Label>
         <Input
-          id="task-title"
+          id='task-title'
           placeholder={t('Enter task title')}
-          aria-invalid={errors.title ? 'true' : 'false'}
           {...register('title')}
         />
+        <p className='text-xs text-slate-500 dark:text-slate-400'>
+          {t('Use a short, clear task title.')}
+        </p>
         {errors.title ? (
-          <p className="text-sm text-rose-600 dark:text-rose-400">{errors.title.message}</p>
+          <p className='text-xs text-rose-500'>{t(errors.title.message ?? '')}</p>
         ) : null}
-      </FormField>
-
-      <FormField
-        label={t('Description')}
-        htmlFor="task-description"
-        hint={t('Add more context for this task.')}
-      >
-        <Textarea
-          id="task-description"
-          placeholder={t('Write a short description')}
-          className="min-h-24"
-          aria-invalid={errors.description ? 'true' : 'false'}
-          {...register('description')}
-        />
-        {errors.description ? (
-          <p className="text-sm text-rose-600 dark:text-rose-400">{errors.description.message}</p>
-        ) : null}
-      </FormField>
-
-      <div className="grid gap-4 md:grid-cols-3">
-        <FormField label={t('Priority')} required hint={t('Set the task priority.')}>
-          <Controller
-            name="priority"
-            control={control}
-            render={({ field }) => (
-              <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger aria-invalid={errors.priority ? 'true' : 'false'}>
-                  <SelectValue placeholder={t('Select priority')} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="low">{t('Low')}</SelectItem>
-                  <SelectItem value="medium">{t('Medium')}</SelectItem>
-                  <SelectItem value="high">{t('High')}</SelectItem>
-                </SelectContent>
-              </Select>
-            )}
-          />
-          {errors.priority ? (
-            <p className="text-sm text-rose-600 dark:text-rose-400">{errors.priority.message}</p>
-          ) : null}
-        </FormField>
-
-        <FormField
-          label={t('Due date')}
-          htmlFor="task-due-date"
-          required
-          hint={t('Set a target date.')}
-        >
-          <div className="relative">
-            <CalendarDays className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-            <Input
-              id="task-due-date"
-              type="date"
-              min={minDueDate}
-              className="pl-9"
-              aria-invalid={errors.dueDate ? 'true' : 'false'}
-              {...register('dueDate')}
-            />
-          </div>
-          {errors.dueDate ? (
-            <p className="text-sm text-rose-600 dark:text-rose-400">{errors.dueDate.message}</p>
-          ) : null}
-        </FormField>
-
-        <FormField
-          label={t('Time')}
-          htmlFor="task-due-time"
-          required
-          hint={t('Set a target time.')}
-        >
-          <div className="relative">
-            <Clock3 className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-            <Input
-              id="task-due-time"
-              type="time"
-              className="pl-9"
-              aria-invalid={errors.dueTime ? 'true' : 'false'}
-              {...register('dueTime')}
-            />
-          </div>
-          {errors.dueTime ? (
-            <p className="text-sm text-rose-600 dark:text-rose-400">{errors.dueTime.message}</p>
-          ) : null}
-        </FormField>
       </div>
 
-      <div className="flex flex-wrap items-center gap-2 pt-2">
-        <Button type="submit" isLoading={submitting}>
-          {isEditMode ? (
-            <>
-              <Save className="h-4 w-4" />
-              {submitLabel ?? t('Save changes')}
-            </>
-          ) : (
-            <>
-              <Plus className="h-4 w-4" />
-              {submitLabel ?? t('Add task')}
-            </>
-          )}
+      <div className='space-y-2'>
+        <Label htmlFor='task-description'>{t('Description')}</Label>
+        <Textarea
+          id='task-description'
+          placeholder={t('Write a short description')}
+          className='min-h-28'
+          {...register('description')}
+        />
+        <p className='text-xs text-slate-500 dark:text-slate-400'>
+          {t('Add more context for this task.')}
+        </p>
+      </div>
+
+      <TaskLabelField
+        value={labelIds}
+        onChange={(nextValue: string[]) => {
+          setValue('labelIds', nextValue, {
+            shouldDirty: true,
+            shouldValidate: true,
+          })
+        }}
+      />
+
+      <div className='grid gap-4 md:grid-cols-3'>
+        <div className='space-y-2'>
+          <Label htmlFor='task-priority'>
+            {t('Priority')}
+            <span className='text-rose-500'>*</span>
+          </Label>
+          <Select
+            value={priority}
+            onValueChange={(value) =>
+              setValue('priority', value as TaskFormValues['priority'], {
+                shouldDirty: true,
+                shouldValidate: true,
+              })
+            }
+          >
+            <SelectTrigger id='task-priority'>
+              <SelectValue placeholder={t('Select priority')} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value='low'>{t('Low')}</SelectItem>
+              <SelectItem value='medium'>{t('Medium')}</SelectItem>
+              <SelectItem value='high'>{t('High')}</SelectItem>
+            </SelectContent>
+          </Select>
+          <p className='text-xs text-slate-500 dark:text-slate-400'>
+            {t('Set the task priority.')}
+          </p>
+        </div>
+
+        <div className='space-y-2'>
+          <Label htmlFor='task-due-date'>
+            {t('Due date')}
+            <span className='text-rose-500'>*</span>
+          </Label>
+          <Input id='task-due-date' type='date' {...register('dueDate')} />
+          <p className='text-xs text-slate-500 dark:text-slate-400'>
+            {t('Set a target date.')}
+          </p>
+          {errors.dueDate ? (
+            <p className='text-xs text-rose-500'>{t(errors.dueDate.message ?? '')}</p>
+          ) : null}
+        </div>
+
+        <div className='space-y-2'>
+          <Label htmlFor='task-due-time'>{t('Time')}</Label>
+          <Input id='task-due-time' type='time' {...register('dueTime')} />
+          <p className='text-xs text-slate-500 dark:text-slate-400'>
+            {t('Set a target time.')}
+          </p>
+        </div>
+      </div>
+
+      <div className='flex flex-wrap items-center gap-3'>
+        <Button type='submit' disabled={isSubmitting}>
+          {submitLabel}
         </Button>
 
-        {onCancelEdit ? (
-          <Button type="button" variant="outline" onClick={onCancelEdit}>
-            <X className="h-4 w-4" />
+        {mode === 'edit' && onCancelEdit ? (
+          <Button type='button' variant='outline' onClick={onCancelEdit}>
             {t('Cancel')}
           </Button>
         ) : null}
       </div>
     </form>
   )
-  //#endregion render
 }
 //#endregion component
