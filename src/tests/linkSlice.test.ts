@@ -60,6 +60,9 @@ const createRootState = (links: ILinksState): RootState =>
     taskComments: {
       byTaskId: {},
     },
+    taskActivity: {
+      items: [],
+    },
     notes: {
       items: [],
       filters: {
@@ -74,7 +77,7 @@ const createRootState = (links: ILinksState): RootState =>
   }) as RootState
 //#endregion helpers
 
-//#region setup
+//#region tests
 describe('linkSlice', () => {
   it('adds a link', () => {
     const nextState = linkReducer(createLinksState(), addLink(createLink()))
@@ -141,11 +144,7 @@ describe('linkSlice', () => {
       category: 'all',
     })
   })
-})
-//#endregion setup
 
-//#region selector tests
-describe('linkSelectors', () => {
   it('returns filtered links', () => {
     const linksState = createLinksState({
       items: [
@@ -174,4 +173,4 @@ describe('linkSelectors', () => {
     expect(result[0]?.id).toBe('link-1')
   })
 })
-//#endregion selector tests
+//#endregion tests

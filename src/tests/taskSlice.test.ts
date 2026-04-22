@@ -68,6 +68,9 @@ const createRootState = (tasks: ITasksState): RootState =>
     taskComments: {
       byTaskId: {},
     },
+    taskActivity: {
+      items: [],
+    },
     notes: {
       items: [],
       filters: {
@@ -88,7 +91,7 @@ const createRootState = (tasks: ITasksState): RootState =>
   }) as RootState
 //#endregion helpers
 
-//#region slice tests
+//#region tests
 describe('tasksSlice', () => {
   it('adds a task', () => {
     const nextState = tasksReducer(
@@ -184,11 +187,7 @@ describe('tasksSlice', () => {
       keyword: '',
     })
   })
-})
-//#endregion slice tests
 
-//#region selector tests
-describe('taskSelectors', () => {
   it('returns filtered tasks', () => {
     const tasksState = createTasksState({
       items: [
@@ -236,4 +235,4 @@ describe('taskSelectors', () => {
     expect(selectPendingTaskCount(state)).toBe(1)
   })
 })
-//#endregion selector tests
+//#endregion tests
