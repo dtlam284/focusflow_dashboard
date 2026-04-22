@@ -27,17 +27,34 @@ export const selectCommentsByTaskId = createSelector(
   },
 )
 
-export const selectCommentCountByTaskId = createSelector(
+export const selectRootCommentsByTaskId = createSelector(
+  [selectCommentsByTaskId],
+  (comments): ITaskComment[] => comments.filter((comment) => !comment.parentId),
+)
+
+export const selectRepliesByParentId = createSelector(
   [
-    selectTaskCommentsState,
-    (_state: RootState, taskId: string | null) => taskId,
+    selectCommentsByTaskId,
+    (_state: RootState, _taskId: string | null, parentId: string | null) =>
+      parentId,
   ],
-  (taskCommentsState, taskId): number => {
-    if (!taskId) {
-      return 0
+  (comments, parentId): ITaskComment[] => {
+    if (!parentId) {
+      return EMPTY_COMMENTS
     }
 
-    return taskCommentsState.byTaskId[taskId]?.length ?? 0
+    const parentComment = comments.find((comment) => comment.id === parentId)
+
+    if (!parentComment || parentComment.parentId) {
+      return EMPTY_COMMENTS
+    }
+
+    return comments.filter((comment) => comment.parentId === parentId)
   },
+)
+
+export const selectCommentCountByTaskId = createSelector(
+  [selectCommentsByTaskId],
+  (comments): number => comments.length,
 )
 //#endregion derived selectors
