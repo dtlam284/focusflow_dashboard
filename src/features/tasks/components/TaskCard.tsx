@@ -6,6 +6,7 @@ import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import { cn } from '@/utils'
 
 import { getTaskEffectiveStatus } from '../store/selectors/taskSelectors'
+import { TaskLabelChips } from './TaskLabelChips'
 import type { ITask, TaskComputedStatus } from '../types/taskTypes'
 
 //#region props
@@ -66,6 +67,8 @@ export function TaskCard({ task, onEdit, onDelete, onToggleStatus }: ITaskCardPr
               {task.description}
             </p>
           ) : null}
+
+          <TaskLabelChips labelIds={task.labelIds} maxVisible={3} />
         </div>
 
         <StatusChip
