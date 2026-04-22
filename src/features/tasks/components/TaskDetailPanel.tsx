@@ -31,6 +31,7 @@ import {
   selectSelectedTaskId,
 } from '../store/selectors/taskDetailSelectors'
 import { getTaskEffectiveStatus } from '../store/selectors/taskSelectors'
+import { TaskCommentsSection } from './TaskCommentsSection'
 import type { TaskComputedStatus } from '../types/taskTypes'
 
 //#region constants
@@ -315,6 +316,7 @@ export function TaskDetailPanel() {
                   </div>
                 </div>
               </section>
+              <TaskCommentsSection taskId={selectedTask.id} />
             </div>
           </div>
         ) : null}
