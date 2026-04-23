@@ -8,6 +8,8 @@ import {
 } from '@/features/tasks/store/selectors/taskSelectors'
 import tasksReducer, {
   addTask,
+  bulkDeleteTasks,
+  bulkUpdateTaskStatus,
   deleteTask,
   resetTaskFilters,
   setTaskFilters,
@@ -250,6 +252,64 @@ describe('tasksSlice', () => {
 
     expect(selectCompletedTaskCount(state)).toBe(2)
     expect(selectPendingTaskCount(state)).toBe(1)
+  })
+
+  it('bulk deletes tasks and reindexes orders per column', () => {
+    const initialState = createTasksState({
+      items: [
+        createTask({ id: 'task-1', status: 'todo', order: 0 }),
+        createTask({ id: 'task-2', status: 'todo', order: 1 }),
+        createTask({ id: 'task-3', status: 'done', order: 0 }),
+        createTask({ id: 'task-4', status: 'todo', order: 2 }),
+      ],
+    })
+
+    const nextState = tasksReducer(
+      initialState,
+      bulkDeleteTasks(['task-2', 'task-3']),
+    )
+
+    expect(nextState.items.map((task) => task.id)).toEqual(['task-1', 'task-4'])
+    expect(nextState.items.find((task) => task.id === 'task-1')?.order).toBe(0)
+    expect(nextState.items.find((task) => task.id === 'task-4')?.order).toBe(1)
+  })
+
+  it('bulk updates status and reindexes destination columns', () => {
+    const initialState = createTasksState({
+      items: [
+        createTask({ id: 'task-1', status: 'todo', order: 0 }),
+        createTask({ id: 'task-2', status: 'todo', order: 1 }),
+        createTask({ id: 'task-3', status: 'review', order: 0 }),
+        createTask({ id: 'task-4', status: 'done', order: 0 }),
+      ],
+    })
+
+    const nextState = tasksReducer(
+      initialState,
+      bulkUpdateTaskStatus({
+        taskIds: ['task-1', 'task-3'],
+        status: 'done',
+      }),
+    )
+
+    const doneTasks = nextState.items
+      .filter((task) => task.status === 'done')
+      .sort((left, right) => left.order - right.order)
+
+    const todoTasks = nextState.items
+      .filter((task) => task.status === 'todo')
+      .sort((left, right) => left.order - right.order)
+
+    expect(doneTasks.map((task) => task.id)).toEqual([
+      'task-4',
+      'task-1',
+      'task-3',
+    ])
+    expect(todoTasks.map((task) => task.id)).toEqual(['task-2'])
+    expect(todoTasks[0]?.order).toBe(0)
+    expect(doneTasks[0]?.order).toBe(0)
+    expect(doneTasks[1]?.order).toBe(1)
+    expect(doneTasks[2]?.order).toBe(2)
   })
 })
 //#endregion tests

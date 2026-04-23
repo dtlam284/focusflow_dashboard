@@ -1,6 +1,12 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 
-import type { ITask, ITasksState, TaskFilterPriority, TaskFilterStatus } from '../../types/taskTypes'
+import type {
+  ITask,
+  ITasksState,
+  TaskFilterPriority,
+  TaskFilterStatus,
+  TaskStatus,
+} from '../../types/taskTypes'
 
 //#region helpers
 const getNormalizedLabelIds = (labelIds: string[] | undefined): string[] => {
@@ -9,6 +15,18 @@ const getNormalizedLabelIds = (labelIds: string[] | undefined): string[] => {
   }
 
   return Array.from(new Set(labelIds))
+}
+
+const normalizeTaskOrdersByStatus = (tasks: ITask[]): ITask[] => {
+  return ['todo', 'in_progress', 'review', 'done'].flatMap((status) =>
+    tasks
+      .filter((task) => task.status === status)
+      .sort((left, right) => left.order - right.order)
+      .map((task, index) => ({
+        ...task,
+        order: index,
+      })),
+  )
 }
 //#endregion helpers
 
@@ -30,10 +48,12 @@ const taskSlice = createSlice({
   initialState,
   reducers: {
     hydrateTasks(state, action: PayloadAction<ITask[]>) {
-      state.items = action.payload.map((task) => ({
-        ...task,
-        labelIds: getNormalizedLabelIds(task.labelIds),
-      }))
+      state.items = normalizeTaskOrdersByStatus(
+        action.payload.map((task) => ({
+          ...task,
+          labelIds: getNormalizedLabelIds(task.labelIds),
+        })),
+      )
     },
 
     addTask(state, action: PayloadAction<ITask>) {
@@ -74,27 +94,73 @@ const taskSlice = createSlice({
     },
 
     deleteTask(state, action: PayloadAction<string>) {
-      const taskToDelete = state.items.find((task) => task.id === action.payload)
+      state.items = normalizeTaskOrdersByStatus(
+        state.items.filter((task) => task.id !== action.payload),
+      )
+    },
 
-      if (!taskToDelete) {
-        return
-      }
+    bulkDeleteTasks(state, action: PayloadAction<string[]>) {
+      const taskIdsToDelete = new Set(action.payload)
 
-      state.items = state.items
-        .filter((task) => task.id !== action.payload)
-        .map((task) => {
-          if (
-            task.status === taskToDelete.status &&
-            task.order > taskToDelete.order
-          ) {
-            return {
+      state.items = normalizeTaskOrdersByStatus(
+        state.items.filter((task) => !taskIdsToDelete.has(task.id)),
+      )
+    },
+
+    bulkUpdateTaskStatus(
+      state,
+      action: PayloadAction<{
+        taskIds: string[]
+        status: TaskStatus
+      }>,
+    ) {
+      const { taskIds, status } = action.payload
+      const taskIdSet = new Set(taskIds)
+      const updatedAt = new Date().toISOString()
+
+      const currentTargetTasks = state.items
+        .filter((task) => task.status === status)
+        .sort((left, right) => left.order - right.order)
+        .map((task) =>
+          taskIdSet.has(task.id)
+            ? {
+                ...task,
+                updatedAt,
+              }
+            : task,
+        )
+
+      const movedTasks = state.items
+        .filter((task) => taskIdSet.has(task.id) && task.status !== status)
+        .map((task) => ({
+          ...task,
+          status,
+          updatedAt,
+        }))
+
+      const normalizedOtherTasks = ['todo', 'in_progress', 'review', 'done']
+        .filter((columnStatus) => columnStatus !== status)
+        .flatMap((columnStatus) =>
+          state.items
+            .filter(
+              (task) =>
+                task.status === columnStatus && !taskIdSet.has(task.id),
+            )
+            .sort((left, right) => left.order - right.order)
+            .map((task, index) => ({
               ...task,
-              order: task.order - 1,
-            }
-          }
+              order: index,
+            })),
+        )
 
-          return task
-        })
+      const nextTargetTasks = [...currentTargetTasks, ...movedTasks].map(
+        (task, index) => ({
+          ...task,
+          order: index,
+        }),
+      )
+
+      state.items = [...normalizedOtherTasks, ...nextTargetTasks]
     },
 
     toggleTaskStatus(state, action: PayloadAction<string>) {
@@ -105,18 +171,23 @@ const taskSlice = createSlice({
       }
 
       const nextStatus = task.status === 'done' ? 'todo' : 'done'
-      const nextOrder = state.items.filter((item) => item.status === nextStatus).length
+      const nextOrder = state.items.filter(
+        (item) => item.status === nextStatus,
+      ).length
 
       task.status = nextStatus
       task.order = nextOrder
       task.updatedAt = new Date().toISOString()
     },
 
-    reorderTasksInColumn(state, action: PayloadAction<{
-      status: ITask['status']
-      fromIndex: number
-      toIndex: number
-    }>) {
+    reorderTasksInColumn(
+      state,
+      action: PayloadAction<{
+        status: ITask['status']
+        fromIndex: number
+        toIndex: number
+      }>,
+    ) {
       const { status, fromIndex, toIndex } = action.payload
       const columnTasks = state.items
         .filter((task) => task.status === status)
@@ -152,79 +223,71 @@ const taskSlice = createSlice({
       })
     },
 
-    moveTaskToColumn(state, action: PayloadAction<{
-      taskId: string
-      toStatus: ITask['status']
-      toIndex: number
-    }>) {
+    moveTaskToColumn(
+      state,
+      action: PayloadAction<{
+        taskId: string
+        toStatus: ITask['status']
+        toIndex: number
+      }>,
+    ) {
       const { taskId, toStatus, toIndex } = action.payload
       const taskToMove = state.items.find((task) => task.id === taskId)
 
-      if (!taskToMove || taskToMove.status === toStatus) {
+      if (!taskToMove) {
         return
       }
 
-      const sourceStatus = taskToMove.status
-      const sourceOrder = taskToMove.order
+      const updatedAt = new Date().toISOString()
 
-      const sourceTasks = state.items
-        .filter((task) => task.status === sourceStatus && task.id !== taskId)
-        .sort((left, right) => left.order - right.order)
-        .map((task, index) => ({
-          ...task,
-          order: index,
-        }))
+      const remainingTasks = state.items.filter((task) => task.id !== taskId)
 
-      const targetTasks = state.items
+      const destinationTasks = remainingTasks
         .filter((task) => task.status === toStatus)
         .sort((left, right) => left.order - right.order)
 
-      const nextTask = {
+      const nextTask: ITask = {
         ...taskToMove,
         status: toStatus,
-        order: Math.max(0, Math.min(toIndex, targetTasks.length)),
-        updatedAt: new Date().toISOString(),
+        order: 0,
+        updatedAt,
       }
 
-      targetTasks.splice(nextTask.order, 0, nextTask)
+      const safeIndex = Math.max(0, Math.min(toIndex, destinationTasks.length))
+      destinationTasks.splice(safeIndex, 0, nextTask)
 
-      targetTasks.forEach((task, index) => {
-        task.order = index
-      })
-
-      state.items = state.items
-        .filter((task) => task.id !== taskId)
-        .map((task) => {
-          if (task.status === sourceStatus && task.order > sourceOrder) {
-            return {
+      const normalizedTasks = ['todo', 'in_progress', 'review', 'done'].flatMap(
+        (status) => {
+          if (status === toStatus) {
+            return destinationTasks.map((task, index) => ({
               ...task,
-              order: task.order - 1,
-            }
+              order: index,
+            }))
           }
 
-          return task
-        })
+          return remainingTasks
+            .filter((task) => task.status === status)
+            .sort((left, right) => left.order - right.order)
+            .map((task, index) => ({
+              ...task,
+              order: index,
+            }))
+        },
+      )
 
-      state.items.push(...sourceTasks, ...targetTasks.filter((task) => task.id === taskId))
-      state.items = state.items.map((task) => {
-        const targetTask = targetTasks.find((item) => item.id === task.id)
-
-        if (targetTask) {
-          return targetTask
-        }
-
-        return task
-      })
+      state.items = normalizedTasks
     },
 
     setTaskFilters(
       state,
-      action: PayloadAction<Partial<{
-        status: TaskFilterStatus
-        priority: TaskFilterPriority
-        keyword: string
-        labelId: string | 'all'
-      }>>,
+      action: PayloadAction<
+        Partial<{
+          status: TaskFilterStatus
+          priority: TaskFilterPriority
+          keyword: string
+          labelId: string | 'all'
+        }>
+      >,
     ) {
       state.filters = {
         ...state.filters,
@@ -245,6 +308,8 @@ export const {
   addTask,
   updateTask,
   deleteTask,
+  bulkDeleteTasks,
+  bulkUpdateTaskStatus,
   toggleTaskStatus,
   reorderTasksInColumn,
   moveTaskToColumn,
