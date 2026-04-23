@@ -36,11 +36,13 @@ import {
 } from './KanbanColumn'
 import { KanbanDragOverlay } from './KanbanDragOverlay'
 
-//#region types
+//#region props
 interface IKanbanBoardProps {
   tasks: ITask[]
   onEditTask: (task: ITask) => void
   onDeleteTask: (taskId: string) => void
+  selectedTaskIds: string[]
+  onToggleTaskSelection: (taskId: string) => void
 }
 
 interface IDragTaskData {
@@ -54,7 +56,7 @@ interface IDragColumnData {
   type: 'column'
   status: TaskStatus
 }
-//#endregion types
+//#endregion props
 
 //#region helpers
 const isTaskDragData = (value: unknown): value is IDragTaskData => {
@@ -135,6 +137,8 @@ export function KanbanBoard({
   tasks,
   onEditTask,
   onDeleteTask,
+  selectedTaskIds,
+  onToggleTaskSelection,
 }: IKanbanBoardProps) {
   //#region hooks
   const dispatch = useAppDispatch()
@@ -303,6 +307,8 @@ export function KanbanBoard({
             onOpenTask={handleOpenTask}
             onEditTask={onEditTask}
             onDeleteTask={onDeleteTask}
+            selectedTaskIds={selectedTaskIds}
+            onToggleTaskSelection={onToggleTaskSelection}
           />
         ))}
       </div>

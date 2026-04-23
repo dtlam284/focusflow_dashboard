@@ -1,5 +1,11 @@
 import * as React from 'react'
-import { AlertTriangle, CheckCircle2, Clock3, ListTodo, Plus } from 'lucide-react'
+import {
+  AlertTriangle,
+  CheckCircle2,
+  Clock3,
+  ListTodo,
+  Plus,
+} from 'lucide-react'
 
 import { useAppDispatch, useAppSelector } from '@/app/store/hooks'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
@@ -8,6 +14,7 @@ import { StatCard } from '@/components/shared/StatCard'
 import { Button } from '@/components/ui/button'
 import { useI18n } from '@/contexts/I18nContext'
 
+import { BulkActionBar } from '@/features/tasks/components/BulkActionBar'
 import { KanbanBoard } from '@/features/tasks/components/KanbanBoard'
 import { TaskDetailPanel } from '@/features/tasks/components/TaskDetailPanel'
 import { TaskFilterBar } from '@/features/tasks/components/TaskFilterBar'
@@ -19,6 +26,8 @@ import {
 import { removeCommentsByTaskId } from '@/features/tasks/store/slices/taskCommentsSlice'
 import {
   addTask,
+  bulkDeleteTasks,
+  bulkUpdateTaskStatus,
   deleteTask,
   resetTaskFilters,
   setTaskFilters,
@@ -32,7 +41,7 @@ import {
   selectTaskItems,
   selectUnfinishedTaskCount,
 } from '@/features/tasks/store/selectors/taskSelectors'
-import type { ITask, ITaskFilters } from '@/features/tasks/types/taskTypes'
+import type { ITask, ITaskFilters, TaskStatus } from '@/features/tasks/types/taskTypes'
 
 import { TaskEditorDialog } from '@/features/tasks/components/TaskEditorDialog'
 
@@ -55,11 +64,18 @@ export function TasksScreen() {
   //#region local state
   const [editingTaskId, setEditingTaskId] = React.useState<string | null>(null)
   const [isCreateDialogOpen, setIsCreateDialogOpen] = React.useState(false)
-  const [taskPendingDelete, setTaskPendingDelete] = React.useState<ITask | null>(null)
+  const [taskPendingDelete, setTaskPendingDelete] = React.useState<ITask | null>(
+    null,
+  )
+  const [selectedTaskIds, setSelectedTaskIds] = React.useState<string[]>([])
+  const [taskIdsPendingBulkDelete, setTaskIdsPendingBulkDelete] = React.useState<
+    string[]
+  >([])
   //#endregion local state
 
   //#region derived values
-  const editingTask = tasks.find((task: ITask) => task.id === editingTaskId) ?? null
+  const editingTask =
+    tasks.find((task: ITask) => task.id === editingTaskId) ?? null
   const isEditDialogOpen = Boolean(editingTask)
   const totalCount = tasks.length
 
@@ -157,6 +173,10 @@ export function TasksScreen() {
     dispatch(removeCommentsByTaskId(taskPendingDelete.id))
     dispatch(removeActivitiesByTaskId(taskPendingDelete.id))
 
+    setSelectedTaskIds((prev) =>
+      prev.filter((taskId) => taskId !== taskPendingDelete.id),
+    )
+
     if (editingTaskId === taskPendingDelete.id) {
       setEditingTaskId(null)
     }
@@ -176,12 +196,67 @@ export function TasksScreen() {
     dispatch(setTaskFilters({ keyword }))
   }
 
+  const handleLabelChange = (labelId: ITaskFilters['labelId']) => {
+    dispatch(setTaskFilters({ labelId }))
+  }
+
   const handleResetFilters = () => {
     dispatch(resetTaskFilters())
   }
 
-  const handleLabelChange = (labelId: ITaskFilters['labelId']) => {
-    dispatch(setTaskFilters({ labelId }))
+  const handleToggleTaskSelection = (taskId: string) => {
+    setSelectedTaskIds((prev) =>
+      prev.includes(taskId)
+        ? prev.filter((selectedId) => selectedId !== taskId)
+        : [...prev, taskId],
+    )
+  }
+
+  const handleClearSelection = () => {
+    setSelectedTaskIds([])
+  }
+
+  const handleRequestBulkDelete = () => {
+    if (selectedTaskIds.length === 0) {
+      return
+    }
+
+    setTaskIdsPendingBulkDelete(selectedTaskIds)
+  }
+
+  const handleConfirmBulkDelete = () => {
+    if (taskIdsPendingBulkDelete.length === 0) {
+      return
+    }
+
+    dispatch(bulkDeleteTasks(taskIdsPendingBulkDelete))
+
+    taskIdsPendingBulkDelete.forEach((taskId) => {
+      dispatch(removeCommentsByTaskId(taskId))
+      dispatch(removeActivitiesByTaskId(taskId))
+    })
+
+    if (editingTaskId && taskIdsPendingBulkDelete.includes(editingTaskId)) {
+      setEditingTaskId(null)
+    }
+
+    setSelectedTaskIds([])
+    setTaskIdsPendingBulkDelete([])
+  }
+
+  const handleBulkStatusChange = (status: TaskStatus) => {
+    if (selectedTaskIds.length === 0) {
+      return
+    }
+
+    dispatch(
+      bulkUpdateTaskStatus({
+        taskIds: selectedTaskIds,
+        status,
+      }),
+    )
+
+    setSelectedTaskIds([])
   }
   //#endregion handlers
 
@@ -190,7 +265,7 @@ export function TasksScreen() {
     <div className='space-y-6'>
       <PageHeader
         title={t('Tasks')}
-        // description={t('Manage your tasks with a clean and focused workflow.')}
+        description={t('Manage your tasks with a clean and focused workflow.')}
         actions={
           <Button onClick={() => setIsCreateDialogOpen(true)}>
             <Plus className='h-4 w-4' />
@@ -224,19 +299,28 @@ export function TasksScreen() {
 
       <div className='space-y-4'>
         <TaskFilterBar
-            filters={filters}
-            visibleCount={filteredTasks.length}
-            onKeywordChange={handleKeywordChange}
-            onStatusChange={handleStatusChange}
-            onPriorityChange={handlePriorityChange}
-            onLabelChange={handleLabelChange}
-            onReset={handleResetFilters}
+          filters={filters}
+          visibleCount={filteredTasks.length}
+          onKeywordChange={handleKeywordChange}
+          onStatusChange={handleStatusChange}
+          onPriorityChange={handlePriorityChange}
+          onLabelChange={handleLabelChange}
+          onReset={handleResetFilters}
+        />
+
+        <BulkActionBar
+          selectedCount={selectedTaskIds.length}
+          onClearSelection={handleClearSelection}
+          onDeleteSelected={handleRequestBulkDelete}
+          onChangeStatus={handleBulkStatusChange}
         />
 
         <KanbanBoard
           tasks={filteredTasks}
           onEditTask={handleStartEdit}
           onDeleteTask={handleRequestDelete}
+          selectedTaskIds={selectedTaskIds}
+          onToggleTaskSelection={handleToggleTaskSelection}
         />
       </div>
 
@@ -279,6 +363,22 @@ export function TasksScreen() {
           }
         }}
         onConfirm={handleConfirmDelete}
+      />
+
+      <ConfirmDialog
+        open={taskIdsPendingBulkDelete.length > 0}
+        title={t('Delete selected tasks')}
+        description={t('Are you sure you want to delete {count} selected tasks?', {
+          count: String(taskIdsPendingBulkDelete.length),
+        })}
+        confirmLabel={t('Delete selected')}
+        cancelLabel={t('Cancel')}
+        onOpenChange={(open: boolean) => {
+          if (!open) {
+            setTaskIdsPendingBulkDelete([])
+          }
+        }}
+        onConfirm={handleConfirmBulkDelete}
       />
     </div>
   )
