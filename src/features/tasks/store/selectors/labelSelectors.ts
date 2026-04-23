@@ -1,7 +1,5 @@
 import { createSelector } from '@reduxjs/toolkit'
-
 import type { RootState } from '@/app/store/store'
-
 import type { ILabel } from '../../types/taskTypes'
 
 //#region constants

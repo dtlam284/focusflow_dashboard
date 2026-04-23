@@ -1,11 +1,6 @@
 import { createSelector } from '@reduxjs/toolkit'
-
 import type { RootState } from '@/app/store/store'
-
-import type {
-  ITaskActivitiesState,
-  ITaskActivity,
-} from '../../types/taskTypes'
+import type { ITaskActivitiesState, ITaskActivity } from '../../types/taskTypes'
 
 //#region constants
 const EMPTY_ACTIVITIES: ITaskActivity[] = []

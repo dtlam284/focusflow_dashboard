@@ -1,12 +1,5 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
-
-import type {
-  ITask,
-  ITasksState,
-  TaskFilterPriority,
-  TaskFilterStatus,
-  TaskStatus,
-} from '../../types/taskTypes'
+import type { ITask, ITasksState, TaskFilterPriority, TaskFilterStatus, TaskStatus } from '../../types/taskTypes'
 
 //#region helpers
 const getNormalizedLabelIds = (labelIds: string[] | undefined): string[] => {

@@ -1,13 +1,6 @@
 import { createSelector } from '@reduxjs/toolkit'
-
 import type { RootState } from '@/app/store/store'
-
-import type {
-  ITask,
-  ITaskBoardColumn,
-  TaskComputedStatus,
-  TaskStatus,
-} from '../../types/taskTypes'
+import type { ITask, ITaskBoardColumn, TaskComputedStatus, TaskStatus } from '../../types/taskTypes'
 
 //#region helpers
 const sortTasksByOrder = (tasks: ITask[]) =>

@@ -1,5 +1,4 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
-
 import type { ILabel, ITaskLabelsState } from '../../types/taskTypes'
 
 //#region state
