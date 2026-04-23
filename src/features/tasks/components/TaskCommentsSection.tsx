@@ -7,10 +7,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { useI18n } from '@/contexts/I18nContext'
 
 import { addTaskActivity } from '../store/slices/taskActivitySlice'
-import {
-  selectCommentCountByTaskId,
-  selectRootCommentsByTaskId,
-} from '../store/selectors/taskCommentSelectors'
+import { selectCommentCountByTaskId, selectRootCommentsByTaskId } from '../store/selectors/taskCommentSelectors'
 import { addTaskComment } from '../store/slices/taskCommentsSlice'
 import { TaskCommentItem } from './TaskCommentItem'
 

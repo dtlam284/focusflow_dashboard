@@ -1,18 +1,12 @@
 import { RotateCcw, Search, Tag } from 'lucide-react'
 
-import { useAppSelector } from '@/app/store/hooks'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { Button } from '@/components/ui/button'
 import { useI18n } from '@/contexts/I18nContext'
-
+import { useAppSelector } from '@/app/store/hooks'
 import { selectLabelItems } from '../store/selectors/labelSelectors'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+
 import type { ITaskFilters } from '../types/taskTypes'
 
 //#region props

@@ -1,8 +1,8 @@
 import * as React from 'react'
 
-import { EmptyState } from '@/components/shared/EmptyState'
-import { useI18n } from '@/contexts/I18nContext'
 import { cn } from '@/utils'
+import { useI18n } from '@/contexts/I18nContext'
+import { EmptyState } from '@/components/shared/EmptyState'
 
 import { TaskCard } from './TaskCard'
 import type { ITask, ITaskFilters } from '../types/taskTypes'

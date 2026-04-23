@@ -1,6 +1,6 @@
-import { useAppSelector } from '@/app/store/hooks'
-import { useI18n } from '@/contexts/I18nContext'
 import { cn } from '@/utils'
+import { useI18n } from '@/contexts/I18nContext'
+import { useAppSelector } from '@/app/store/hooks'
 
 import { selectLabelsByIds } from '../store/selectors/labelSelectors'
 

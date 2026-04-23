@@ -1,41 +1,24 @@
 import * as React from 'react'
-import {
-  CalendarDays,
-  Check,
-  Clock3,
-  FileText,
-  PencilLine,
-  Tag,
-  X,
-} from 'lucide-react'
+import { CalendarDays, Check, Clock3, FileText, PencilLine, Tag, X } from 'lucide-react'
 
 import { useAppDispatch, useAppSelector } from '@/app/store/hooks'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from '@/components/ui/sheet'
+import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { useI18n } from '@/contexts/I18nContext'
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { cn } from '@/utils'
-
-import { addTaskActivity } from '../store/slices/taskActivitySlice'
-import { closeTaskDetail } from '../store/slices/taskDetailSlice'
+import { useI18n } from '@/contexts/I18nContext'
 import { updateTask } from '../store/slices/taskSlice'
-import {
-  selectIsTaskDetailOpen,
-  selectSelectedTaskDetail,
-  selectSelectedTaskId,
-} from '../store/selectors/taskDetailSelectors'
+import { closeTaskDetail } from '../store/slices/taskDetailSlice'
+import { addTaskActivity } from '../store/slices/taskActivitySlice'
 import { getTaskEffectiveStatus } from '../store/selectors/taskSelectors'
-import type { TaskComputedStatus } from '../types/taskTypes'
-import { TaskActivityTimeline } from './TaskActivityTimeline'
-import { TaskCommentsSection } from './TaskCommentsSection'
+import { selectIsTaskDetailOpen, selectSelectedTaskDetail, selectSelectedTaskId } from '../store/selectors/taskDetailSelectors'
+
 import { TaskLabelChips } from './TaskLabelChips'
+import { TaskCommentsSection } from './TaskCommentsSection'
+import { TaskActivityTimeline } from './TaskActivityTimeline'
+
+import type { TaskComputedStatus } from '../types/taskTypes'
 
 //#region constants
 const statusLabels: Record<TaskComputedStatus, string> = {

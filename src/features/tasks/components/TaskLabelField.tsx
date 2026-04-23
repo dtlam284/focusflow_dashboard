@@ -1,12 +1,12 @@
 import { useMemo } from 'react'
 import { Check, Tag } from 'lucide-react'
 
-import { useAppSelector } from '@/app/store/hooks'
+import { cn } from '@/utils'
 import { Button } from '@/components/ui/button'
 import { useI18n } from '@/contexts/I18nContext'
-import { cn } from '@/utils'
-
+import { useAppSelector } from '@/app/store/hooks'
 import { selectLabelItems } from '../store/selectors/labelSelectors'
+
 import type { ILabel } from '../types/taskTypes'
 
 //#region constants

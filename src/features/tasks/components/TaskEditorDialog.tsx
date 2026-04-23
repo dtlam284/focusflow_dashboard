@@ -1,14 +1,8 @@
-import { SectionCard } from '@/components/shared/SectionCard'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
 import { useI18n } from '@/contexts/I18nContext'
-
+import { SectionCard } from '@/components/shared/SectionCard'
 import { TaskForm } from '@/features/tasks/components/TaskForm'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+
 import type { TaskFormValues } from '@/features/tasks/schemas/taskSchema'
 
 //#region props

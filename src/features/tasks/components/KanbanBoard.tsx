@@ -20,20 +20,9 @@ import { useAppDispatch } from '@/app/store/hooks'
 
 import { addTaskActivity } from '../store/slices/taskActivitySlice'
 import { openTaskDetail } from '../store/slices/taskDetailSlice'
-import {
-  moveTaskToColumn,
-  reorderTasksInColumn,
-} from '../store/slices/taskSlice'
-import {
-  TASK_STATUSES,
-  type ITask,
-  type ITaskBoardColumn,
-  type TaskStatus,
-} from '../types/taskTypes'
-import {
-  KanbanColumn,
-  type IKanbanColumnDragPreview,
-} from './KanbanColumn'
+import { moveTaskToColumn, reorderTasksInColumn } from '../store/slices/taskSlice'
+import { TASK_STATUSES, type ITask, type ITaskBoardColumn, type TaskStatus } from '../types/taskTypes'
+import { KanbanColumn, type IKanbanColumnDragPreview } from './KanbanColumn'
 import { KanbanDragOverlay } from './KanbanDragOverlay'
 
 //#region props
