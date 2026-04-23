@@ -2,6 +2,7 @@ import type { ILink } from '@/features/links/types/linkTypes'
 import type { INote } from '@/features/notes/types/noteTypes'
 import type { IBoardState } from '@/features/tasks/store/slices/boardSlice'
 import type { ITask, ITaskCommentsState } from '@/features/tasks/types/taskTypes'
+import type { ITaskRelationsState } from '@/features/tasks/types'
 
 const STORAGE_KEY = 'cms-feature-state'
 
@@ -11,6 +12,7 @@ export interface IPersistedFeatureState {
     items: ITask[]
   }
   taskComments?: ITaskCommentsState
+  taskRelations?: ITaskRelationsState
   board?: IBoardState
   notes?: {
     items: INote[]

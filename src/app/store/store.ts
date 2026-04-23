@@ -12,6 +12,7 @@ import taskCommentsReducer, { hydrateTaskComments } from '@/features/tasks/store
 import taskDetailReducer from '@/features/tasks/store/slices/taskDetailSlice'
 import taskLabelsReducer from '@/features/tasks/store/slices/labelSlice'
 import tasksReducer, { hydrateTasks } from '@/features/tasks/store/slices/taskSlice'
+import taskRelationsReducer, { hydrateTaskRelations } from '@/features/tasks/store/slices/taskRelationsSlice'
 
 import { loadState, saveState } from '@/utils/storage'
 
@@ -30,6 +31,7 @@ const rootReducer = combineReducers({
   taskComments: taskCommentsReducer,
   taskActivity: taskActivityReducer,
   taskLabels: taskLabelsReducer,
+  taskRelations: taskRelationsReducer,
   board: boardReducer,
   notes: notesReducer,
   links: linksReducer,
@@ -67,6 +69,10 @@ if (persistedFeatureState?.taskComments?.byTaskId) {
   store.dispatch(hydrateTaskComments(persistedFeatureState.taskComments.byTaskId))
 }
 
+if (persistedFeatureState?.taskRelations) {
+  store.dispatch(hydrateTaskRelations(persistedFeatureState.taskRelations))
+}
+
 if (persistedFeatureState?.board) {
   store.dispatch(hydrateBoardPreferences(persistedFeatureState.board))
 }
@@ -91,6 +97,7 @@ store.subscribe(() => {
     taskComments: {
       byTaskId: state.taskComments.byTaskId,
     },
+    taskRelations: state.taskRelations,
     board: state.board,
     notes: {
       items: state.notes.items,
