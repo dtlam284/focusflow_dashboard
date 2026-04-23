@@ -1,19 +1,9 @@
 import { describe, expect, it } from 'vitest'
 
+import { selectFilteredNotes, selectFilteredPinnedNotes, selectFilteredUnpinnedNotes, } from '@/features/notes/store/selectors/noteSelectors'
+import noteReducer, { addNote, deleteNote, resetNoteFilters, setNoteFilters, togglePinNote, updateNote, } from '@/features/notes/store/slices/noteSlice'
+
 import type { RootState } from '@/app/store/store'
-import {
-  selectFilteredNotes,
-  selectFilteredPinnedNotes,
-  selectFilteredUnpinnedNotes,
-} from '@/features/notes/store/selectors/noteSelectors'
-import noteReducer, {
-  addNote,
-  deleteNote,
-  resetNoteFilters,
-  setNoteFilters,
-  togglePinNote,
-  updateNote,
-} from '@/features/notes/store/slices/noteSlice'
 import type { INote, INotesState } from '@/features/notes/types/noteTypes'
 
 //#region helpers
@@ -72,6 +62,11 @@ const createRootState = (notes: INotesState): RootState =>
     },
     taskLabels: {
       items: [],
+    },
+    board: {
+      showCompleted: true,
+      sortMode: 'newest',
+      groupMode:'status'
     },
     notes,
     links: {

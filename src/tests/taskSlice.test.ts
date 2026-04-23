@@ -1,21 +1,9 @@
 import { describe, expect, it } from 'vitest'
 
+import { selectCompletedTaskCount, selectFilteredTasks, selectPendingTaskCount, } from '@/features/tasks/store/selectors/taskSelectors'
+import tasksReducer, { addTask, bulkDeleteTasks, bulkUpdateTaskStatus, deleteTask, resetTaskFilters, setTaskFilters, toggleTaskStatus, updateTask } from '@/features/tasks/store/slices/taskSlice'
+
 import type { RootState } from '@/app/store/store'
-import {
-  selectCompletedTaskCount,
-  selectFilteredTasks,
-  selectPendingTaskCount,
-} from '@/features/tasks/store/selectors/taskSelectors'
-import tasksReducer, {
-  addTask,
-  bulkDeleteTasks,
-  bulkUpdateTaskStatus,
-  deleteTask,
-  resetTaskFilters,
-  setTaskFilters,
-  toggleTaskStatus,
-  updateTask,
-} from '@/features/tasks/store/slices/taskSlice'
 import type { ITask, ITasksState } from '@/features/tasks/types/taskTypes'
 
 //#region helpers
@@ -78,6 +66,11 @@ const createRootState = (tasks: ITasksState): RootState =>
     },
     taskLabels: {
       items: [],
+    },
+    board: {
+      showCompleted: true,
+      sortMode: 'newest',
+      groupMode:'status'
     },
     notes: {
       items: [],

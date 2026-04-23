@@ -1,22 +1,17 @@
 import type { ILink } from '@/features/links/types/linkTypes'
 import type { INote } from '@/features/notes/types/noteTypes'
-import type {
-  ITask,
-  ITaskActivitiesState,
-  ITaskCommentsState,
-  ITaskLabelsState,
-} from '@/features/tasks/types/taskTypes'
+import type { IBoardState } from '@/features/tasks/store/slices/boardSlice'
+import type { ITask, ITaskCommentsState } from '@/features/tasks/types/taskTypes'
 
 const STORAGE_KEY = 'cms-feature-state'
 
-//#region types
+//#region props
 export interface IPersistedFeatureState {
   tasks?: {
     items: ITask[]
   }
   taskComments?: ITaskCommentsState
-  taskActivity?: ITaskActivitiesState
-  taskLabels?: ITaskLabelsState
+  board?: IBoardState
   notes?: {
     items: INote[]
   }
@@ -24,9 +19,9 @@ export interface IPersistedFeatureState {
     items: ILink[]
   }
 }
-//#endregion types
+//#endregion props
 
-//#region load state
+//#region load
 export const loadState = (): IPersistedFeatureState | undefined => {
   try {
     const serializedState = window.localStorage.getItem(STORAGE_KEY)
@@ -40,9 +35,9 @@ export const loadState = (): IPersistedFeatureState | undefined => {
     return undefined
   }
 }
-//#endregion load state
+//#endregion load
 
-//#region save state
+//#region save
 export const saveState = (state: IPersistedFeatureState) => {
   try {
     const serializedState = JSON.stringify(state)
@@ -51,4 +46,4 @@ export const saveState = (state: IPersistedFeatureState) => {
     // ignore write errors
   }
 }
-//#endregion save state
+//#endregion save

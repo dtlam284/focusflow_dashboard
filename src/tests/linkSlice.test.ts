@@ -1,14 +1,9 @@
 import { describe, expect, it } from 'vitest'
 
-import type { RootState } from '@/app/store/store'
 import { selectFilteredLinks } from '@/features/links/store/selectors/linkSelectors'
-import linkReducer, {
-  addLink,
-  deleteLink,
-  resetLinkFilters,
-  setLinkFilters,
-  updateLink,
-} from '@/features/links/store/slices/linkSlice'
+import linkReducer, { addLink, deleteLink, resetLinkFilters, setLinkFilters, updateLink, } from '@/features/links/store/slices/linkSlice'
+
+import type { RootState } from '@/app/store/store'
 import type { ILink, ILinksState } from '@/features/links/types/linkTypes'
 
 //#region helpers
@@ -66,6 +61,11 @@ const createRootState = (links: ILinksState): RootState =>
     },
     taskLabels: {
       items: [],
+    },
+    board: {
+      showCompleted: true,
+      sortMode: 'newest',
+      groupMode:'status'
     },
     notes: {
       items: [],
