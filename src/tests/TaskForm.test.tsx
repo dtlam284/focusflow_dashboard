@@ -1,6 +1,6 @@
+import { Provider } from 'react-redux'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { Provider } from 'react-redux'
 import { describe, expect, it, vi } from 'vitest'
 
 import { store } from '@/app/store/store'
