@@ -1,30 +1,16 @@
 import * as React from 'react'
 
-import { PageHeader } from '@/components/shared/PageHeader'
-import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { useI18n } from '@/contexts/I18nContext'
-import { useAppDispatch, useAppSelector } from '@/app/store/hooks'
-
+import { PageHeader } from '@/components/shared/PageHeader'
 import { NoteForm } from '@/features/notes/components/NoteForm'
+import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { NotesGrid } from '@/features/notes/components/NotesGrid'
-import { NotesPinnedSection } from '@/features/notes/components/NotesPinnedSection'
+import { useAppDispatch, useAppSelector } from '@/app/store/hooks'
 import { NotePreviewDialog } from '@/features/notes/components/NotePreviewDialog'
-import {
-  addNote,
-  deleteNote,
-  resetNoteFilters,
-  setNoteFilters,
-  togglePinNote,
-  updateNote,
-} from '@/features/notes/store/slices/noteSlice'
-import {
-  selectFilteredNotesCount,
-  selectFilteredPinnedNotes,
-  selectFilteredUnpinnedNotes,
-  selectNoteFilters,
-  selectNoteItems,
-  selectNotesCount,
-} from '@/features/notes/store/selectors/noteSelectors'
+import { NotesPinnedSection } from '@/features/notes/components/NotesPinnedSection'
+
+import { addNote, deleteNote, resetNoteFilters, setNoteFilters, togglePinNote, updateNote } from '@/features/notes/store/slices/noteSlice'
+import { selectFilteredNotesCount, selectFilteredPinnedNotes, selectFilteredUnpinnedNotes, selectNoteFilters, selectNoteItems, selectNotesCount } from '@/features/notes/store/selectors/noteSelectors'
 
 import type { INote } from '@/features/notes/types/noteTypes'
 import type { NoteFormValues } from '@/features/notes/schemas/noteSchema'
