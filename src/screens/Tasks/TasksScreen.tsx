@@ -1,49 +1,30 @@
 import * as React from 'react'
-import {
-  AlertTriangle,
-  CheckCircle2,
-  Clock3,
-  ListTodo,
-  Plus,
-} from 'lucide-react'
+import { AlertTriangle, CheckCircle2, Clock3, ListTodo, Plus } from 'lucide-react'
 
-import { useAppDispatch, useAppSelector } from '@/app/store/hooks'
-import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
-import { PageHeader } from '@/components/shared/PageHeader'
-import { StatCard } from '@/components/shared/StatCard'
 import { Button } from '@/components/ui/button'
 import { useI18n } from '@/contexts/I18nContext'
-
-import { BulkActionBar } from '@/features/tasks/components/BulkActionBar'
+import { StatCard } from '@/components/shared/StatCard'
+import { PageHeader } from '@/components/shared/PageHeader'
+import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
+import { useAppDispatch, useAppSelector } from '@/app/store/hooks'
+import { LabelBoard } from '@/features/tasks/components/LabelBoard'
 import { KanbanBoard } from '@/features/tasks/components/KanbanBoard'
-import { TaskDetailPanel } from '@/features/tasks/components/TaskDetailPanel'
+import { BulkActionBar } from '@/features/tasks/components/BulkActionBar'
 import { TaskFilterBar } from '@/features/tasks/components/TaskFilterBar'
-import type { TaskFormValues } from '@/features/tasks/schemas/taskSchema'
-import {
-  addTaskActivity,
-  removeActivitiesByTaskId,
-} from '@/features/tasks/store/slices/taskActivitySlice'
-import { removeCommentsByTaskId } from '@/features/tasks/store/slices/taskCommentsSlice'
-import {
-  addTask,
-  bulkDeleteTasks,
-  bulkUpdateTaskStatus,
-  deleteTask,
-  resetTaskFilters,
-  setTaskFilters,
-  updateTask,
-} from '@/features/tasks/store/slices/taskSlice'
-import {
-  selectCompletedTaskCount,
-  selectFilteredTasks,
-  selectPendingTaskCount,
-  selectTaskFilters,
-  selectTaskItems,
-  selectUnfinishedTaskCount,
-} from '@/features/tasks/store/selectors/taskSelectors'
-import type { ITask, ITaskFilters, TaskStatus } from '@/features/tasks/types/taskTypes'
-
+import { TaskDetailPanel } from '@/features/tasks/components/TaskDetailPanel'
+import { openTaskDetail } from '@/features/tasks/store/slices/taskDetailSlice'
 import { TaskEditorDialog } from '@/features/tasks/components/TaskEditorDialog'
+import { BoardPreferencesBar } from '@/features/tasks/components/BoardPreferencesBar'
+import { removeCommentsByTaskId } from '@/features/tasks/store/slices/taskCommentsSlice'
+import { addTaskActivity, removeActivitiesByTaskId} from '@/features/tasks/store/slices/taskActivitySlice'
+import {  resetBoardPreferences,  setGroupMode,  setShowCompleted,  setSortMode } from '@/features/tasks/store/slices/boardSlice'
+import { addTask, bulkDeleteTasks, bulkUpdateTaskStatus, deleteTask, resetTaskFilters, setTaskFilters, updateTask } from '@/features/tasks/store/slices/taskSlice'
+import { selectBoardVisibleTasks, selectGroupMode, selectShowCompleted, selectSortMode, selectLabelGroupedColumns } from '@/features/tasks/store/selectors/boardSelectors'
+import { selectCompletedTaskCount, selectPendingTaskCount, selectTaskFilters, selectTaskItems, selectUnfinishedTaskCount } from '@/features/tasks/store/selectors/taskSelectors'
+
+import type { TaskFormValues } from '@/features/tasks/schemas/taskSchema'
+import type { ITask, ITaskFilters, TaskStatus } from '@/features/tasks/types/taskTypes'
+import type { BoardGroupMode, BoardSortMode,} from '@/features/tasks/store/slices/boardSlice'
 
 //#region component
 export function TasksScreen() {
@@ -55,10 +36,14 @@ export function TasksScreen() {
   //#region selectors
   const tasks = useAppSelector(selectTaskItems)
   const filters = useAppSelector(selectTaskFilters)
-  const filteredTasks = useAppSelector(selectFilteredTasks)
+  const boardVisibleTasks = useAppSelector(selectBoardVisibleTasks)
   const completedCount = useAppSelector(selectCompletedTaskCount)
   const pendingCount = useAppSelector(selectPendingTaskCount)
   const unfinishedCount = useAppSelector(selectUnfinishedTaskCount)
+  const showCompleted = useAppSelector(selectShowCompleted)
+  const sortMode = useAppSelector(selectSortMode)
+  const groupMode = useAppSelector(selectGroupMode)
+  const labelGroupedColumns = useAppSelector(selectLabelGroupedColumns)
   //#endregion selectors
 
   //#region local state
@@ -258,6 +243,26 @@ export function TasksScreen() {
 
     setSelectedTaskIds([])
   }
+
+  const handleShowCompletedChange = (value: boolean) => {
+    dispatch(setShowCompleted(value))
+  }
+
+  const handleSortModeChange = (value: BoardSortMode) => {
+    dispatch(setSortMode(value))
+  }
+
+  const handleGroupModeChange = (value: BoardGroupMode) => {
+    dispatch(setGroupMode(value))
+  }
+
+  const handleResetBoardPreferences = () => {
+    dispatch(resetBoardPreferences())
+  }
+
+  const handleOpenTaskDetail = (task: ITask) => {
+    dispatch(openTaskDetail(task.id))
+  }
   //#endregion handlers
 
   //#region render
@@ -265,7 +270,7 @@ export function TasksScreen() {
     <div className='space-y-6'>
       <PageHeader
         title={t('Tasks')}
-        description={t('Manage your tasks with a clean and focused workflow.')}
+        // description={t('Manage your tasks with a clean and focused workflow.')}
         actions={
           <Button onClick={() => setIsCreateDialogOpen(true)}>
             <Plus className='h-4 w-4' />
@@ -300,12 +305,22 @@ export function TasksScreen() {
       <div className='space-y-4'>
         <TaskFilterBar
           filters={filters}
-          visibleCount={filteredTasks.length}
+          visibleCount={boardVisibleTasks.length}
           onKeywordChange={handleKeywordChange}
           onStatusChange={handleStatusChange}
           onPriorityChange={handlePriorityChange}
           onLabelChange={handleLabelChange}
           onReset={handleResetFilters}
+        />
+
+        <BoardPreferencesBar
+          showCompleted={showCompleted}
+          sortMode={sortMode}
+          groupMode={groupMode}
+          onShowCompletedChange={handleShowCompletedChange}
+          onSortModeChange={handleSortModeChange}
+          onGroupModeChange={handleGroupModeChange}
+          onReset={handleResetBoardPreferences}
         />
 
         <BulkActionBar
@@ -315,13 +330,24 @@ export function TasksScreen() {
           onChangeStatus={handleBulkStatusChange}
         />
 
-        <KanbanBoard
-          tasks={filteredTasks}
-          onEditTask={handleStartEdit}
-          onDeleteTask={handleRequestDelete}
-          selectedTaskIds={selectedTaskIds}
-          onToggleTaskSelection={handleToggleTaskSelection}
-        />
+        {groupMode === 'status' ? (
+          <KanbanBoard
+            tasks={boardVisibleTasks}
+            onEditTask={handleStartEdit}
+            onDeleteTask={handleRequestDelete}
+            selectedTaskIds={selectedTaskIds}
+            onToggleTaskSelection={handleToggleTaskSelection}
+          />
+        ) : (
+          <LabelBoard
+            columns={labelGroupedColumns}
+            selectedTaskIds={selectedTaskIds}
+            onToggleTaskSelection={handleToggleTaskSelection}
+            onOpenTask={handleOpenTaskDetail}
+            onEditTask={handleStartEdit}
+            onDeleteTask={handleRequestDelete}
+          />
+        )}
       </div>
 
       <TaskEditorDialog
