@@ -1,8 +1,10 @@
+import React from 'react'
+import { ShieldAlert } from 'lucide-react'
+import { useNavigate, useSearchParams } from 'react-router'
+
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/contexts/AuthContext'
-import { ShieldAlert } from 'lucide-react'
-import React from 'react'
-import { useNavigate, useSearchParams } from 'react-router'
+
 
 export function SessionRequiredScreen() {
   const navigate = useNavigate()

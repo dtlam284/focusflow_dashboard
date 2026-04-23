@@ -1,17 +1,11 @@
 import { CheckCircle2, Clock3, LayoutDashboard, Link2, NotebookPen, ListTodo } from 'lucide-react'
 
 import { useAuth } from '@/contexts/AuthContext'
-import { PageHeader } from '@/components/shared/PageHeader'
 import { useAppSelector } from '@/app/store/hooks'
-
-import {
-  selectCompletedTaskCount,
-  selectPendingTaskCount,
-  selectTotalTaskCount,
-  selectUnfinishedTaskCount,
-} from '@/features/tasks/store/selectors/taskSelectors'
-import { selectPinnedNotesCount } from '@/features/notes/store/selectors/noteSelectors'
+import { PageHeader } from '@/components/shared/PageHeader'
 import { selectLinksCount } from '@/features/links/store/selectors/linkSelectors'
+import { selectPinnedNotesCount } from '@/features/notes/store/selectors/noteSelectors'
+import { selectCompletedTaskCount, selectPendingTaskCount, selectTotalTaskCount, selectUnfinishedTaskCount } from '@/features/tasks/store/selectors/taskSelectors'
 
 //#region types
 type SummaryCardProps = {
