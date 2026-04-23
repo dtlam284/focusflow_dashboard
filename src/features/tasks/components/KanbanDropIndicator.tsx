@@ -1,13 +1,13 @@
 import { cn } from '@/utils';
 
-//#region types
+//#region props
 interface IKanbanDropIndicatorProps {
     isActive?: boolean;
     label?: string;
     size?: 'inline' | 'block';
     className?: string;
 }
-//#endregion types
+//#endregion props
 
 //#region component
 export function KanbanDropIndicator({

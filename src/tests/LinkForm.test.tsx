@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from 'vitest'
 
 import { LinkForm } from '@/features/links/components/LinkForm'
 
+//#region tests
 describe('LinkForm', () => {
   it('does not submit when URL is invalid', async () => {
     const user = userEvent.setup()
@@ -25,3 +26,4 @@ describe('LinkForm', () => {
     expect(await screen.findByText('Please enter a valid URL')).toBeInTheDocument()
   })
 })
+//#endregion tests

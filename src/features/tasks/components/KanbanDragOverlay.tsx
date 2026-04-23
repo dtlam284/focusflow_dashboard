@@ -6,11 +6,11 @@ import { cn } from '@/utils'
 import { getTaskEffectiveStatus } from '../store/selectors/taskSelectors'
 import type { ITask, TaskComputedStatus } from '../types/taskTypes'
 
-//#region types
+//#region props
 export interface IKanbanDragOverlayProps {
   task: ITask
 }
-//#endregion types
+//#endregion props
 
 //#region constants
 const statusStyles: Record<TaskComputedStatus, string> = {
