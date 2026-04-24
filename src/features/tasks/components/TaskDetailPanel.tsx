@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { CalendarDays, Check, Clock3, Eye, FileText, PencilLine, Tag, X } from 'lucide-react'
+import { CalendarDays, Check, Clock3, FileText, PencilLine, Tag, X } from 'lucide-react'
 
 import { useAppDispatch, useAppSelector } from '@/app/store/hooks'
 import { Button } from '@/components/ui/button'
