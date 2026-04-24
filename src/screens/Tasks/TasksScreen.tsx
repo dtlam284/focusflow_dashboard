@@ -1,9 +1,8 @@
 import * as React from 'react'
-import { AlertTriangle, CheckCircle2, Clock3, ListTodo, Plus } from 'lucide-react'
+import { Plus } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { useI18n } from '@/contexts/I18nContext'
-import { StatCard } from '@/components/shared/StatCard'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { useAppDispatch, useAppSelector } from '@/app/store/hooks'
@@ -20,8 +19,7 @@ import { addTaskActivity, removeActivitiesByTaskId} from '@/features/tasks/store
 import {  resetBoardPreferences,  setGroupMode,  setShowCompleted,  setSortMode } from '@/features/tasks/store/slices/boardSlice'
 import { addTask, bulkDeleteTasks, bulkUpdateTaskStatus, deleteTask, resetTaskFilters, setTaskFilters, updateTask } from '@/features/tasks/store/slices/taskSlice'
 import { selectBoardVisibleTasks, selectGroupMode, selectShowCompleted, selectSortMode, selectLabelGroupedColumns } from '@/features/tasks/store/selectors/boardSelectors'
-import { selectCompletedTaskCount, selectPendingTaskCount, selectTaskFilters, selectTaskItems, selectUnfinishedTaskCount } from '@/features/tasks/store/selectors/taskSelectors'
-
+import { selectTaskFilters, selectTaskItems } from '@/features/tasks/store/selectors/taskSelectors'
 import type { TaskFormValues } from '@/features/tasks/schemas/taskSchema'
 import type { ITask, ITaskFilters, TaskStatus } from '@/features/tasks/types/taskTypes'
 import type { BoardGroupMode, BoardSortMode,} from '@/features/tasks/store/slices/boardSlice'
@@ -37,9 +35,6 @@ export function TasksScreen() {
   const tasks = useAppSelector(selectTaskItems)
   const filters = useAppSelector(selectTaskFilters)
   const boardVisibleTasks = useAppSelector(selectBoardVisibleTasks)
-  const completedCount = useAppSelector(selectCompletedTaskCount)
-  const pendingCount = useAppSelector(selectPendingTaskCount)
-  const unfinishedCount = useAppSelector(selectUnfinishedTaskCount)
   const showCompleted = useAppSelector(selectShowCompleted)
   const sortMode = useAppSelector(selectSortMode)
   const groupMode = useAppSelector(selectGroupMode)
@@ -59,10 +54,8 @@ export function TasksScreen() {
   //#endregion local state
 
   //#region derived values
-  const editingTask =
-    tasks.find((task: ITask) => task.id === editingTaskId) ?? null
+  const editingTask = tasks.find((task: ITask) => task.id === editingTaskId) ?? null
   const isEditDialogOpen = Boolean(editingTask)
-  const totalCount = tasks.length
 
   const initialFormValues = editingTask
     ? {
@@ -278,50 +271,29 @@ export function TasksScreen() {
           </Button>
         }
       />
-
-      <div className='grid gap-4 md:grid-cols-2 xl:grid-cols-4'>
-        <StatCard
-          title={t('Total tasks')}
-          value={totalCount}
-          icon={<ListTodo className='h-4 w-4' />}
-        />
-        <StatCard
-          title={t('Pending')}
-          value={pendingCount}
-          icon={<Clock3 className='h-4 w-4' />}
-        />
-        <StatCard
-          title={t('Completed')}
-          value={completedCount}
-          icon={<CheckCircle2 className='h-4 w-4' />}
-        />
-        <StatCard
-          title={t('Unfinished')}
-          value={unfinishedCount}
-          icon={<AlertTriangle className='h-4 w-4' />}
-        />
-      </div>
-
+      
       <div className='space-y-4'>
-        <TaskFilterBar
-          filters={filters}
-          visibleCount={boardVisibleTasks.length}
-          onKeywordChange={handleKeywordChange}
-          onStatusChange={handleStatusChange}
-          onPriorityChange={handlePriorityChange}
-          onLabelChange={handleLabelChange}
-          onReset={handleResetFilters}
-        />
+        <div className='grid gap-4 xl:grid-cols-[1.45fr_1fr] xl:items-start'>
+          <TaskFilterBar
+            filters={filters}
+            visibleCount={boardVisibleTasks.length}
+            onKeywordChange={handleKeywordChange}
+            onStatusChange={handleStatusChange}
+            onPriorityChange={handlePriorityChange}
+            onLabelChange={handleLabelChange}
+            onReset={handleResetFilters}
+          />
 
-        <BoardPreferencesBar
-          showCompleted={showCompleted}
-          sortMode={sortMode}
-          groupMode={groupMode}
-          onShowCompletedChange={handleShowCompletedChange}
-          onSortModeChange={handleSortModeChange}
-          onGroupModeChange={handleGroupModeChange}
-          onReset={handleResetBoardPreferences}
-        />
+          <BoardPreferencesBar
+            showCompleted={showCompleted}
+            sortMode={sortMode}
+            groupMode={groupMode}
+            onShowCompletedChange={handleShowCompletedChange}
+            onSortModeChange={handleSortModeChange}
+            onGroupModeChange={handleGroupModeChange}
+            onReset={handleResetBoardPreferences}
+          />
+        </div>
 
         <BulkActionBar
           selectedCount={selectedTaskIds.length}
