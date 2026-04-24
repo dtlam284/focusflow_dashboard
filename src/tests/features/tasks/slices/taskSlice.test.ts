@@ -72,6 +72,12 @@ const createRootState = (tasks: ITasksState): RootState =>
       sortMode: 'newest',
       groupMode:'status'
     },
+    taskRelations: {
+      taskNoteRefs: [],
+      taskLinkRefs: [],
+      dismissedSuggestions: [],
+      recentAttachmentSignals: [],
+    },
     notes: {
       items: [],
       filters: {

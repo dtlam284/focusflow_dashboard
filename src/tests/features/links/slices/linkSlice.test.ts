@@ -62,6 +62,12 @@ const createRootState = (links: ILinksState): RootState =>
     taskLabels: {
       items: [],
     },
+    taskRelations: {
+      taskNoteRefs: [],
+      taskLinkRefs: [],
+      dismissedSuggestions: [],
+      recentAttachmentSignals: [],
+    },
     board: {
       showCompleted: true,
       sortMode: 'newest',
