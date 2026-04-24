@@ -1,7 +1,6 @@
 import { cn } from '@/utils'
 import { useI18n } from '@/contexts/I18nContext'
 import { useAppSelector } from '@/app/store/hooks'
-
 import { selectLabelsByIds } from '../store/selectors/labelSelectors'
 
 //#region constants
@@ -31,8 +30,11 @@ export function TaskLabelChips({
   maxVisible,
   className,
 }: ITaskLabelChipsProps) {
+
+  //#region hooks
   const { t } = useI18n()
   const labels = useAppSelector((state) => selectLabelsByIds(state, labelIds))
+  //#endregion hooks
 
   if (!labels.length) {
     return null
@@ -46,6 +48,7 @@ export function TaskLabelChips({
       ? labels.length - maxVisible
       : 0
 
+  //#region render
   return (
     <div className={cn('flex flex-wrap gap-2', className)}>
       {visibleLabels.map((label) => (
@@ -67,5 +70,6 @@ export function TaskLabelChips({
       ) : null}
     </div>
   )
+  //#endregion render
 }
 //#endregion component

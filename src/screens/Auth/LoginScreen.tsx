@@ -2,7 +2,6 @@ import React from 'react'
 import { Navigate, useNavigate, useSearchParams } from 'react-router'
 import { ShieldCheck } from 'lucide-react'
 import { toast } from 'sonner'
-
 import { useAppDispatch } from '@/app/store/hooks'
 import { FormField } from '@/components/shared/FormField'
 import { Button } from '@/components/ui/button'

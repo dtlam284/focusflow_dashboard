@@ -455,7 +455,7 @@ export function TaskDetailPanel() {
                                         title={t('Attached links')}
                                         itemCount={attachedLinks.length}
                                         emptyTitle={t('No attached links')}
-                                        emptyDescription={t('Links attached to this task will appear here.')}
+                                        emptyDescription={t('')}
                                     >
                                         {attachedLinks.map((link) => (
                                             <TaskResourceItem
@@ -473,7 +473,7 @@ export function TaskDetailPanel() {
                                         title={t('Suggested links')}
                                         itemCount={suggestedLinks.length}
                                         emptyTitle={t('No suggested links')}
-                                        emptyDescription={t('Relevant links will appear here when a useful match is found.')}
+                                        emptyDescription={t('')}
                                     >
                                         {suggestedLinks.map((suggestion) => (
                                             <TaskResourceItem
@@ -497,7 +497,7 @@ export function TaskDetailPanel() {
                                         title={t('Attached notes')}
                                         itemCount={attachedNotes.length}
                                         emptyTitle={t('No attached notes')}
-                                        emptyDescription={t('Notes attached to this task will appear here.')}
+                                        emptyDescription={t('')}
                                     >
                                         {attachedNotes.map((note) => (
                                             <TaskResourceItem
@@ -515,7 +515,7 @@ export function TaskDetailPanel() {
                                         title={t('Suggested notes')}
                                         itemCount={suggestedNotes.length}
                                         emptyTitle={t('No suggested notes')}
-                                        emptyDescription={t('Relevant notes will appear here when a useful match is found.')}
+                                        emptyDescription={t('')}
                                     >
                                         {suggestedNotes.map((suggestion) => (
                                             <TaskResourceItem

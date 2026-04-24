@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest'
 
-import { selectSuggestedEntitiesByTaskId, selectSuggestedLinksByTaskId, selectSuggestedNotesByTaskId } from '@/features/tasks/store/selectors/taskRelationsSelectors'
+import { 
+  selectSuggestedEntitiesByTaskId, 
+  selectSuggestedLinksByTaskId, 
+  selectSuggestedNotesByTaskId 
+} from '@/features/tasks/store/selectors/taskRelationsSelectors'
 
 import type { RootState } from '@/app/store/store'
 import type { ILink } from '@/features/links/types/linkTypes'
@@ -340,6 +344,71 @@ describe('taskRelationsSelectors', () => {
     expect(selectSuggestedNotesByTaskId(state, 'missing-task')).toEqual([])
     expect(selectSuggestedLinksByTaskId(state, 'missing-task')).toEqual([])
     expect(selectSuggestedEntitiesByTaskId(state, 'missing-task')).toEqual([])
+  })
+
+  it('keeps dismiss behavior task-scoped for the same entity', () => {
+    const taskA = createTask({ id: 'task-a', title: 'Accessibility review' })
+    const taskB = createTask({ id: 'task-b', title: 'Accessibility review' })
+
+    const sharedNote = createNote({
+      id: 'note-shared',
+      title: 'Accessibility checklist',
+      content: 'Keyboard navigation review',
+    })
+
+    const state = createRootState({
+      tasks: createTasksState([taskA, taskB]),
+      notes: createNotesState([sharedNote]),
+      links: createLinksState([]),
+      taskRelations: createTaskRelationsState({
+        dismissedSuggestions: [
+          {
+            id: 'dismissed:task-a:note:note-shared',
+            taskId: 'task-a',
+            entityType: 'note',
+            entityId: 'note-shared',
+            dismissedAt: '2026-04-24T00:00:00.000Z',
+          },
+        ],
+      }),
+    })
+
+    expect(selectSuggestedNotesByTaskId(state, 'task-a')).toEqual([])
+    expect(selectSuggestedNotesByTaskId(state, 'task-b')).toHaveLength(1)
+    expect(selectSuggestedNotesByTaskId(state, 'task-b')[0]?.entity.id).toBe(
+      'note-shared',
+    )
+  })
+
+  it('excludes a dismissed suggestion without removing the source entity from state', () => {
+    const task = createTask()
+
+    const dismissedLink = createLink({
+      id: 'link-dismissed-only',
+      title: 'Accessibility review patterns',
+      category: 'design',
+    })
+
+    const state = createRootState({
+      tasks: createTasksState([task]),
+      notes: createNotesState([]),
+      links: createLinksState([dismissedLink]),
+      taskRelations: createTaskRelationsState({
+        dismissedSuggestions: [
+          {
+            id: 'dismissed:task-1:link:link-dismissed-only',
+            taskId: 'task-1',
+            entityType: 'link',
+            entityId: 'link-dismissed-only',
+            dismissedAt: '2026-04-24T00:00:00.000Z',
+          },
+        ],
+      }),
+    })
+
+    expect(state.links.items).toHaveLength(1)
+    expect(state.links.items[0]?.id).toBe('link-dismissed-only')
+    expect(selectSuggestedLinksByTaskId(state, 'task-1')).toEqual([])
   })
 })
 //#endregion tests
