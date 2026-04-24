@@ -1,4 +1,6 @@
 import * as React from 'react'
+import { Eye, Paperclip, X } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { cn } from '@/utils'
 
 //#region props
@@ -9,6 +11,9 @@ interface ITaskResourceItemProps {
     variant: 'attached' | 'suggested'
     score?: number
     reasons?: string[]
+    onAttach?: () => void
+    onView?: () => void
+    onDismiss?: () => void
 }
 //#endregion props
 
@@ -43,6 +48,9 @@ export function TaskResourceItem({
     variant,
     score,
     reasons = [],
+    onAttach,
+    onView,
+    onDismiss,
 }: ITaskResourceItemProps) {
     const visibleReasons =
         variant === 'suggested' ? reasons.slice(0, 2) : []
@@ -92,6 +100,46 @@ export function TaskResourceItem({
                         </li>
                     ))}
                 </ul>
+            ) : null}
+
+            {onAttach || onView || onDismiss ? (
+                <div className='mt-4 flex flex-wrap items-center gap-2'>
+                    {onAttach ? (
+                        <Button
+                            type='button'
+                            size='sm'
+                            onClick={onAttach}
+                        >
+                            <Paperclip className='h-4 w-4' />
+                            Attach
+                        </Button>
+                    ) : null}
+
+                    {onView ? (
+                        <Button
+                            type='button'
+                            variant='outline'
+                            size='sm'
+                            onClick={onView}
+                        >
+                            <Eye className='h-4 w-4' />
+                            View
+                        </Button>
+                    ) : null}
+
+                    {onDismiss ? (
+                        <Button
+                            type='button'
+                            variant='outline'
+                            size='sm'
+                            onClick={onDismiss}
+                            className='text-slate-600 dark:text-slate-300'
+                        >
+                            <X className='h-4 w-4' />
+                            Dismiss
+                        </Button>
+                    ) : null}
+                </div>
             ) : null}
         </article>
     )
