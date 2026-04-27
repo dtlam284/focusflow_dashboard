@@ -1,5 +1,4 @@
-import * as React from 'react'
-import { Eye, Paperclip, X } from 'lucide-react'
+import { Eye, Paperclip, Sparkles, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/utils'
 
@@ -90,16 +89,23 @@ export function TaskResourceItem({
             </div>
 
             {variant === 'suggested' && visibleReasons.length > 0 ? (
-                <ul className='mt-3 space-y-1'>
-                    {visibleReasons.map((reason) => (
-                        <li
-                            key={reason}
-                            className='text-xs text-slate-600 dark:text-slate-300'
-                        >
-                            • {reason}
-                        </li>
-                    ))}
-                </ul>
+                <div className='mt-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 dark:border-slate-800 dark:bg-slate-900/40'>
+                    <div className='mb-2 flex items-center gap-2 text-xs font-medium text-slate-700 dark:text-slate-200'>
+                        <Sparkles className='h-3.5 w-3.5' />
+                        Why suggested
+                    </div>
+
+                    <ul className='space-y-1'>
+                        {visibleReasons.map((reason) => (
+                            <li
+                                key={reason}
+                                className='text-xs leading-5 text-slate-600 dark:text-slate-300'
+                            >
+                                • {reason}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
             ) : null}
 
             {onAttach || onView || onDismiss ? (
