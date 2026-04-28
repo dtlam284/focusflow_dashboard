@@ -54,49 +54,49 @@ export function DashboardScreen() {
     <div className="space-y-6">
       <PageHeader
         title={`Welcome${user ? `, ${user.firstName}` : ''}`}
-        description="Overview of the current work, saved notes, and saved resources."
+        description=''
       />
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         <SummaryCard
           title="Total Tasks"
           value={totalTasks}
-          description="All tasks."
+          description=""
           icon={<ListTodo className="h-5 w-5" />}
         />
 
         <SummaryCard
           title="Completed Tasks"
           value={completedTasks}
-          description="Tasks already marked as done."
+          description=""
           icon={<CheckCircle2 className="h-5 w-5" />}
         />
 
         <SummaryCard
           title="Pending Tasks"
           value={pendingTasks}
-          description="Ucompleted tasks."
+          description=""
           icon={<Clock3 className="h-5 w-5" />}
         />
 
         <SummaryCard
           title="Unfinished Tasks"
           value={unfinishedTasks}
-          description="Overdue tasks and uncompleted."
+          description=""
           icon={<LayoutDashboard className="h-5 w-5" />}
         />
 
         <SummaryCard
           title="Pinned Notes"
           value={pinnedNotes}
-          description="Pinned notes for quick access."
+          description=""
           icon={<NotebookPen className="h-5 w-5" />}
         />
 
         <SummaryCard
           title="Saved Links"
           value={savedLinks}
-          description="Saved resources."
+          description=""
           icon={<Link2 className="h-5 w-5" />}
         />
       </section>

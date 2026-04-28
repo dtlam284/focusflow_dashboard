@@ -77,7 +77,7 @@ export function LinkDetailPanel() {
                                 {t('Link details')}
                             </SheetTitle>
                             <SheetDescription>
-                                {t('Review link context and discover related tasks')}
+                                {t('')}
                             </SheetDescription>
                         </SheetHeader>
 
@@ -142,7 +142,7 @@ export function LinkDetailPanel() {
                                             {t('No related tasks')}
                                         </p>
                                         <p className='mt-1 text-xs text-slate-500 dark:text-slate-400'>
-                                            {t('Tasks already linked to this resource will appear here.')}
+                                            {t('')}
                                         </p>
                                     </div>
                                 ) : (
@@ -193,7 +193,7 @@ export function LinkDetailPanel() {
                                             {t('No suggested tasks')}
                                         </p>
                                         <p className='mt-1 text-xs text-slate-500 dark:text-slate-400'>
-                                            {t('Relevant task suggestions will appear here when a useful match is found.')}
+                                            {t('')}
                                         </p>
                                     </div>
                                 ) : (

@@ -150,7 +150,7 @@ export function NotesScreen() {
       <PageHeader
         title={t('Notes')}
         description={t(
-          'Capture ideas, reminders, and useful information in a clean note workspace.',
+          '',
         )}
       />
 

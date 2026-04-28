@@ -69,7 +69,7 @@ export function NoteDetailPanel() {
                                 {t('Note details')}
                             </SheetTitle>
                             <SheetDescription>
-                                {t('Review note content and discover related tasks')}
+                                {t('')}
                             </SheetDescription>
                         </SheetHeader>
 
@@ -122,7 +122,7 @@ export function NoteDetailPanel() {
                                             {t('No related tasks')}
                                         </p>
                                         <p className='mt-1 text-xs text-slate-500 dark:text-slate-400'>
-                                            {t('Tasks already linked to this note will appear here.')}
+                                            {t('')}
                                         </p>
                                     </div>
                                 ) : (
@@ -173,7 +173,7 @@ export function NoteDetailPanel() {
                                             {t('No suggested tasks')}
                                         </p>
                                         <p className='mt-1 text-xs text-slate-500 dark:text-slate-400'>
-                                            {t('Relevant task suggestions will appear here when a useful match is found.')}
+                                            {t('')}
                                         </p>
                                     </div>
                                 ) : (

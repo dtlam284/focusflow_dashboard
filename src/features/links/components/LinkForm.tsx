@@ -65,9 +65,9 @@ export function LinkForm({
     <div className="rounded-2xl border bg-card p-5 shadow-sm">
       <div className="mb-4 space-y-1">
         <h2 className="text-lg font-semibold">{mode === 'create' ? 'Add link' : 'Edit link'}</h2>
-        <p className="text-sm text-muted-foreground">
+        {/* <p className="text-sm text-muted-foreground">
           Save a useful resource with a valid URL and clear category.
-        </p>
+        </p> */}
       </div>
 
       <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">

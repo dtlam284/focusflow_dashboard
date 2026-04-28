@@ -316,7 +316,7 @@ export function TaskDetailPanel() {
                                 {t('Task details')}
                             </SheetTitle>
                             <SheetDescription>
-                                {t('Review task context, notes, links, activity, and discussion')}
+                                {t('')}
                             </SheetDescription>
                         </SheetHeader>
 

@@ -64,9 +64,9 @@ export function LinksScreen() {
     <section className='space-y-6'>
       <div className='space-y-2'>
         <h1 className='text-2xl font-semibold tracking-tight'>Links</h1>
-        <p className='text-sm text-muted-foreground'>
+        {/* <p className='text-sm text-muted-foreground'>
           Save useful resources and open them quickly in a safe new tab.
-        </p>
+        </p> */}
       </div>
 
       <div className='grid gap-6 xl:grid-cols-[360px_minmax(0,1fr)]'>

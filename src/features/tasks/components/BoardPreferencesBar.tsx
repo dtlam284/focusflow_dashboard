@@ -56,7 +56,7 @@ export function BoardPreferencesBar({
               {t('Show completed')}
             </p>
             <p className='text-xs text-slate-500 dark:text-slate-400'>
-              {t('Completed tasks.')}
+              {t('')}
             </p>
           </div>
 

@@ -94,8 +94,8 @@ export function NoteForm({
       title={isEditMode ? t('Edit note') : t('Create a new note')}
       description={
         isEditMode
-          ? t('Update the selected note details.')
-          : t('Capture quick ideas, reminders, and useful notes.')
+          ? t('')
+          : t('')
       }
     >
       <form onSubmit={handleSubmit(submitHandler)} className="space-y-4">
@@ -103,7 +103,7 @@ export function NoteForm({
           label={t('Title')}
           htmlFor="note-title"
           required
-          hint={t('Use a short title that is easy to scan.')}
+          hint={t('')}
         >
           <Input
             id="note-title"
@@ -120,7 +120,7 @@ export function NoteForm({
           label={t('Content')}
           htmlFor="note-content"
           required
-          hint={t('Keep it concise but meaningful.')}
+          hint={t('')}
         >
           <Textarea
             id="note-content"
@@ -135,7 +135,7 @@ export function NoteForm({
         </FormField>
 
         <div className="grid gap-4 md:grid-cols-2">
-          <FormField label={t('Color')} required hint={t('Use color as a light visual accent.')}>
+          <FormField label={t('Color')} required hint={t('')}>
             <Controller
               name="color"
               control={control}
@@ -160,7 +160,7 @@ export function NoteForm({
             ) : null}
           </FormField>
 
-          <FormField label={t('Category')} required hint={t('Choose the note type or topic.')}>
+          <FormField label={t('Category')} required hint={t('')}>
             <Controller
               name="category"
               control={control}
