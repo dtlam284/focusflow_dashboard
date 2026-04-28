@@ -10,7 +10,7 @@ import { useI18n } from '@/contexts/I18nContext'
 import { cn } from '@/utils'
 
 import { addTaskActivity } from '../store/slices/taskActivitySlice'
-import { closeTaskDetail } from '../store/slices/taskDetailSlice'
+import { closeTaskDetail, openTaskDetail } from '../store/slices/taskDetailSlice'
 import {
     attachLinkToTask,
     attachNoteToTask,
@@ -20,6 +20,7 @@ import { updateTask } from '../store/slices/taskSlice'
 import {
     selectAttachedLinksByTaskId,
     selectAttachedNotesByTaskId,
+    selectSimilarTasksByTaskId,
     selectSuggestedLinksByTaskId,
     selectSuggestedNotesByTaskId,
 } from '../store/selectors/taskRelationsSelectors'
@@ -104,6 +105,9 @@ const formatLinkMetadata = (link: ILink) => {
 
 const formatNoteMetadata = (note: INote) =>
     note.category !== 'other' ? note.category : undefined
+
+const formatTaskMetadata = (status: string, priority: string) =>
+    `${status.replace('_', ' ')} • ${priority}`
 //#endregion helpers
 
 //#region component
@@ -127,6 +131,9 @@ export function TaskDetailPanel() {
     )
     const suggestedLinks = useAppSelector((state) =>
         selectedTaskId ? selectSuggestedLinksByTaskId(state, selectedTaskId) : [],
+    )
+    const similarTasks = useAppSelector((state) =>
+        selectedTaskId ? selectSimilarTasksByTaskId(state, selectedTaskId) : [],
     )
     //#endregion hooks
 
@@ -299,6 +306,14 @@ export function TaskDetailPanel() {
 
     const handlePreviewNote = (note: INote) => {
         setPreviewNote(note)
+    }
+
+    const handleOpenSimilarTask = (taskId: string) => {
+        if (!selectedTaskId || taskId === selectedTaskId) {
+            return
+        }
+
+        dispatch(openTaskDetail(taskId))
     }
     //#endregion handlers
 
@@ -575,6 +590,83 @@ export function TaskDetailPanel() {
                                         </section>
                                     ) : null}
                                 </div>
+                            </section>
+
+                            <section className='space-y-4'>
+                                <h3 className='text-sm font-semibold text-slate-900 dark:text-slate-100'>
+                                    {t('Similar tasks')}
+                                </h3>
+
+                                {similarTasks.length === 0 ? (
+                                    <div className='rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-4 dark:border-slate-700 dark:bg-slate-900/30'>
+                                        <p className='text-sm font-medium text-slate-700 dark:text-slate-200'>
+                                            {t('No similar tasks')}
+                                        </p>
+                                        <p className='mt-1 text-xs text-slate-500 dark:text-slate-400'>
+                                            {t('')}
+                                        </p>
+                                    </div>
+                                ) : (
+                                    <div className='grid gap-4'>
+                                        {similarTasks.map((suggestion) => (
+                                            <article
+                                                key={suggestion.entity.id}
+                                                className='rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-950/40'
+                                            >
+                                                <div className='flex items-start justify-between gap-3'>
+                                                    <div className='min-w-0 flex-1 space-y-1'>
+                                                        <h4 className='truncate text-sm font-semibold text-slate-900 dark:text-slate-100'>
+                                                            {suggestion.entity.title}
+                                                        </h4>
+                                                        <p className='text-xs text-slate-500 dark:text-slate-400'>
+                                                            {formatTaskMetadata(
+                                                                suggestion.entity.status,
+                                                                suggestion.entity.priority,
+                                                            )}
+                                                        </p>
+                                                    </div>
+
+                                                    <div className='flex items-center gap-2'>
+                                                        <span className='inline-flex rounded-full border border-blue-200 bg-blue-100 px-2.5 py-1 text-[11px] font-medium text-blue-700 dark:border-blue-900 dark:bg-blue-950/40 dark:text-blue-300'>
+                                                            {suggestion.score >= 14
+                                                                ? t('Strong match')
+                                                                : suggestion.score >= 9
+                                                                ? t('Good match')
+                                                                : t('Possible match')}
+                                                        </span>
+
+                                                        <Button
+                                                            type='button'
+                                                            variant='outline'
+                                                            size='sm'
+                                                            onClick={() => handleOpenSimilarTask(suggestion.entity.id)}
+                                                        >
+                                                            {t('Open task')}
+                                                        </Button>
+                                                    </div>
+                                                </div>
+
+                                                {suggestion.reasons.length > 0 ? (
+                                                    <div className='mt-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 dark:border-slate-800 dark:bg-slate-900/40'>
+                                                        <p className='mb-2 text-xs font-medium text-slate-700 dark:text-slate-200'>
+                                                            {t('Why related')}
+                                                        </p>
+                                                        <ul className='space-y-1'>
+                                                            {suggestion.reasons.map((reason: string) => (
+                                                                <li
+                                                                    key={reason}
+                                                                    className='text-xs leading-5 text-slate-600 dark:text-slate-300'
+                                                                >
+                                                                    • {reason}
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    </div>
+                                                ) : null}
+                                            </article>
+                                        ))}
+                                    </div>
+                                )}
                             </section>
 
                             <TaskActivityTimeline taskId={selectedTask.id} />

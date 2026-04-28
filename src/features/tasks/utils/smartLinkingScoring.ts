@@ -15,6 +15,18 @@ const MAX_TITLE_MATCHES_TO_SCORE = 3
 const MAX_CONTENT_MATCHES_TO_SCORE = 3
 const MAX_CATEGORY_MATCHES_TO_SCORE = 2
 const MAX_REASON_KEYWORDS = 2
+
+const SIMILAR_TASK_MIN_RELEVANCE_SCORE = 5
+
+const SHARED_NOTE_SIMILARITY_SCORE = 6
+const SHARED_LINK_SIMILARITY_SCORE = 5
+const SHARED_LABEL_SIMILARITY_SCORE = 4
+const SIMILAR_TASK_KEYWORD_SCORE = 2
+
+const MAX_SHARED_NOTE_MATCHES_TO_SCORE = 2
+const MAX_SHARED_LINK_MATCHES_TO_SCORE = 2
+const MAX_SHARED_LABEL_MATCHES_TO_SCORE = 2
+const MAX_SIMILAR_TASK_KEYWORD_MATCHES_TO_SCORE = 3
 //#endregion constants
 
 //#region props
@@ -29,6 +41,13 @@ interface IScoringOptions {
     isAlreadyAttached?: boolean
     isDismissed?: boolean
     hasRecentAttachmentSignal?: boolean
+}
+
+interface ISimilarTaskScoringOptions {
+    sharedNoteCount?: number
+    sharedLinkCount?: number
+    sharedLabelCount?: number
+    excludeSelf?: boolean
 }
 //#endregion props
 
@@ -95,26 +114,38 @@ const formatReason = (
 }
 
 const getReasonPriority = (reason: string): number => {
+    if (reason.includes('Shares') && reason.includes('resource')) {
+        return 1
+    }
+
+    if (reason.includes('Matched keywords:')) {
+        return 2
+    }
+
     if (
         reason.includes('Matched task title') ||
         reason.includes('Matched keywords in title')
     ) {
-        return 1
+        return 3
     }
 
     if (reason.includes('Recently attached')) {
-        return 2
+        return 4
+    }
+
+    if (reason.includes('Shares') && reason.includes('label')) {
+        return 5
     }
 
     if (
         reason.includes('Matched task details') ||
         reason.includes('Matched related content')
     ) {
-        return 3
+        return 6
     }
 
     if (reason.includes('Matched category')) {
-        return 4
+        return 7
     }
 
     return 99
@@ -141,6 +172,62 @@ const buildSuggestionScore = (
         score,
         reasons: orderReasons(reasons),
     }
+}
+
+const buildSimilarTaskScore = (
+    entityId: string,
+    score: number,
+    reasons: string[],
+): ISuggestionScore | null => {
+    if (score < SIMILAR_TASK_MIN_RELEVANCE_SCORE) {
+        return null
+    }
+
+    return {
+        entityType: 'task',
+        entityId,
+        score,
+        reasons: orderReasons(reasons),
+    }
+}
+
+const getCountBasedPoints = (
+    count: number,
+    pointsPerMatch: number,
+    maxMatchesToScore: number,
+): number => Math.min(count, maxMatchesToScore) * pointsPerMatch
+
+const formatSharedResourceReason = (
+    sharedNoteCount: number,
+    sharedLinkCount: number,
+): string | null => {
+    const totalSharedResources = sharedNoteCount + sharedLinkCount
+
+    if (totalSharedResources === 0) {
+        return null
+    }
+
+    return `Shares ${totalSharedResources} linked ${
+        totalSharedResources === 1 ? 'resource' : 'resources'
+    }`
+}
+
+const formatSharedLabelReason = (sharedLabelCount: number): string | null => {
+    if (sharedLabelCount === 0) {
+        return null
+    }
+
+    return `Shares ${sharedLabelCount} ${
+        sharedLabelCount === 1 ? 'label' : 'labels'
+    }`
+}
+
+const formatKeywordReason = (keywords: string[]): string | null => {
+    if (keywords.length === 0) {
+        return null
+    }
+
+    return `Matched keywords: ${formatKeywordList(keywords)}`
 }
 //#endregion helpers
 
@@ -439,5 +526,80 @@ export function scoreTaskSuggestionForLink(
     }
 
     return buildSuggestionScore('task', task.id, score, reasons)
+}
+
+export function scoreSimilarTaskForTask(
+    baseTask: ITask,
+    candidateTask: ITask,
+    options: ISimilarTaskScoringOptions = {},
+): ISuggestionScore | null {
+    const {
+        sharedNoteCount = 0,
+        sharedLinkCount = 0,
+        sharedLabelCount = 0,
+        excludeSelf = true,
+    } = options
+
+    if (excludeSelf && baseTask.id === candidateTask.id) {
+        return null
+    }
+
+    const baseKeywords = extractKeywordsFromParts([
+        baseTask.title,
+        baseTask.description,
+    ])
+    const candidateKeywords = extractKeywordsFromParts([
+        candidateTask.title,
+        candidateTask.description,
+    ])
+
+    const keywordOverlap = getKeywordOverlap(baseKeywords, candidateKeywords)
+
+    let score = 0
+    const reasons: string[] = []
+
+    score += getCountBasedPoints(
+        sharedNoteCount,
+        SHARED_NOTE_SIMILARITY_SCORE,
+        MAX_SHARED_NOTE_MATCHES_TO_SCORE,
+    )
+
+    score += getCountBasedPoints(
+        sharedLinkCount,
+        SHARED_LINK_SIMILARITY_SCORE,
+        MAX_SHARED_LINK_MATCHES_TO_SCORE,
+    )
+
+    score += getCountBasedPoints(
+        sharedLabelCount,
+        SHARED_LABEL_SIMILARITY_SCORE,
+        MAX_SHARED_LABEL_MATCHES_TO_SCORE,
+    )
+
+    score += getScoredMatchPoints(
+        keywordOverlap,
+        SIMILAR_TASK_KEYWORD_SCORE,
+        MAX_SIMILAR_TASK_KEYWORD_MATCHES_TO_SCORE,
+    )
+
+    const sharedResourceReason = formatSharedResourceReason(
+        sharedNoteCount,
+        sharedLinkCount,
+    )
+    if (sharedResourceReason) {
+        reasons.push(sharedResourceReason)
+    }
+
+    const sharedLabelReason = formatSharedLabelReason(sharedLabelCount)
+    if (sharedLabelReason) {
+        reasons.push(sharedLabelReason)
+    }
+
+    const keywordReason = formatKeywordReason(keywordOverlap)
+    if (keywordReason) {
+        reasons.push(keywordReason)
+    }
+
+    return buildSimilarTaskScore(candidateTask.id, score, reasons)
 }
 //#endregion exports

@@ -2,6 +2,7 @@ import { createSelector } from '@reduxjs/toolkit'
 import {
     scoreLinkSuggestionForTask,
     scoreNoteSuggestionForTask,
+    scoreSimilarTaskForTask,
     scoreTaskSuggestionForLink,
     scoreTaskSuggestionForNote,
 } from '@/features/tasks/utils/smartLinkingScoring'
@@ -37,9 +38,11 @@ export interface ISuggestedTaskResult {
     reasons: string[]
 }
 
-export type ISuggestedTaskEntityResult =
+export type SuggestedTaskEntityResult =
     | ISuggestedNoteResult
     | ISuggestedLinkResult
+
+export type SimilarTaskResult = ISuggestedTaskResult
 //#endregion props
 
 //#region base selectors
@@ -66,6 +69,15 @@ const toLimitedSuggestionResults = <T extends { score: number }>(
     items: T[],
 ): T[] =>
     sortSuggestedResultsByScore(items).slice(0, SMART_LINKING_MAX_SUGGESTIONS)
+
+const getUniqueIntersectionCount = (
+    leftIds: string[],
+    rightIds: string[],
+): number => {
+    const rightIdSet = new Set(rightIds)
+
+    return Array.from(new Set(leftIds)).filter((id) => rightIdSet.has(id)).length
+}
 //#endregion helpers
 
 //#region task selectors
@@ -88,7 +100,7 @@ export const selectNoteById = createSelector(
     ],
     (notes, noteId) => notes.find((note) => note.id === noteId) ?? null,
 )
-
+ 
 export const selectLinkById = createSelector(
     [
         (state: RootState) => state.links.items,
@@ -355,7 +367,7 @@ export const selectSuggestedLinksByTaskId = createSelector(
 
 export const selectSuggestedEntitiesByTaskId = createSelector(
     [selectSuggestedNotesByTaskId, selectSuggestedLinksByTaskId],
-    (suggestedNotes, suggestedLinks): ISuggestedTaskEntityResult[] =>
+    (suggestedNotes, suggestedLinks): SuggestedTaskEntityResult[] =>
         toLimitedSuggestionResults([...suggestedNotes, ...suggestedLinks]),
 )
 
@@ -442,6 +454,72 @@ export const selectSuggestedTasksByLinkId = createSelector(
         })
 
         return toLimitedSuggestionResults(suggestedTasks)
+    },
+)
+
+export const selectSimilarTasksByTaskId = createSelector(
+    [selectTaskById, selectAllTasks, selectTaskNoteRefs, selectTaskLinkRefs],
+    (
+        task,
+        tasks,
+        taskNoteRefs,
+        taskLinkRefs,
+    ): SimilarTaskResult[] => {
+        if (!task) {
+            return []
+        }
+
+        const baseNoteIds = taskNoteRefs
+            .filter((item) => item.taskId === task.id)
+            .map((item) => item.noteId)
+
+        const baseLinkIds = taskLinkRefs
+            .filter((item) => item.taskId === task.id)
+            .map((item) => item.linkId)
+
+        const baseLabelIds = task.labelIds ?? []
+
+        const similarTasks = tasks.flatMap((candidateTask) => {
+            const candidateNoteIds = taskNoteRefs
+                .filter((item) => item.taskId === candidateTask.id)
+                .map((item) => item.noteId)
+
+            const candidateLinkIds = taskLinkRefs
+                .filter((item) => item.taskId === candidateTask.id)
+                .map((item) => item.linkId)
+
+            const candidateLabelIds = candidateTask.labelIds ?? []
+
+            const suggestionScore = scoreSimilarTaskForTask(task, candidateTask, {
+                sharedNoteCount: getUniqueIntersectionCount(
+                    baseNoteIds,
+                    candidateNoteIds,
+                ),
+                sharedLinkCount: getUniqueIntersectionCount(
+                    baseLinkIds,
+                    candidateLinkIds,
+                ),
+                sharedLabelCount: getUniqueIntersectionCount(
+                    baseLabelIds,
+                    candidateLabelIds,
+                ),
+            })
+
+            if (!suggestionScore) {
+                return []
+            }
+
+            return [
+                {
+                    entityType: 'task' as const,
+                    entity: candidateTask,
+                    score: suggestionScore.score,
+                    reasons: suggestionScore.reasons,
+                },
+            ]
+        })
+
+        return toLimitedSuggestionResults(similarTasks)
     },
 )
 //#endregion smart suggestion selectors
