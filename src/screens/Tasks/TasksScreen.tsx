@@ -15,14 +15,31 @@ import { openTaskDetail } from '@/features/tasks/store/slices/taskDetailSlice'
 import { TaskEditorDialog } from '@/features/tasks/components/TaskEditorDialog'
 import { BoardPreferencesBar } from '@/features/tasks/components/BoardPreferencesBar'
 import { removeCommentsByTaskId } from '@/features/tasks/store/slices/taskCommentsSlice'
-import { addTaskActivity, removeActivitiesByTaskId} from '@/features/tasks/store/slices/taskActivitySlice'
-import {  resetBoardPreferences,  setGroupMode,  setShowCompleted,  setSortMode } from '@/features/tasks/store/slices/boardSlice'
+import { 
+  addTaskActivity, 
+  removeActivitiesByTaskId
+} from '@/features/tasks/store/slices/taskActivitySlice'
+import {  
+  resetBoardPreferences,  
+  setGroupMode,  
+  setShowCompleted,  
+  setSortMode 
+} from '@/features/tasks/store/slices/boardSlice'
 import { addTask, bulkDeleteTasks, bulkUpdateTaskStatus, deleteTask, resetTaskFilters, setTaskFilters, updateTask } from '@/features/tasks/store/slices/taskSlice'
 import { selectBoardVisibleTasks, selectGroupMode, selectShowCompleted, selectSortMode, selectLabelGroupedColumns } from '@/features/tasks/store/selectors/boardSelectors'
 import { selectTaskFilters, selectTaskItems } from '@/features/tasks/store/selectors/taskSelectors'
 import type { TaskFormValues } from '@/features/tasks/schemas/taskSchema'
 import type { ITask, ITaskFilters, TaskStatus } from '@/features/tasks/types/taskTypes'
 import type { BoardGroupMode, BoardSortMode,} from '@/features/tasks/store/slices/boardSlice'
+import { SmartLinkingPreferencesCard } from '@/features/tasks/components/SmartLinkingPreferencesCard'
+import {
+  resetSmartLinkingPreferences,
+  setSmartLinkingEnabled,
+  setSmartLinkingHideDismissed,
+  setSmartLinkingMaxSuggestions,
+  setSmartLinkingShowReasons,
+} from '@/features/tasks/store/slices/smartLinkingPreferencesSlice'
+import { selectSmartLinkingPreferencesState } from '@/features/tasks/store/selectors/smartLinkingPreferencesSelectors'
 
 //#region component
 export function TasksScreen() {
@@ -39,6 +56,7 @@ export function TasksScreen() {
   const sortMode = useAppSelector(selectSortMode)
   const groupMode = useAppSelector(selectGroupMode)
   const labelGroupedColumns = useAppSelector(selectLabelGroupedColumns)
+  const smartLinkingPreferences = useAppSelector(selectSmartLinkingPreferencesState)
   //#endregion selectors
 
   //#region local state
@@ -256,6 +274,26 @@ export function TasksScreen() {
   const handleOpenTaskDetail = (task: ITask) => {
     dispatch(openTaskDetail(task.id))
   }
+
+  const handleSmartLinkingEnabledChange = (value: boolean) => {
+    dispatch(setSmartLinkingEnabled(value))
+  }
+
+  const handleSmartLinkingHideDismissedChange = (value: boolean) => {
+    dispatch(setSmartLinkingHideDismissed(value))
+  }
+
+  const handleSmartLinkingShowReasonsChange = (value: boolean) => {
+    dispatch(setSmartLinkingShowReasons(value))
+  }
+
+  const handleSmartLinkingMaxSuggestionsChange = (value: 3 | 5 | 10) => {
+    dispatch(setSmartLinkingMaxSuggestions(value))
+  }
+
+  const handleResetSmartLinkingPreferences = () => {
+    dispatch(resetSmartLinkingPreferences())
+  }
   //#endregion handlers
 
   //#region render
@@ -294,6 +332,15 @@ export function TasksScreen() {
             onReset={handleResetBoardPreferences}
           />
         </div>
+
+        <SmartLinkingPreferencesCard
+          preferences={smartLinkingPreferences}
+          onEnabledChange={handleSmartLinkingEnabledChange}
+          onHideDismissedChange={handleSmartLinkingHideDismissedChange}
+          onShowReasonsChange={handleSmartLinkingShowReasonsChange}
+          onMaxSuggestionsChange={handleSmartLinkingMaxSuggestionsChange}
+          onReset={handleResetSmartLinkingPreferences}
+        />
 
         <BulkActionBar
           selectedCount={selectedTaskIds.length}
