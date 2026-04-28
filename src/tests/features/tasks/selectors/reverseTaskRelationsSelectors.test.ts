@@ -136,6 +136,12 @@ const createRootState = ({
             selectedLinkId: null,
             isOpen: false,
         },
+        smartLinkingPreferences: {
+            enabled: true,
+            maxSuggestions: 5,
+            showReasons: true,
+            hideDismissed: true,
+        },
         _persist: {
             version: -1,
             rehydrated: true,

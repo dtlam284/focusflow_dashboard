@@ -99,6 +99,12 @@ const createRootState = (tasks: ITasksState): RootState =>
         category: 'all',
       },
     },
+    smartLinkingPreferences: {
+        enabled: true,
+        maxSuggestions: 5,
+        showReasons: true,
+        hideDismissed: true,
+    },
     _persist: {
       version: -1,
       rehydrated: true,
