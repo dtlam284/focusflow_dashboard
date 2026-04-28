@@ -311,7 +311,7 @@ export function TasksScreen() {
       />
       
       <div className='space-y-4'>
-        <div className='grid gap-4 xl:grid-cols-[1.45fr_1fr] xl:items-start'>
+        <div className='grid gap-4 xl:grid-cols-[1fr_1fr] xl:items-start'>
           <TaskFilterBar
             filters={filters}
             visibleCount={boardVisibleTasks.length}

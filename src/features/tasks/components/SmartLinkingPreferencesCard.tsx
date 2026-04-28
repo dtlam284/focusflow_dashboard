@@ -28,8 +28,8 @@ export function SmartLinkingPreferencesCard({
 
     //#region render
     return (
-        <section className='rounded-2xl border bg-card p-4 shadow-sm'>
-            <div className='mb-4 flex items-start justify-between gap-3'>
+        <section className='rounded-2xl border bg-card p-2.5 shadow-sm'>
+            <div className='mb-2 flex items-center justify-between gap-3'>
                 <div>
                     <h3 className='text-sm font-semibold text-foreground'>
                         {t('Smart linking preferences')}
@@ -125,7 +125,7 @@ export function SmartLinkingPreferencesCard({
                                 Number(event.target.value) as 3 | 5 | 10,
                             )
                         }
-                        className='mt-3 h-10 w-full rounded-xl border bg-background px-3 text-sm'
+                        className='mt-2 h-9 w-full rounded-xl border bg-background px-3 text-sm'
                     >
                         <option value={3}>3</option>
                         <option value={5}>5</option>
