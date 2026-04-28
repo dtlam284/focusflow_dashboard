@@ -1,9 +1,7 @@
-import { Edit3, Pin, PinOff, Tag, Trash2 } from 'lucide-react'
-
+import { Edit3, Info, Pin, PinOff, Tag, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import { cn } from '@/utils'
-
 import type { INote } from '../types/noteTypes'
 
 //#region props
@@ -13,6 +11,7 @@ export interface INoteCardProps {
   onDelete: (noteId: string) => void
   onTogglePin: (noteId: string) => void
   onPreview: (note: INote) => void
+  onOpenDetail?: (note: INote) => void
 }
 //#endregion props
 
@@ -54,7 +53,14 @@ const formatCategory = (category: INote['category']) => {
 //#endregion helpers
 
 //#region component
-export function NoteCard({ note, onEdit, onDelete, onTogglePin, onPreview }: INoteCardProps) {
+export function NoteCard({
+  note,
+  onEdit,
+  onDelete,
+  onTogglePin,
+  onPreview,
+  onOpenDetail,
+}: INoteCardProps) {
   //#region derived values
   const previewContent = note.content.replace(/\s+/g, ' ').trim()
   //#endregion derived values
@@ -68,72 +74,79 @@ export function NoteCard({ note, onEdit, onDelete, onTogglePin, onPreview }: INo
         note.isPinned && 'ring-1 ring-amber-300 dark:ring-amber-700',
       )}
     >
-      <CardHeader className="flex flex-row items-start justify-between gap-3 border-b border-slate-100 pb-3 dark:border-slate-800">
-        <div className="min-w-0 space-y-2">
-          <div className="flex flex-wrap items-center gap-2">
+      <CardHeader className='flex flex-row items-start justify-between gap-3 border-b border-slate-100 pb-3 dark:border-slate-800'>
+        <div className='min-w-0 space-y-2'>
+          <div className='flex flex-wrap items-center gap-2'>
             <span
               className={cn(
                 'inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium',
                 categoryBadgeStyles[note.category],
               )}
             >
-              <Tag className="h-3.5 w-3.5" />
+              <Tag className='h-3.5 w-3.5' />
               {formatCategory(note.category)}
             </span>
 
             {note.isPinned ? (
-              <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-800 dark:bg-amber-950/50 dark:text-amber-300">
-                <Pin className="h-3.5 w-3.5" />
+              <span className='inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-800 dark:bg-amber-950/50 dark:text-amber-300'>
+                <Pin className='h-3.5 w-3.5' />
                 Pinned
               </span>
             ) : null}
           </div>
 
           <button
-            type="button"
+            type='button'
             onClick={() => onPreview(note)}
-            className="block w-full text-left outline-none"
+            className='block w-full text-left outline-none'
           >
-            <h3 className="line-clamp-2 text-base font-semibold text-slate-900 dark:text-slate-100">
+            <h3 className='line-clamp-2 text-base font-semibold text-slate-900 dark:text-slate-100'>
               {note.title}
             </h3>
           </button>
         </div>
 
         <Button
-          size="icon"
-          variant="ghost"
-          className="h-8 w-8 shrink-0"
+          size='icon'
+          variant='ghost'
+          className='h-8 w-8 shrink-0'
           onClick={() => onTogglePin(note.id)}
           aria-label={note.isPinned ? 'Unpin note' : 'Pin note'}
           title={note.isPinned ? 'Unpin note' : 'Pin note'}
         >
-          {note.isPinned ? <PinOff className="h-4 w-4" /> : <Pin className="h-4 w-4" />}
+          {note.isPinned ? <PinOff className='h-4 w-4' /> : <Pin className='h-4 w-4' />}
         </Button>
       </CardHeader>
 
-      <CardContent className="py-3">
+      <CardContent className='py-3'>
         <button
-          type="button"
+          type='button'
           onClick={() => onPreview(note)}
-          className="block w-full text-left outline-none"
+          className='block w-full text-left outline-none'
         >
-          <div className="h-[52px] overflow-hidden">
-            <p className="line-clamp-2 break-words text-sm leading-6 text-slate-600 dark:text-slate-300">
+          <div className='h-[52px] overflow-hidden'>
+            <p className='line-clamp-2 break-words text-sm leading-6 text-slate-600 dark:text-slate-300'>
               {previewContent}
             </p>
           </div>
         </button>
       </CardContent>
 
-      <CardFooter className="flex flex-wrap items-center gap-2 border-t border-slate-100 pt-4 dark:border-slate-800">
-        <Button size="sm" variant="outline" onClick={() => onEdit(note)}>
-          <Edit3 className="h-4 w-4" />
+      <CardFooter className='flex flex-wrap items-center gap-2 border-t border-slate-100 pt-4 dark:border-slate-800'>
+        {onOpenDetail ? (
+          <Button size='sm' variant='outline' onClick={() => onOpenDetail(note)}>
+            <Info className='h-4 w-4' />
+            Details
+          </Button>
+        ) : null}
+
+        <Button size='sm' variant='outline' onClick={() => onEdit(note)}>
+          <Edit3 className='h-4 w-4' />
           Edit
         </Button>
 
-        <Button size="sm" variant="destructive" onClick={() => onDelete(note.id)}>
-          <Trash2 className="h-4 w-4" />
+        <Button size='sm' variant='destructive' onClick={() => onDelete(note.id)}>
+          <Trash2 className='h-4 w-4' />
           Delete
         </Button>
       </CardFooter>

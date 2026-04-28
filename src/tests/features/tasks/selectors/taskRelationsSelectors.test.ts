@@ -131,6 +131,14 @@ const createRootState = ({
     },
     notes,
     links,
+    noteDetail: {
+      selectedNoteId: null,
+      isOpen: false,
+    },
+    linkDetail: {
+      selectedLinkId: null,
+      isOpen: false,
+    },
     _persist: {
       version: -1,
       rehydrated: true,

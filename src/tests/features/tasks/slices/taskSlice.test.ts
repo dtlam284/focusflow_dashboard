@@ -84,6 +84,14 @@ const createRootState = (tasks: ITasksState): RootState =>
         keyword: '',
       },
     },
+    noteDetail: {
+      selectedNoteId: null,
+      isOpen: false,
+    },
+    linkDetail: {
+      selectedLinkId: null,
+      isOpen: false,
+    },
     links: {
       items: [],
       filters: {

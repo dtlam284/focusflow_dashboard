@@ -19,7 +19,7 @@ const MAX_REASON_KEYWORDS = 2
 
 //#region props
 export interface ISuggestionScore {
-    entityType: 'note' | 'link'
+    entityType: 'note' | 'link' | 'task'
     entityId: string
     score: number
     reasons: string[]
@@ -61,7 +61,12 @@ const formatKeywordList = (keywords: string[]) =>
     keywords.slice(0, MAX_REASON_KEYWORDS).join(', ')
 
 const formatReason = (
-    kind: 'title' | 'content' | 'category',
+    kind:
+        | 'title'
+        | 'content'
+        | 'category'
+        | 'task-title'
+        | 'task-content',
     keywords: string[],
 ): string | null => {
     if (keywords.length === 0) {
@@ -78,38 +83,50 @@ const formatReason = (
         return `Matched related content: ${keywordList}`
     }
 
+    if (kind === 'task-title') {
+        return `Matched task title: ${keywordList}`
+    }
+
+    if (kind === 'task-content') {
+        return `Matched task details: ${keywordList}`
+    }
+
     return `Matched category: ${keywordList}`
 }
 
-const orderReasons = (reasons: string[]): string[] => {
-    const recentReason = reasons.find((reason) =>
-        reason.includes('Recently attached'),
-    )
+const getReasonPriority = (reason: string): number => {
+    if (
+        reason.includes('Matched task title') ||
+        reason.includes('Matched keywords in title')
+    ) {
+        return 1
+    }
 
-    const titleReason = reasons.find((reason) =>
-        reason.includes('Matched keywords in title'),
-    )
+    if (reason.includes('Recently attached')) {
+        return 2
+    }
 
-    const contentReason = reasons.find((reason) =>
-        reason.includes('Matched related content'),
-    )
+    if (
+        reason.includes('Matched task details') ||
+        reason.includes('Matched related content')
+    ) {
+        return 3
+    }
 
-    const categoryReason = reasons.find((reason) =>
-        reason.includes('Matched category'),
-    )
+    if (reason.includes('Matched category')) {
+        return 4
+    }
 
-    const orderedReasons = [
-        titleReason,
-        recentReason,
-        contentReason,
-        categoryReason,
-    ].filter((reason): reason is string => Boolean(reason))
-
-    return Array.from(new Set(orderedReasons)).slice(0, 2)
+    return 99
 }
 
+const orderReasons = (reasons: string[]): string[] =>
+    Array.from(new Set(reasons))
+        .sort((left, right) => getReasonPriority(left) - getReasonPriority(right))
+        .slice(0, 2)
+
 const buildSuggestionScore = (
-    entityType: 'note' | 'link',
+    entityType: 'note' | 'link' | 'task',
     entityId: string,
     score: number,
     reasons: string[],
@@ -266,5 +283,161 @@ export function scoreLinkSuggestionForTask(
     }
 
     return buildSuggestionScore('link', link.id, score, reasons)
+}
+
+export function scoreTaskSuggestionForNote(
+    task: ITask,
+    note: INote,
+    options: IScoringOptions = {},
+): ISuggestionScore | null {
+    const {
+        isAlreadyAttached = false,
+        isDismissed = false,
+        hasRecentAttachmentSignal = false,
+    } = options
+
+    if (isAlreadyAttached || isDismissed) {
+        return null
+    }
+
+    const noteKeywords = extractKeywordsFromParts([note.title, note.content])
+    const noteCategoryKeywords = extractKeywordsFromParts([note.category])
+
+    const taskTitleKeywords = extractKeywordsFromParts([task.title])
+    const taskContentKeywords = extractKeywordsFromParts([task.description])
+    const taskKeywords = extractKeywordsFromParts([task.title, task.description])
+
+    const titleOverlap = getKeywordOverlap(noteKeywords, taskTitleKeywords)
+
+    const contentOverlap = excludeTakenKeywords(
+        getKeywordOverlap(noteKeywords, taskContentKeywords),
+        titleOverlap,
+    )
+
+    const categoryOverlap = excludeTakenKeywords(
+        getKeywordOverlap(noteCategoryKeywords, taskKeywords),
+        [...titleOverlap, ...contentOverlap],
+    )
+
+    let score = 0
+    const reasons: string[] = []
+
+    score += getScoredMatchPoints(
+        titleOverlap,
+        TITLE_KEYWORD_MATCH_SCORE,
+        MAX_TITLE_MATCHES_TO_SCORE,
+    )
+
+    score += getScoredMatchPoints(
+        contentOverlap,
+        CONTENT_KEYWORD_MATCH_SCORE,
+        MAX_CONTENT_MATCHES_TO_SCORE,
+    )
+
+    score += getScoredMatchPoints(
+        categoryOverlap,
+        CATEGORY_KEYWORD_MATCH_SCORE,
+        MAX_CATEGORY_MATCHES_TO_SCORE,
+    )
+
+    const titleReason = formatReason('task-title', titleOverlap)
+    if (titleReason) {
+        reasons.push(titleReason)
+    }
+
+    const contentReason = formatReason('task-content', contentOverlap)
+    if (contentReason) {
+        reasons.push(contentReason)
+    }
+
+    const categoryReason = formatReason('category', categoryOverlap)
+    if (categoryReason) {
+        reasons.push(categoryReason)
+    }
+
+    if (hasRecentAttachmentSignal) {
+        score += RECENT_ATTACHMENT_BONUS_SCORE
+        reasons.push('Recently attached in a similar task context')
+    }
+
+    return buildSuggestionScore('task', task.id, score, reasons)
+}
+
+export function scoreTaskSuggestionForLink(
+    task: ITask,
+    link: ILink,
+    options: IScoringOptions = {},
+): ISuggestionScore | null {
+    const {
+        isAlreadyAttached = false,
+        isDismissed = false,
+        hasRecentAttachmentSignal = false,
+    } = options
+
+    if (isAlreadyAttached || isDismissed) {
+        return null
+    }
+
+    const linkKeywords = extractKeywordsFromParts([link.title])
+    const linkCategoryKeywords = extractKeywordsFromParts([link.category])
+
+    const taskTitleKeywords = extractKeywordsFromParts([task.title])
+    const taskContentKeywords = extractKeywordsFromParts([task.description])
+    const taskKeywords = extractKeywordsFromParts([task.title, task.description])
+
+    const titleOverlap = getKeywordOverlap(linkKeywords, taskTitleKeywords)
+
+    const contentOverlap = excludeTakenKeywords(
+        getKeywordOverlap(linkKeywords, taskContentKeywords),
+        titleOverlap,
+    )
+
+    const categoryOverlap = excludeTakenKeywords(
+        getKeywordOverlap(linkCategoryKeywords, taskKeywords),
+        [...titleOverlap, ...contentOverlap],
+    )
+
+    let score = 0
+    const reasons: string[] = []
+
+    score += getScoredMatchPoints(
+        titleOverlap,
+        TITLE_KEYWORD_MATCH_SCORE,
+        MAX_TITLE_MATCHES_TO_SCORE,
+    )
+
+    score += getScoredMatchPoints(
+        contentOverlap,
+        CONTENT_KEYWORD_MATCH_SCORE,
+        MAX_CONTENT_MATCHES_TO_SCORE,
+    )
+
+    score += getScoredMatchPoints(
+        categoryOverlap,
+        CATEGORY_KEYWORD_MATCH_SCORE,
+        MAX_CATEGORY_MATCHES_TO_SCORE,
+    )
+
+    const titleReason = formatReason('task-title', titleOverlap)
+    if (titleReason) {
+        reasons.push(titleReason)
+    }
+
+    const contentReason = formatReason('task-content', contentOverlap)
+    if (contentReason) {
+        reasons.push(contentReason)
+    }
+
+    const categoryReason = formatReason('category', categoryOverlap)
+    if (categoryReason) {
+        reasons.push(categoryReason)
+    }
+
+    if (hasRecentAttachmentSignal) {
+        score += RECENT_ATTACHMENT_BONUS_SCORE
+        reasons.push('Recently attached in a similar task context')
+    }
+
+    return buildSuggestionScore('task', task.id, score, reasons)
 }
 //#endregion exports

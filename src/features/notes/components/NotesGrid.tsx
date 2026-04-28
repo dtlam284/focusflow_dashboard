@@ -1,9 +1,7 @@
 import * as React from 'react'
-
 import { EmptyState } from '@/components/shared/EmptyState'
 import { useI18n } from '@/contexts/I18nContext'
 import { cn } from '@/utils'
-
 import { NoteCard } from './NoteCard'
 import { NoteForm } from './NoteForm'
 import type { INote } from '../types/noteTypes'
@@ -20,6 +18,7 @@ export interface INotesGridProps {
   onDelete: (noteId: string) => void
   onTogglePin: (noteId: string) => void
   onPreview: (note: INote) => void
+  onOpenDetail?: (note: INote) => void
   emptyAction?: React.ReactNode
   className?: string
 }
@@ -35,6 +34,7 @@ export function NotesGrid({
   onDelete,
   onTogglePin,
   onPreview,
+  onOpenDetail,
   emptyAction,
   className,
 }: INotesGridProps) {
@@ -64,7 +64,7 @@ export function NotesGrid({
         note.id === editingNoteId ? (
           <NoteForm
             key={`edit-${note.id}`}
-            mode="edit"
+            mode='edit'
             initialValues={{
               title: note.title,
               content: note.content,
@@ -82,6 +82,7 @@ export function NotesGrid({
             onDelete={onDelete}
             onTogglePin={onTogglePin}
             onPreview={onPreview}
+            onOpenDetail={onOpenDetail}
           />
         ),
       )}

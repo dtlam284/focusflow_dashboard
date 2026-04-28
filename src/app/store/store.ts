@@ -5,7 +5,9 @@ import storage from 'redux-persist/lib/storage'
 import appReducer from '@/app/store/slices/appSlice'
 import authReducer from '@/features/auth/store/slices/authSlice'
 import linksReducer, { hydrateLinks } from '@/features/links/store/slices/linkSlice'
+import linkDetailReducer from '@/features/links/store/slices/linkDetailSlice'
 import notesReducer, { hydrateNotes } from '@/features/notes/store/slices/noteSlice'
+import noteDetailReducer from '@/features/notes/store/slices/noteDetailSlice'
 import boardReducer, { hydrateBoardPreferences, } from '@/features/tasks/store/slices/boardSlice'
 import taskActivityReducer from '@/features/tasks/store/slices/taskActivitySlice'
 import taskCommentsReducer, { hydrateTaskComments } from '@/features/tasks/store/slices/taskCommentsSlice'
@@ -34,7 +36,9 @@ const rootReducer = combineReducers({
   taskRelations: taskRelationsReducer,
   board: boardReducer,
   notes: notesReducer,
+  noteDetail: noteDetailReducer,
   links: linksReducer,
+  linkDetail: linkDetailReducer,
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)
