@@ -1,10 +1,12 @@
 import { extractKeywordsFromParts } from '@/features/tasks/utils/smartLinkingKeywords'
+import { SIMILAR_TASK_MIN_SUGGESTION_SCORE, SMART_LINKING_MIN_SUGGESTION_SCORE } from './smartLinkingQuality'
 import type { ILink } from '@/features/links/types/linkTypes'
 import type { INote } from '@/features/notes/types/noteTypes'
 import type { ITask } from '@/features/tasks/types/taskTypes'
 
 //#region constants
-export const SMART_LINKING_MIN_RELEVANCE_SCORE = 3
+export const SMART_LINKING_MIN_RELEVANCE_SCORE = 
+    SMART_LINKING_MIN_SUGGESTION_SCORE
 
 const TITLE_KEYWORD_MATCH_SCORE = 5
 const CONTENT_KEYWORD_MATCH_SCORE = 3
@@ -16,7 +18,8 @@ const MAX_CONTENT_MATCHES_TO_SCORE = 3
 const MAX_CATEGORY_MATCHES_TO_SCORE = 2
 const MAX_REASON_KEYWORDS = 2
 
-const SIMILAR_TASK_MIN_RELEVANCE_SCORE = 5
+const SIMILAR_TASK_MIN_RELEVANCE_SCORE = 
+    SIMILAR_TASK_MIN_SUGGESTION_SCORE
 
 const SHARED_NOTE_SIMILARITY_SCORE = 6
 const SHARED_LINK_SIMILARITY_SCORE = 5

@@ -6,15 +6,17 @@ import {
     scoreTaskSuggestionForLink,
     scoreTaskSuggestionForNote,
 } from '@/features/tasks/utils/smartLinkingScoring'
+import {
+    applySuggestionQualityGate,
+    SIMILAR_TASK_MIN_SUGGESTION_SCORE,
+    SMART_LINKING_MIN_SUGGESTION_SCORE,
+} from '@/features/tasks/utils/smartLinkingQuality'
 import type { RootState } from '@/app/store/store'
 import type { ILink } from '@/features/links/types/linkTypes'
 import type { INote } from '@/features/notes/types/noteTypes'
 import type { ITask } from '@/features/tasks/types/taskTypes'
 import type { SmartLinkedEntityType } from '@/features/tasks/types/taskRelationTypes'
 
-//#region constants
-const SMART_LINKING_MAX_SUGGESTIONS = 5
-//#endregion constants
 
 //#region props
 export interface ISuggestedNoteResult {
@@ -60,15 +62,6 @@ const createEntityLookupKey = (
     entityType: SmartLinkedEntityType,
     entityId: string,
 ) => `${entityType}:${entityId}`
-
-const sortSuggestedResultsByScore = <T extends { score: number }>(
-    items: T[],
-): T[] => [...items].sort((left, right) => right.score - left.score)
-
-const toLimitedSuggestionResults = <T extends { score: number }>(
-    items: T[],
-): T[] =>
-    sortSuggestedResultsByScore(items).slice(0, SMART_LINKING_MAX_SUGGESTIONS)
 
 const getUniqueIntersectionCount = (
     leftIds: string[],
@@ -311,7 +304,9 @@ export const selectSuggestedNotesByTaskId = createSelector(
             ]
         })
 
-        return toLimitedSuggestionResults(suggestedNotes)
+        return applySuggestionQualityGate(suggestedNotes, {
+            minScore: SMART_LINKING_MIN_SUGGESTION_SCORE,
+        })
     },
 )
 
@@ -361,14 +356,21 @@ export const selectSuggestedLinksByTaskId = createSelector(
             ]
         })
 
-        return toLimitedSuggestionResults(suggestedLinks)
+        return applySuggestionQualityGate(suggestedLinks, {
+            minScore: SMART_LINKING_MIN_SUGGESTION_SCORE,
+        })
     },
 )
 
 export const selectSuggestedEntitiesByTaskId = createSelector(
     [selectSuggestedNotesByTaskId, selectSuggestedLinksByTaskId],
     (suggestedNotes, suggestedLinks): SuggestedTaskEntityResult[] =>
-        toLimitedSuggestionResults([...suggestedNotes, ...suggestedLinks]),
+    applySuggestionQualityGate(
+        [...suggestedNotes, ...suggestedLinks],
+        {
+            minScore: SMART_LINKING_MIN_SUGGESTION_SCORE,
+        },
+    )
 )
 
 export const selectSuggestedTasksByNoteId = createSelector(
@@ -410,7 +412,9 @@ export const selectSuggestedTasksByNoteId = createSelector(
             ]
         })
 
-        return toLimitedSuggestionResults(suggestedTasks)
+        return applySuggestionQualityGate(suggestedTasks, {
+            minScore: SMART_LINKING_MIN_SUGGESTION_SCORE,
+        })
     },
 )
 
@@ -453,7 +457,9 @@ export const selectSuggestedTasksByLinkId = createSelector(
             ]
         })
 
-        return toLimitedSuggestionResults(suggestedTasks)
+        return applySuggestionQualityGate(suggestedTasks, {
+            minScore: SMART_LINKING_MIN_SUGGESTION_SCORE,
+        })
     },
 )
 
@@ -519,7 +525,9 @@ export const selectSimilarTasksByTaskId = createSelector(
             ]
         })
 
-        return toLimitedSuggestionResults(similarTasks)
+        return applySuggestionQualityGate(similarTasks, {
+            minScore: SIMILAR_TASK_MIN_SUGGESTION_SCORE,
+        })
     },
 )
 //#endregion smart suggestion selectors
