@@ -1,9 +1,7 @@
 import { Pin } from 'lucide-react'
 import type { ComponentProps } from 'react'
-
 import { useI18n } from '@/contexts/I18nContext'
 import { cn } from '@/utils'
-
 import { NoteCard } from './NoteCard'
 import { NoteForm } from './NoteForm'
 import type { INote } from '../types/noteTypes'
@@ -20,6 +18,7 @@ export interface INotesPinnedSectionProps {
   onDelete: (noteId: string) => void
   onTogglePin: (noteId: string) => void
   onPreview: (note: INote) => void
+  onOpenDetail?: (note: INote) => void
   className?: string
 }
 //#endregion props
@@ -34,6 +33,7 @@ export function NotesPinnedSection({
   onDelete,
   onTogglePin,
   onPreview,
+  onOpenDetail,
   className,
 }: INotesPinnedSectionProps) {
   //#region hooks
@@ -49,27 +49,27 @@ export function NotesPinnedSection({
   //#region render
   return (
     <section className={cn('space-y-4', className)}>
-      <div className="flex items-center gap-2">
-        <div className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300">
-          <Pin className="h-4 w-4" />
+      <div className='flex items-center gap-2'>
+        <div className='inline-flex h-8 w-8 items-center justify-center rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300'>
+          <Pin className='h-4 w-4' />
         </div>
 
         <div>
-          <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+          <h2 className='text-sm font-semibold text-slate-900 dark:text-slate-100'>
             {t('Pinned notes')}
           </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
+          <p className='text-xs text-slate-500 dark:text-slate-400'>
             {t('Your most important notes stay here for quick access.')}
           </p>
         </div>
       </div>
 
-      <div className="grid items-start gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <div className='grid items-start gap-4 sm:grid-cols-2 xl:grid-cols-3'>
         {notes.map((note) =>
           note.id === editingNoteId ? (
             <NoteForm
               key={`edit-${note.id}`}
-              mode="edit"
+              mode='edit'
               initialValues={{
                 title: note.title,
                 content: note.content,
@@ -87,6 +87,7 @@ export function NotesPinnedSection({
               onDelete={onDelete}
               onTogglePin={onTogglePin}
               onPreview={onPreview}
+              onOpenDetail={onOpenDetail}
             />
           ),
         )}
