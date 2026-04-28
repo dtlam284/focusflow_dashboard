@@ -11,6 +11,11 @@ import {
     SIMILAR_TASK_MIN_SUGGESTION_SCORE,
     SMART_LINKING_MIN_SUGGESTION_SCORE,
 } from '@/features/tasks/utils/smartLinkingQuality'
+import {
+    selectIsSmartLinkingEnabled,
+    selectSmartLinkingHideDismissed,
+    selectSmartLinkingMaxSuggestions,
+} from '@/features/tasks/store/selectors/smartLinkingPreferencesSelectors'
 import type { RootState } from '@/app/store/store'
 import type { ILink } from '@/features/links/types/linkTypes'
 import type { INote } from '@/features/notes/types/noteTypes'
@@ -265,6 +270,9 @@ export const selectSuggestedNotesByTaskId = createSelector(
         selectAttachedNoteIdsByTaskId,
         selectDismissedSuggestionKeySetByTaskId,
         selectRecentAttachmentSignalKeySetByTaskId,
+        selectIsSmartLinkingEnabled,
+        selectSmartLinkingHideDismissed,
+        selectSmartLinkingMaxSuggestions,
     ],
     (
         task,
@@ -272,19 +280,24 @@ export const selectSuggestedNotesByTaskId = createSelector(
         attachedNoteIds,
         dismissedSuggestionKeySet,
         recentAttachmentSignalKeySet,
+        isSmartLinkingEnabled,
+        hideDismissed,
+        maxSuggestions,
     ): ISuggestedNoteResult[] => {
-        if (!task) {
+        if (!task || !isSmartLinkingEnabled) {
             return []
         }
 
         const attachedNoteIdSet = new Set(attachedNoteIds)
 
-        const suggestedNotes = notes.flatMap((note) => {
+        const suggestedNotes = notes.flatMap((note: INote) => {
             const suggestionScore = scoreNoteSuggestionForTask(task, note, {
                 isAlreadyAttached: attachedNoteIdSet.has(note.id),
-                isDismissed: dismissedSuggestionKeySet.has(
-                    createEntityLookupKey('note', note.id),
-                ),
+                isDismissed:
+                    hideDismissed &&
+                    dismissedSuggestionKeySet.has(
+                        createEntityLookupKey('note', note.id),
+                    ),
                 hasRecentAttachmentSignal: recentAttachmentSignalKeySet.has(
                     createEntityLookupKey('note', note.id),
                 ),
@@ -306,6 +319,7 @@ export const selectSuggestedNotesByTaskId = createSelector(
 
         return applySuggestionQualityGate(suggestedNotes, {
             minScore: SMART_LINKING_MIN_SUGGESTION_SCORE,
+            maxResults: maxSuggestions,
         })
     },
 )

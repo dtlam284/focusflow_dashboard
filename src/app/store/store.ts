@@ -15,6 +15,7 @@ import taskDetailReducer from '@/features/tasks/store/slices/taskDetailSlice'
 import taskLabelsReducer from '@/features/tasks/store/slices/labelSlice'
 import tasksReducer, { hydrateTasks } from '@/features/tasks/store/slices/taskSlice'
 import taskRelationsReducer, { hydrateTaskRelations } from '@/features/tasks/store/slices/taskRelationsSlice'
+import smartLinkingPreferencesReducer from '@/features/tasks/store/slices/smartLinkingPreferencesSlice'
 
 import { loadState, saveState } from '@/utils/storage'
 
@@ -39,6 +40,7 @@ const rootReducer = combineReducers({
   noteDetail: noteDetailReducer,
   links: linksReducer,
   linkDetail: linkDetailReducer,
+  smartLinkingPreferences: smartLinkingPreferencesReducer,
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)
