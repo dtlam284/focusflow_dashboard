@@ -4,7 +4,13 @@ import { CalendarDays, Check, Clock3, FileText, PencilLine, Tag, X } from 'lucid
 import { useAppDispatch, useAppSelector } from '@/app/store/hooks'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Sheet, SheetContent, SheetDescription,  SheetHeader, SheetTitle } from '@/components/ui/sheet'
+import { 
+    Sheet, 
+    SheetContent, 
+    SheetDescription,  
+    SheetHeader, 
+    SheetTitle 
+} from '@/components/ui/sheet'
 import { Textarea } from '@/components/ui/textarea'
 import { useI18n } from '@/contexts/I18nContext'
 import { cn } from '@/utils'
@@ -30,7 +36,7 @@ import {
     selectSelectedTaskDetail,
     selectSelectedTaskId,
 } from '../store/selectors/taskDetailSelectors'
-
+import { selectSmartLinkingShowReasons } from '@/features/tasks/store/selectors/smartLinkingPreferencesSelectors'
 import { TaskActivityTimeline } from './TaskActivityTimeline'
 import { TaskCommentsSection } from './TaskCommentsSection'
 import { TaskLabelChips } from './TaskLabelChips'
@@ -135,6 +141,7 @@ export function TaskDetailPanel() {
     const similarTasks = useAppSelector((state) =>
         selectedTaskId ? selectSimilarTasksByTaskId(state, selectedTaskId) : [],
     )
+    const showSmartLinkingReasons = useAppSelector(selectSmartLinkingShowReasons)
     //#endregion hooks
 
     //#region local state
@@ -646,7 +653,7 @@ export function TaskDetailPanel() {
                                                     </div>
                                                 </div>
 
-                                                {suggestion.reasons.length > 0 ? (
+                                                {showSmartLinkingReasons && suggestion.reasons.length > 0 ? (
                                                     <div className='mt-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 dark:border-slate-800 dark:bg-slate-900/40'>
                                                         <p className='mb-2 text-xs font-medium text-slate-700 dark:text-slate-200'>
                                                             {t('Why related')}

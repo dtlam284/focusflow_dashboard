@@ -91,7 +91,7 @@ export function TaskResourceItem({
             {variant === 'suggested' && visibleReasons.length > 0 ? (
                 <div className='mt-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 dark:border-slate-800 dark:bg-slate-900/40'>
                     <div className='mb-2 flex items-center gap-2 text-xs font-medium text-slate-700 dark:text-slate-200'>
-                        <Sparkles className='h-3.5 w-3.5' />
+                        {/* <Sparkles className='h-3.5 w-3.5' /> */}
                         Why suggested
                     </div>
 

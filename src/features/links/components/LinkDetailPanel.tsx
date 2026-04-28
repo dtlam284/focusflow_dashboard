@@ -10,6 +10,7 @@ import { openTaskDetail } from '@/features/tasks/store/slices/taskDetailSlice'
 import { selectRelatedTasksByLinkId, selectSuggestedTasksByLinkId } from '@/features/tasks/store/selectors/taskRelationsSelectors'
 import { closeLinkDetail } from '@/features/links/store/slices/linkDetailSlice'
 import { selectIsLinkDetailOpen, selectSelectedLinkDetail, selectSelectedLinkId } from '@/features/links/store/selectors/linkDetailSelectors'
+import { selectSmartLinkingShowReasons } from '@/features/tasks/store/selectors/smartLinkingPreferencesSelectors'
 
 //#region helpers
 const formatTaskMeta = (status: string, priority: string) =>
@@ -33,6 +34,8 @@ export function LinkDetailPanel() {
     const suggestedTasks = useAppSelector((state) =>
         selectedLinkId ? selectSuggestedTasksByLinkId(state, selectedLinkId) : [],
     )
+
+    const showSmartLinkingReasons = useAppSelector(selectSmartLinkingShowReasons)
     //#endregion hooks
 
     //#region effects
@@ -236,7 +239,7 @@ export function LinkDetailPanel() {
                                                     </div>
                                                 </div>
 
-                                                {suggestion.reasons.length > 0 ? (
+                                                {showSmartLinkingReasons && suggestion.reasons.length > 0 ? (
                                                     <div className='mt-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 dark:border-slate-800 dark:bg-slate-900/40'>
                                                         <p className='mb-2 text-xs font-medium text-slate-700 dark:text-slate-200'>
                                                             {t('Why suggested')}
