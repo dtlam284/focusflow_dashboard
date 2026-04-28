@@ -82,6 +82,14 @@ const createRootState = (notes: INotesState): RootState =>
         category: 'all',
       },
     },
+    noteDetail: {
+      selectedNoteId: null,
+      isOpen: false,
+    },
+    linkDetail: {
+      selectedLinkId: null,
+      isOpen: false,
+    },
     _persist: {
       version: -1,
       rehydrated: true,
