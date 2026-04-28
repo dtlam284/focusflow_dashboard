@@ -1,5 +1,4 @@
 import * as React from 'react'
-
 import { useI18n } from '@/contexts/I18nContext'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { NoteForm } from '@/features/notes/components/NoteForm'
@@ -8,9 +7,25 @@ import { NotesGrid } from '@/features/notes/components/NotesGrid'
 import { useAppDispatch, useAppSelector } from '@/app/store/hooks'
 import { NotePreviewDialog } from '@/features/notes/components/NotePreviewDialog'
 import { NotesPinnedSection } from '@/features/notes/components/NotesPinnedSection'
+import { NoteDetailPanel } from '@/features/notes/components/NoteDetailPanel'
 
-import { addNote, deleteNote, resetNoteFilters, setNoteFilters, togglePinNote, updateNote } from '@/features/notes/store/slices/noteSlice'
-import { selectFilteredNotesCount, selectFilteredPinnedNotes, selectFilteredUnpinnedNotes, selectNoteFilters, selectNoteItems, selectNotesCount } from '@/features/notes/store/selectors/noteSelectors'
+import {
+  addNote,
+  deleteNote,
+  resetNoteFilters,
+  setNoteFilters,
+  togglePinNote,
+  updateNote,
+} from '@/features/notes/store/slices/noteSlice'
+import { openNoteDetail } from '@/features/notes/store/slices/noteDetailSlice'
+import {
+  selectFilteredNotesCount,
+  selectFilteredPinnedNotes,
+  selectFilteredUnpinnedNotes,
+  selectNoteFilters,
+  selectNoteItems,
+  selectNotesCount,
+} from '@/features/notes/store/selectors/noteSelectors'
 
 import type { INote } from '@/features/notes/types/noteTypes'
 import type { NoteFormValues } from '@/features/notes/schemas/noteSchema'
@@ -94,6 +109,10 @@ export function NotesScreen() {
     setIsPreviewOpen(true)
   }
 
+  const handleOpenNoteDetail = (note: INote) => {
+    dispatch(openNoteDetail(note.id))
+  }
+
   const handleRequestDelete = (noteId: string) => {
     const note = notes.find((item) => item.id === noteId) ?? null
     setNotePendingDelete(note)
@@ -127,7 +146,7 @@ export function NotesScreen() {
 
   //#region render
   return (
-    <div className="space-y-6">
+    <div className='space-y-6'>
       <PageHeader
         title={t('Notes')}
         description={t(
@@ -135,35 +154,35 @@ export function NotesScreen() {
         )}
       />
 
-      <div className="rounded-2xl border bg-card p-4 shadow-sm">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div className="min-w-0 flex-1 space-y-2">
-            <label htmlFor="notes-search" className="text-sm font-medium">
+      <div className='rounded-2xl border bg-card p-4 shadow-sm'>
+        <div className='flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between'>
+          <div className='min-w-0 flex-1 space-y-2'>
+            <label htmlFor='notes-search' className='text-sm font-medium'>
               {t('Search')}
             </label>
             <input
-              id="notes-search"
-              type="text"
+              id='notes-search'
+              type='text'
               value={filters.keyword}
               onChange={(event) => handleKeywordChange(event.target.value)}
               placeholder={t('Search notes by title or content')}
-              data-skip-auto-label="true"
-              className="w-full rounded-xl border bg-background px-3 py-2 text-sm outline-none transition focus:border-primary"
+              data-skip-auto-label='true'
+              className='w-full rounded-xl border bg-background px-3 py-2 text-sm outline-none transition focus:border-primary'
             />
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="text-sm text-muted-foreground">
-              {t('Showing')} <span className="font-medium text-foreground">{filteredCount}</span>
+          <div className='flex items-center gap-3'>
+            <div className='text-sm text-muted-foreground'>
+              {t('Showing')} <span className='font-medium text-foreground'>{filteredCount}</span>
               {' / '}
-              <span className="font-medium text-foreground">{totalCount}</span>
+              <span className='font-medium text-foreground'>{totalCount}</span>
             </div>
 
             <button
-              type="button"
+              type='button'
               onClick={handleResetFilters}
               disabled={!isFiltered}
-              className="inline-flex h-10 items-center justify-center rounded-xl border px-4 text-sm font-medium transition hover:bg-accent disabled:pointer-events-none disabled:opacity-50"
+              className='inline-flex h-10 items-center justify-center rounded-xl border px-4 text-sm font-medium transition hover:bg-accent disabled:pointer-events-none disabled:opacity-50'
             >
               {t('Reset')}
             </button>
@@ -171,12 +190,12 @@ export function NotesScreen() {
         </div>
       </div>
 
-      <div className="grid items-start gap-6 xl:grid-cols-[380px_minmax(0,1fr)]">
-        <aside className="xl:sticky xl:top-6 xl:self-start xl:h-fit">
-          <NoteForm key="create-note" mode="create" onSubmit={handleCreateNote} />
+      <div className='grid items-start gap-6 xl:grid-cols-[380px_minmax(0,1fr)]'>
+        <aside className='xl:sticky xl:top-6 xl:self-start xl:h-fit'>
+          <NoteForm key='create-note' mode='create' onSubmit={handleCreateNote} />
         </aside>
 
-        <div className="space-y-6">
+        <div className='space-y-6'>
           <NotesPinnedSection
             notes={pinnedNotes}
             editingNoteId={editingNoteId}
@@ -186,6 +205,7 @@ export function NotesScreen() {
             onDelete={handleRequestDelete}
             onTogglePin={handleTogglePin}
             onPreview={handlePreviewNote}
+            onOpenDetail={handleOpenNoteDetail}
           />
 
           <NotesGrid
@@ -197,6 +217,7 @@ export function NotesScreen() {
             onDelete={handleRequestDelete}
             onTogglePin={handleTogglePin}
             onPreview={handlePreviewNote}
+            onOpenDetail={handleOpenNoteDetail}
           />
         </div>
       </div>
@@ -210,6 +231,8 @@ export function NotesScreen() {
         }}
         onEdit={handleStartEdit}
       />
+
+      <NoteDetailPanel />
 
       <ConfirmDialog
         open={Boolean(notePendingDelete)}
